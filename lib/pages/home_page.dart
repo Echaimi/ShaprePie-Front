@@ -8,16 +8,17 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    HomePageContent(),
-    DepensePage(),
-    GaleriePage(),
-    ProfilePage(),
+    const HomePageContent(),
+    const DepensePage(),
+    const GaleriePage(),
+    const ProfilePage(),
   ];
 
   void _onTap(int index) {
