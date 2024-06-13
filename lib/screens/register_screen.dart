@@ -1,27 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'home_page.dart';
-import 'register_page.dart';
-import '../components/my_button.dart';
-import '../components/my_textfield.dart';
-import '../components/square_tile.dart';
+import 'package:nsm/widgets/my_button.dart';
+import 'package:nsm/widgets/my_textfield.dart';
+import 'package:nsm/widgets/square_tile.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   String errorMessage = '';
   bool isLoading = false;
 
-  Future<void> signUserIn() async {
+  Future<void> registerUser() async {
+    if (usernameController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Username is required';
+      });
+      usernameController.text == '';
+      return;
+    }
+    if (emailController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Email is required';
+      });
+      emailController.text == '';
+      return;
+    }
+    if (passwordController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Password is required';
+      });
+      passwordController.text == '';
+      return;
+    }
+    if (confirmPasswordController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Confirm Password is required';
+      });
+      confirmPasswordController.text == '';
+      return;
+    }
+    if (passwordController.text != confirmPasswordController.text) {
+      setState(() {
+        errorMessage = 'Passwords do not match';
+      });
+      return;
+    }
+
     setState(() {
       isLoading = true;
       errorMessage = '';
@@ -29,11 +65,12 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8080/api/v1/login'),
+        Uri.parse('http://localhost:8080/api/v1/signup'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
+          'username': usernameController.text,
           'email': emailController.text,
           'password': passwordController.text,
         }),
@@ -41,19 +78,14 @@ class _LoginPageState extends State<LoginPage> {
 
       final responseData = jsonDecode(response.body);
 
-      if (response.statusCode == 200 && responseData.containsKey('token')) {
+      if (response.statusCode == 200) {
         if (!mounted) return;
-        // Store the token securely if needed
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        context.go('/login');
       } else {
         setState(() {
           if (responseData.containsKey('error')) {
             errorMessage = responseData['error'];
           } else if (responseData.containsKey('errors')) {
-            // Process validation errors
             errorMessage = (responseData['errors'] as List)
                 .map((error) => '${error['field']}: ${error['message']}')
                 .join('\n');
@@ -80,23 +112,30 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
                 const Icon(
-                  Icons.lock,
+                  Icons.person_add,
                   size: 100,
                 ),
                 const SizedBox(height: 50),
                 Text(
-                  'Welcome back you\'ve been missed!',
+                  'Join us now!',
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 25),
+                MyTextField(
+                  controller: usernameController,
+                  hintText: 'Username',
+                  obscureText: false,
+                ),
+                const SizedBox(height: 10),
                 MyTextField(
                   controller: emailController,
                   hintText: 'Email',
@@ -109,33 +148,16 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
+                MyTextField(
+                  controller: confirmPasswordController,
+                  hintText: 'Confirm Password',
+                  obscureText: true,
                 ),
                 const SizedBox(height: 25),
                 isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : MyButton(
-                        onTap: () {
-                          if (emailController.text.isEmpty ||
-                              passwordController.text.isEmpty) {
-                            setState(() {
-                              errorMessage =
-                                  'Please enter both email and password';
-                            });
-                          } else {
-                            signUserIn();
-                          }
-                        },
+                        onTap: registerUser,
                       ),
                 const SizedBox(height: 25),
                 Text(
@@ -183,20 +205,16 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Not a member?',
+                      'Already a member?',
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterPage()),
-                        );
+                        context.go('/login');
                       },
                       child: const Text(
-                        'Register now',
+                        'Login now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

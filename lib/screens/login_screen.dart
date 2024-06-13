@@ -1,62 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:go_router/go_router.dart';
 
-import 'package:nsm/components/my_button.dart';
-import 'package:nsm/components/my_textfield.dart';
-import 'package:nsm/components/square_tile.dart';
+import '../widgets/my_button.dart';
+import '../widgets/my_textfield.dart';
+import '../widgets/square_tile.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final usernameController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
   String errorMessage = '';
   bool isLoading = false;
 
-  Future<void> registerUser() async {
-    if (usernameController.text.isEmpty) {
-      setState(() {
-        errorMessage = 'Username is required';
-      });
-      usernameController.text == '';
-      return;
-    }
-    if (emailController.text.isEmpty) {
-      setState(() {
-        errorMessage = 'Email is required';
-      });
-      emailController.text == '';
-      return;
-    }
-    if (passwordController.text.isEmpty) {
-      setState(() {
-        errorMessage = 'Password is required';
-      });
-      passwordController.text == '';
-      return;
-    }
-    if (confirmPasswordController.text.isEmpty) {
-      setState(() {
-        errorMessage = 'Confirm Password is required';
-      });
-      confirmPasswordController.text == '';
-      return;
-    }
-    if (passwordController.text != confirmPasswordController.text) {
-      setState(() {
-        errorMessage = 'Passwords do not match';
-      });
-      return;
-    }
-
+  Future<void> signUserIn() async {
     setState(() {
       isLoading = true;
       errorMessage = '';
@@ -64,12 +28,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8080/api/v1/signup'),
+        Uri.parse('http://localhost:8080/api/v1/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'username': usernameController.text,
           'email': emailController.text,
           'password': passwordController.text,
         }),
@@ -77,14 +40,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
       final responseData = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && responseData.containsKey('token')) {
         if (!mounted) return;
-        Navigator.pop(context);
+        context.go('/');
       } else {
         setState(() {
           if (responseData.containsKey('error')) {
             errorMessage = responseData['error'];
           } else if (responseData.containsKey('errors')) {
+            // Process validation errors
             errorMessage = (responseData['errors'] as List)
                 .map((error) => '${error['field']}: ${error['message']}')
                 .join('\n');
@@ -111,30 +75,23 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
                 const Icon(
-                  Icons.person_add,
+                  Icons.lock,
                   size: 100,
                 ),
                 const SizedBox(height: 50),
                 Text(
-                  'Join us now!',
+                  'Welcome back you\'ve been missed!',
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 25),
-                MyTextField(
-                  controller: usernameController,
-                  hintText: 'Username',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10),
                 MyTextField(
                   controller: emailController,
                   hintText: 'Email',
@@ -147,16 +104,33 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                MyTextField(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 25),
                 isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : MyButton(
-                        onTap: registerUser,
+                        onTap: () {
+                          if (emailController.text.isEmpty ||
+                              passwordController.text.isEmpty) {
+                            setState(() {
+                              errorMessage =
+                                  'Please enter both email and password';
+                            });
+                          } else {
+                            signUserIn();
+                          }
+                        },
                       ),
                 const SizedBox(height: 25),
                 Text(
@@ -204,16 +178,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already a member?',
+                      'Not a member?',
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        context.go('/register');
                       },
                       child: const Text(
-                        'Login now',
+                        'Register now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
