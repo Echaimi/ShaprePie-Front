@@ -66,7 +66,7 @@ class EventScreen extends StatelessWidget {
                     const SizedBox(height: 8.0),
                     Text(event.description),
                     const SizedBox(height: 8.0),
-                    Text('Author: ${event.author.name}'),
+                    Text('Author: ${event.author.username}'),
                     const SizedBox(height: 8.0),
                     Text('Category: ${event.category.name}'),
                     const SizedBox(height: 8.0),

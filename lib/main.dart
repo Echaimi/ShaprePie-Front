@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nsm/screens/event_screen.dart';
 import 'package:nsm/screens/home_screen.dart';
 import 'dart:io';
@@ -10,6 +10,10 @@ import 'dart:io';
 import 'package:nsm/screens/login_screen.dart';
 import 'package:nsm/screens/profile_screen.dart';
 import 'package:nsm/screens/register_screen.dart';
+import 'package:nsm/services/auth_service.dart';
+import 'package:nsm/providers/auth_provider.dart';
+import 'package:nsm/services/api_service.dart';
+import 'package:nsm/services/user_service.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -73,12 +77,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Navigation App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(
+            AuthService(),
+            UserService(ApiService()),
+          ),
+        ),
+      ],
+      child: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) {
+          return MaterialApp.router(
+            title: 'Navigation App',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            routerConfig: _router,
+          );
+        },
       ),
-      routerConfig: _router,
     );
   }
 }
