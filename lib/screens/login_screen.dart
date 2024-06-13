@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:go_router/go_router.dart';
-
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_textfield.dart';
 import '../widgets/square_tile.dart';
@@ -20,46 +19,33 @@ class _LoginScreenState extends State<LoginScreen> {
   String errorMessage = '';
   bool isLoading = false;
 
-  Future<void> signUserIn() async {
+  Future<void> loginUser() async {
+    if (emailController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Email is required';
+      });
+      return;
+    }
+    if (passwordController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Password is required';
+      });
+      return;
+    }
+
     setState(() {
       isLoading = true;
       errorMessage = '';
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:8080/api/v1/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'email': emailController.text,
-          'password': passwordController.text,
-        }),
-      );
-
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && responseData.containsKey('token')) {
-        if (!mounted) return;
-        context.go('/');
-      } else {
-        setState(() {
-          if (responseData.containsKey('error')) {
-            errorMessage = responseData['error'];
-          } else if (responseData.containsKey('errors')) {
-            // Process validation errors
-            errorMessage = (responseData['errors'] as List)
-                .map((error) => '${error['field']}: ${error['message']}')
-                .join('\n');
-          } else {
-            errorMessage = 'An error occurred';
-          }
-        });
-      }
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.login(emailController.text, passwordController.text);
+      if (!mounted) return;
+      context.go('/');
     } catch (e) {
       setState(() {
-        errorMessage = 'Failed to connect to the server: $e';
+        errorMessage = 'Login failed: ${e.toString()}';
       });
     } finally {
       setState(() {
@@ -75,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -103,34 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 25),
                 isLoading
                     ? const CircularProgressIndicator()
                     : MyButton(
-                        onTap: () {
-                          if (emailController.text.isEmpty ||
-                              passwordController.text.isEmpty) {
-                            setState(() {
-                              errorMessage =
-                                  'Please enter both email and password';
-                            });
-                          } else {
-                            signUserIn();
-                          }
-                        },
+                        onTap: loginUser,
                       ),
                 const SizedBox(height: 25),
                 Text(
@@ -156,10 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
+                        child: Divider(thickness: 0.5, color: Colors.grey[400]),
                       ),
                     ],
                   ),
@@ -178,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Not a member?',
+                      'Don\'t have an account?',
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
@@ -187,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         context.go('/register');
                       },
                       child: const Text(
-                        'Register now',
+                        'Sign up now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -195,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

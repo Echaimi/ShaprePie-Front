@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
 
-import 'package:nsm/widgets/my_button.dart';
-import 'package:nsm/widgets/my_textfield.dart';
-import 'package:nsm/widgets/square_tile.dart';
+import '../widgets/my_button.dart';
+import '../widgets/my_textfield.dart';
+import '../widgets/square_tile.dart';
+import '../providers/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -27,28 +27,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         errorMessage = 'Username is required';
       });
-      usernameController.text == '';
       return;
     }
     if (emailController.text.isEmpty) {
       setState(() {
         errorMessage = 'Email is required';
       });
-      emailController.text == '';
       return;
     }
     if (passwordController.text.isEmpty) {
       setState(() {
         errorMessage = 'Password is required';
       });
-      passwordController.text == '';
       return;
     }
     if (confirmPasswordController.text.isEmpty) {
       setState(() {
         errorMessage = 'Confirm Password is required';
       });
-      confirmPasswordController.text == '';
       return;
     }
     if (passwordController.text != confirmPasswordController.text) {
@@ -64,39 +60,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:8080/api/v1/signup'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'username': usernameController.text,
-          'email': emailController.text,
-          'password': passwordController.text,
-        }),
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.register(
+        usernameController.text,
+        emailController.text,
+        passwordController.text,
       );
-
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        if (!mounted) return;
-        context.go('/login');
-      } else {
-        setState(() {
-          if (responseData.containsKey('error')) {
-            errorMessage = responseData['error'];
-          } else if (responseData.containsKey('errors')) {
-            errorMessage = (responseData['errors'] as List)
-                .map((error) => '${error['field']}: ${error['message']}')
-                .join('\n');
-          } else {
-            errorMessage = 'An error occurred';
-          }
-        });
-      }
+      if (!mounted) return;
+      context.go('/login');
     } catch (e) {
       setState(() {
-        errorMessage = 'Failed to connect to the server: $e';
+        errorMessage = 'Registration failed: ${e.toString()}';
       });
     } finally {
       setState(() {
@@ -183,10 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
+                        child: Divider(thickness: 0.5, color: Colors.grey[400]),
                       ),
                     ],
                   ),
