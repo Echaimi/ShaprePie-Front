@@ -9,7 +9,7 @@ class BottomModal extends StatelessWidget {
     super.key,
     required this.scrollController,
     required this.child,
-    this.heightFactor = 0.9, // Par défaut, 90% de la hauteur de l'écran
+    this.heightFactor = 0.9,
   });
 
   @override
@@ -23,8 +23,8 @@ class BottomModal extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.primaryContainer,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
           ),
         ),
         child: Padding(
