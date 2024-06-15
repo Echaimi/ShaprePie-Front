@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Screen'),
+        backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Consumer<EventProvider>(
         builder: (context, eventProvider, child) {
