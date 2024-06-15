@@ -71,12 +71,41 @@ class MyApp extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) {
+          final ThemeData theme = ThemeData();
+
           return Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return MaterialApp.router(
                 title: 'Navigation App',
-                theme: ThemeData(
-                  primarySwatch: Colors.blue,
+                theme: theme.copyWith(
+                  colorScheme: theme.colorScheme.copyWith(
+                    primary: const Color(0xFFE53170),
+                    secondary: const Color(0xFFFF8906),
+                    background: const Color(0xFF0F0E17),
+                    primaryContainer: const Color(0xFF232136),
+                  ),
+                  textTheme: theme.textTheme.copyWith(
+                    titleLarge: const TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFFFFE)),
+                    titleMedium: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFFFFE)),
+                    titleSmall: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFFFFE)),
+                    bodyMedium: const TextStyle(
+                      fontSize: 14.0,
+                      color: Color(0xFFFFFFFE),
+                    ),
+                    bodyLarge: const TextStyle(
+                      fontSize: 16.0,
+                      color: Color(0xFFFFFFFE),
+                    ),
+                  ),
                 ),
                 routerConfig: GoRouter(
                   initialLocation: '/',
@@ -113,9 +142,7 @@ class MyApp extends StatelessWidget {
                       name: 'event',
                       path: '/events/:id',
                       builder: (context, state) {
-                        print(state.pathParameters);
                         final id = state.pathParameters['id'];
-                        print('ID: $id');
                         final eventId = int.tryParse(id!);
                         if (eventId == null) {
                           throw const FormatException('Failed to parse ID');
