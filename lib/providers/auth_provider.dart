@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/services/user_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:nsm/providers/user_provider.dart';
 import '../services/auth_service.dart';
-import '../models/user.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService authService;
-  final UserService userService;
-  bool _isAuthenticated = false;
-  User? _user;
+  final UserProvider userProvider;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  AuthProvider(this.authService, this.userService);
-
-  bool get isAuthenticated => _isAuthenticated;
-  User? get user => _user;
+  AuthProvider(this.authService, this.userProvider);
 
   Future<void> login(String email, String password) async {
     try {
       final response = await authService.login(email, password);
-      if (response.containsKey('token')) {
-        _isAuthenticated = true;
-      } else {
-        _isAuthenticated = false;
-      }
+      await _storage.write(key: 'auth_token', value: response['token']);
+      await userProvider.getCurrentUser();
       notifyListeners();
     } catch (e) {
-      _isAuthenticated = false;
       rethrow;
     }
   }
@@ -32,20 +24,20 @@ class AuthProvider with ChangeNotifier {
   Future<void> register(String username, String email, String password) async {
     try {
       final response = await authService.register(username, email, password);
-      final userData = response['data'] as Map<String, dynamic>;
-      _user = User.fromJson(userData);
-      _isAuthenticated = true;
       notifyListeners();
     } catch (e) {
-      _isAuthenticated = false;
       rethrow;
     }
   }
 
   Future<void> logout() async {
-    await authService.logout();
-    _isAuthenticated = false;
-    _user = null;
+    await _storage.delete(key: 'auth_token');
+    userProvider.user = null;
     notifyListeners();
+  }
+
+  Future<bool> isAuthenticated() async {
+    String? token = await _storage.read(key: 'auth_token');
+    return token != null;
   }
 }

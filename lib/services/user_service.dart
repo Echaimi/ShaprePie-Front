@@ -10,6 +10,6 @@ class UserService {
   Future<User> getCurrentUser() async {
     final response = await apiService.get('/users/me');
     final data = jsonDecode(response.body);
-    return User.fromJson(data);
+    return User.fromJson(data['data']);
   }
 }

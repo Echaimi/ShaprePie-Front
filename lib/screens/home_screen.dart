@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../providers/event_provider.dart';
+import '../models/event.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +20,14 @@ class _HomeScreenState extends State<HomeScreen> {
     '/register',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<EventProvider>(context, listen: false).fetchEvents();
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -27,8 +38,33 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
-        child: Text('Home Screen'),
+      appBar: AppBar(
+        title: const Text('Home Screen'),
+      ),
+      body: Consumer<EventProvider>(
+        builder: (context, eventProvider, child) {
+          if (eventProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (eventProvider.events.isEmpty) {
+            return const Center(child: Text('No events found.'));
+          }
+
+          return ListView.builder(
+            itemCount: eventProvider.events.length,
+            itemBuilder: (context, index) {
+              final Event event = eventProvider.events[index];
+              return ListTile(
+                title: Text(event.name),
+                subtitle: Text(event.description),
+                onTap: () {
+                  context.go('/events/${event.id}');
+                },
+              );
+            },
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

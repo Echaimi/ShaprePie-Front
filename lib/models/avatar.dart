@@ -6,7 +6,7 @@ class Avatar {
 
   factory Avatar.fromJson(Map<String, dynamic> json) {
     return Avatar(
-      id: json['id'],
+      id: json['ID'],
       url: json['url'],
     );
   }

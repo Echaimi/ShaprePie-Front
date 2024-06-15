@@ -26,13 +26,13 @@ class Event {
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
-      id: json['id'],
+      id: json['ID'],
       name: json['name'],
       description: json['description'],
       author: User.fromJson(json['author']),
       category: Category.fromJson(json['category']),
       image: json['image'],
-      goal: json['goal'],
+      goal: json['goal'].toDouble(),
       code: json['code'],
       state: json['state'],
     );
