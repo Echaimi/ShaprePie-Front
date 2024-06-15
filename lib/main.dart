@@ -2,18 +2,21 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nsm/providers/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:nsm/screens/event_screen.dart';
-import 'package:nsm/screens/home_screen.dart';
+import 'package:nsm/providers/auth_provider.dart';
+import 'package:nsm/providers/event_provider.dart';
+import 'package:nsm/services/api_service.dart';
+import 'package:nsm/services/auth_service.dart';
+import 'package:nsm/services/event_service.dart';
+import 'package:nsm/services/user_service.dart';
 import 'dart:io';
 
-import 'package:nsm/screens/login_screen.dart';
-import 'package:nsm/screens/profile_screen.dart';
-import 'package:nsm/screens/register_screen.dart';
-import 'package:nsm/services/auth_service.dart';
-import 'package:nsm/providers/auth_provider.dart';
-import 'package:nsm/services/api_service.dart';
-import 'package:nsm/services/user_service.dart';
+import 'screens/event_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/register_screen.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -38,40 +41,6 @@ void main() {
   });
 }
 
-final _router = GoRouter(
-  initialLocation: '/',
-  routes: [
-    GoRoute(
-      name: 'home',
-      path: '/',
-      builder: (context, state) => const HomeScreen(),
-    ),
-    GoRoute(
-      name: 'login',
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
-    GoRoute(
-      name: 'register',
-      path: '/register',
-      builder: (context, state) => const RegisterScreen(),
-    ),
-    GoRoute(
-      name: 'profile',
-      path: '/profile',
-      builder: (context, state) => const ProfileScreen(),
-    ),
-    GoRoute(
-      name: 'event',
-      path: '/event/:id',
-      builder: (context, state) {
-        final id = state.pathParameters['id']!;
-        return EventScreen(eventId: id);
-      },
-    ),
-  ],
-);
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -79,21 +48,85 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<ApiService>(
+          create: (_) => ApiService(),
+        ),
         ChangeNotifierProvider(
-          create: (context) => AuthProvider(
-            AuthService(),
-            UserService(ApiService()),
+          create: (context) => UserProvider(
+            UserService(context.read<ApiService>()),
+          ),
+        ),
+        ChangeNotifierProxyProvider<UserProvider, AuthProvider>(
+            create: (context) => AuthProvider(
+                  AuthService(),
+                  context.read<UserProvider>(),
+                ),
+            update: (context, userProvider, previous) =>
+                AuthProvider(AuthService(), userProvider)),
+        ChangeNotifierProvider(
+          create: (context) => EventProvider(
+            EventService(context.read<ApiService>()),
           ),
         ),
       ],
-      child: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          return MaterialApp.router(
-            title: 'Navigation App',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            routerConfig: _router,
+      child: Builder(
+        builder: (context) {
+          return Consumer<AuthProvider>(
+            builder: (context, authProvider, child) {
+              return MaterialApp.router(
+                title: 'Navigation App',
+                theme: ThemeData(
+                  primarySwatch: Colors.blue,
+                ),
+                routerConfig: GoRouter(
+                  initialLocation: '/',
+                  redirect: (context, state) async {
+                    final isAuthenticated =
+                        await authProvider.isAuthenticated();
+                    final isLoggingIn =
+                        state.path == '/login' || state.path == '/register';
+                    if (!isAuthenticated && !isLoggingIn) return '/login';
+                    return null;
+                  },
+                  routes: [
+                    GoRoute(
+                      name: 'home',
+                      path: '/',
+                      builder: (context, state) => const HomeScreen(),
+                    ),
+                    GoRoute(
+                      name: 'login',
+                      path: '/login',
+                      builder: (context, state) => const LoginScreen(),
+                    ),
+                    GoRoute(
+                      name: 'register',
+                      path: '/register',
+                      builder: (context, state) => const RegisterScreen(),
+                    ),
+                    GoRoute(
+                      name: 'profile',
+                      path: '/profile',
+                      builder: (context, state) => const ProfileScreen(),
+                    ),
+                    GoRoute(
+                      name: 'event',
+                      path: '/events/:id',
+                      builder: (context, state) {
+                        print(state.pathParameters);
+                        final id = state.pathParameters['id'];
+                        print('ID: $id');
+                        final eventId = int.tryParse(id!);
+                        if (eventId == null) {
+                          throw const FormatException('Failed to parse ID');
+                        }
+                        return EventScreen(eventId: eventId);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),

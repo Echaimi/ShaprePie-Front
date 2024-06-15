@@ -19,7 +19,7 @@ class EventProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Event? getEventById(String eventId) {
+  Event? getEventById(int eventId) {
     try {
       Event event = _events.firstWhere((event) => event.id == eventId);
       return event;
@@ -28,18 +28,18 @@ class EventProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchEvent(String eventId) async {
+  Future<void> fetchEvent(int eventId) async {
     Event event = await eventService.getEvent(eventId);
     _updateEventInList(event);
     notifyListeners();
   }
 
-  Future<void> updateEvent(String eventId, Map<String, dynamic> data) async {
+  Future<void> updateEvent(int eventId, Map<String, dynamic> data) async {
     Event event = await eventService.updateEvent(eventId, data);
     _updateEventInList(event);
   }
 
-  Future<void> deleteEvent(String eventId) async {
+  Future<void> deleteEvent(int eventId) async {
     await eventService.deleteEvent(eventId);
     _events.removeWhere((event) => event.id == eventId);
     notifyListeners();

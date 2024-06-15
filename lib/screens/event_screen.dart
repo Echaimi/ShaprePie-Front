@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/event_provider.dart';
-import '../services/api_service.dart';
-import '../services/event_service.dart';
-import '../models/expense.dart';
+import '../providers/expense_provider.dart';
+import '../services/websocket_service.dart';
+import '../services/expense_service.dart';
+import 'package:go_router/go_router.dart';
 
 class EventScreen extends StatelessWidget {
-  final String eventId;
+  final int eventId;
 
   const EventScreen({required this.eventId, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => EventProvider(
-        EventService(ApiService()),
-      )..fetchEvent(eventId),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ExpenseProvider(
+            expenseService: ExpenseService(WebSocketService(
+                'ws://localhost:8080/api/v1/ws/events/$eventId')),
+          ),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Event Details'),
@@ -30,11 +36,11 @@ class EventScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: Consumer<EventProvider>(
-          builder: (context, provider, child) {
-            final event = provider.getEventById(eventId);
+        body: Consumer2<EventProvider, ExpenseProvider>(
+          builder: (context, eventProvider, expenseProvider, child) {
+            final event = eventProvider.getEventById(eventId);
 
-            if (provider.isLoading) {
+            if (eventProvider.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -42,55 +48,62 @@ class EventScreen extends StatelessWidget {
               return const Center(child: Text('Event not found'));
             }
 
-            return FutureBuilder<List<Expense>>(
-              future: provider.eventService.getExpenses(eventId),
-              builder: (context, expensesSnapshot) {
-                if (expensesSnapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (expensesSnapshot.hasError) {
-                  return Center(
-                      child: Text('Error: ${expensesSnapshot.error}'));
-                } else if (!expensesSnapshot.hasData) {
-                  return const Center(child: Text('No expenses found'));
-                }
-
-                final expenses = expensesSnapshot.data!;
-
-                return ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    Text(event.name,
-                        style: const TextStyle(
-                            fontSize: 24.0, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8.0),
-                    Text(event.description),
-                    const SizedBox(height: 8.0),
-                    Text('Author: ${event.author.username}'),
-                    const SizedBox(height: 8.0),
-                    Text('Category: ${event.category.name}'),
-                    const SizedBox(height: 8.0),
-                    Image.network(event.image),
-                    const SizedBox(height: 8.0),
-                    Text('Goal: ${event.goal} €'),
-                    const SizedBox(height: 8.0),
-                    Text('Code: ${event.code}'),
-                    const SizedBox(height: 8.0),
-                    Text('State: ${event.state}'),
-                    const SizedBox(height: 16.0),
-                    const Text('Expenses:',
-                        style: TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold)),
-                    ...expenses.map((expense) {
-                      return ListTile(
-                        title: Text(expense.title),
-                        subtitle: Text('Amount: ${expense.amount} €'),
-                      );
-                    }),
-                  ],
-                );
-              },
+            return ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                Text(event.name,
+                    style: const TextStyle(
+                        fontSize: 24.0, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8.0),
+                Text(event.description),
+                const SizedBox(height: 8.0),
+                Text('Author: ${event.author.username}'),
+                const SizedBox(height: 8.0),
+                Text('Category: ${event.category.name}'),
+                const SizedBox(height: 8.0),
+                Image.network(event.image),
+                const SizedBox(height: 8.0),
+                Text('Goal: ${event.goal} €'),
+                const SizedBox(height: 8.0),
+                Text('Code: ${event.code}'),
+                const SizedBox(height: 8.0),
+                Text('State: ${event.state}'),
+                const SizedBox(height: 16.0),
+                const Text('Expenses:',
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                if (expenseProvider.expenses.isEmpty)
+                  const Center(child: CircularProgressIndicator())
+                else
+                  ...expenseProvider.expenses.map((expense) {
+                    return ListTile(
+                      title: Text(expense.title),
+                      subtitle: Text('Amount: ${expense.amount} €'),
+                    );
+                  }),
+              ],
             );
+          },
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex:
+              0, // You can manage this state if you want to highlight the selected item
+          onTap: (index) {
+            if (index == 0) {
+              context.go('/');
+            } else if (index == 1) {
+              context.go('/profile');
+            }
           },
         ),
       ),
