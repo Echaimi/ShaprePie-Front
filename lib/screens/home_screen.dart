@@ -96,10 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
           'Home Screen',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Container(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.background,
         child: Consumer<EventProvider>(
           builder: (context, eventProvider, child) {
             if (eventProvider.isLoading) {

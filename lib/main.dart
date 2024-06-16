@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
                   colorScheme: theme.colorScheme.copyWith(
                     primary: const Color(0xFFE53170),
                     secondary: const Color(0xFFFF8906),
-                    surface: const Color(0xFF0F0E17),
+                    background: const Color(0xFF0F0E17),
                     primaryContainer: const Color(0xFF232136),
                   ),
                   textTheme: theme.textTheme.copyWith(
