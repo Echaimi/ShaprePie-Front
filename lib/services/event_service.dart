@@ -48,4 +48,19 @@ class EventService {
       throw Exception('Failed to delete event');
     }
   }
+
+  Future<String> joinEvent(String code) async {
+    final response = await apiService.post(
+      '/events/join',
+      {'code': code},
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else if (response.statusCode == 500) {
+      throw Exception("User is already in the event");
+    } else {
+      throw Exception('Failed to join event');
+    }
+  }
 }
