@@ -34,7 +34,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
           ),
           child: BottomAppBar(
             notchMargin: 6.0,
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.background,
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
