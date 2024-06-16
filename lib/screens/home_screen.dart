@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nsm/widgets/EventNotFound.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/event_provider.dart';
@@ -92,10 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Home Screen',
-          style: TextStyle(color: Colors.white),
-        ),
+        title:
+            Text('Évènements', style: Theme.of(context).textTheme.titleLarge),
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Container(
@@ -107,7 +106,13 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             if (eventProvider.events.isEmpty) {
-              return const Center(child: Text('No events found.'));
+              return Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 30),
+                  child: const EventNotFound(),
+                ),
+              );
             }
 
             return ListView.builder(
