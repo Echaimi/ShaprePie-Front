@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:nsm/widgets/EventNotFound.dart';
+import 'package:nsm/widgets/create_event_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../services/event_service.dart';
 import '../providers/auth_provider.dart';
@@ -146,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
-              context.go('/create-event');
+              _showModal(context, const CreateEventModalContent());
             },
             child: Text(t(context)?.createEvent ?? 'Create Event'),
           ),
