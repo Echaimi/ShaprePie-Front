@@ -4,11 +4,13 @@ class MyTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
+  final IconButton? suffixIcon;
 
   const MyTextField({
     required this.controller,
     required this.hintText,
     required this.obscureText,
+    this.suffixIcon,
     super.key,
   });
 
@@ -51,14 +53,15 @@ class _MyTextFieldState extends State<MyTextField> {
           ),
           fillColor: Colors.grey.shade200,
           filled: true,
-          suffixIcon: widget.obscureText
-              ? IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: _toggleObscureText,
-                )
-              : null,
+          suffixIcon: widget.suffixIcon ??
+              (widget.obscureText
+                  ? IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: _toggleObscureText,
+                    )
+                  : null),
         ),
       ),
     );

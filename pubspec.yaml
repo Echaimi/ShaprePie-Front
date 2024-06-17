@@ -71,12 +71,18 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
   - lib/assets/icons/astronaut.svg
+  - lib/assets/icons/login.png
   - lib/assets/icons/rocket.svg
   - lib/assets/images/joinEvent.png
-  - lib/assets/animations/joinEvent.json
   - lib/assets/images/noEventFound.png
   - lib/assets/images/404.png
   - lib/assets/images/eventJoinSuccess.png
+  - lib/assets/images/backgroundApp.png
+  - lib/assets/images/login.png
+  - lib/assets/images/register.png
+
+
+
 
 
 

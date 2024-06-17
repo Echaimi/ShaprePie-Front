@@ -14,9 +14,7 @@ import 'dart:io';
 
 import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
 import 'screens/profile_screen.dart';
-import 'screens/register_screen.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -98,6 +96,10 @@ class MyApp extends StatelessWidget {
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFFFFFFE)),
+                    bodySmall: const TextStyle(
+                      fontSize: 12.0,
+                      color: Color(0xFFFFFFFE),
+                    ),
                     bodyMedium: const TextStyle(
                       fontSize: 14.0,
                       color: Color(0xFFFFFFFE),
@@ -110,29 +112,11 @@ class MyApp extends StatelessWidget {
                 ),
                 routerConfig: GoRouter(
                   initialLocation: '/',
-                  redirect: (context, state) async {
-                    final isAuthenticated =
-                        await authProvider.isAuthenticated();
-                    final isLoggingIn =
-                        state.path == '/login' || state.path == '/register';
-                    if (!isAuthenticated && !isLoggingIn) return '/login';
-                    return null;
-                  },
                   routes: [
                     GoRoute(
                       name: 'home',
                       path: '/',
                       builder: (context, state) => const HomeScreen(),
-                    ),
-                    GoRoute(
-                      name: 'login',
-                      path: '/login',
-                      builder: (context, state) => const LoginScreen(),
-                    ),
-                    GoRoute(
-                      name: 'register',
-                      path: '/register',
-                      builder: (context, state) => const RegisterScreen(),
                     ),
                     GoRoute(
                       name: 'profile',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';
 import 'dart:convert';
@@ -15,9 +16,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
   String? _responseMessage;
   bool _isLoading = false;
   bool _isServerError = false;
-  bool _isSuccess = false; // Nouvelle variable d'état
+  bool _isSuccess = false;
   bool _hasTriedOnce = false;
-  String? _eventName; // Variable d'état pour stocker le nom de l'événement
+  String? _eventName;
+  String? _eventID;
   late EventService _eventService;
 
   @override
@@ -31,7 +33,8 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
       _isLoading = true;
       _responseMessage = null;
       _isSuccess = false;
-      _eventName = null; // Réinitialise le nom de l'événement
+      _eventName = null;
+      _eventID = null;
     });
 
     try {
@@ -39,10 +42,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
       final jsonResponse = json.decode(response);
       setState(() {
         _responseMessage = 'Succès: $response';
-        _eventName =
-            jsonResponse['data']['name']; // Extrait le nom de l'événement
+        _eventName = jsonResponse['data']['name'];
+        _eventID = jsonResponse['data']['ID'].toString();
         _isSuccess = true;
-        _isServerError = false; // Réinitialise l'état d'erreur en cas de succès
+        _isServerError = false;
       });
     } catch (e) {
       setState(() {
@@ -62,8 +65,9 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
   }
 
   void _viewEvent() {
-    // Logique pour voir l'évènement
-    // Par exemple, naviguer vers une nouvelle page avec les détails de l'évènement
+    if (_eventID != null) {
+      context.go('/events/$_eventID');
+    }
   }
 
   @override
@@ -78,7 +82,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
         children: [
           Center(
             child: Text(
-              'Erreur de serveur',
+              'Rejoindre un évènement',
               style: textTheme.titleMedium,
             ),
           ),
@@ -91,7 +95,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
           const SizedBox(height: 40),
           Center(
             child: Text(
-              'Oups ! Il semblerait que la planète que tu recherches n\'ait pas répertoriée dans ce système solaire.',
+              'Oups ! Il semblerait que tu te situes déjà sur la planète que tu recherches essaie une autre répertoriée dans ce système solaire.',
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge,
             ),

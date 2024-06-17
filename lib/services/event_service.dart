@@ -57,7 +57,7 @@ class EventService {
 
     if (response.statusCode == 200) {
       return response.body;
-    } else if (response.statusCode == 500) {
+    } else if (response.statusCode == 409) {
       throw Exception("User is already in the event");
     } else {
       throw Exception('Failed to join event');
