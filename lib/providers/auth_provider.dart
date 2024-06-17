@@ -21,10 +21,12 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> register(String username, String email, String password) async {
+  Future<Map<String, dynamic>> register(
+      String username, String email, String password) async {
     try {
       final response = await authService.register(username, email, password);
       notifyListeners();
+      return response;
     } catch (e) {
       rethrow;
     }

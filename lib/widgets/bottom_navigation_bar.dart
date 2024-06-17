@@ -6,6 +6,8 @@ class BottomNavigationBarWidget extends StatelessWidget {
   final Function(int) onItemTapped;
   final VoidCallback onAddButtonPressed;
   final bool isProfileScreen;
+  final bool isAuthenticated;
+  final VoidCallback showAuthenticationModal;
 
   const BottomNavigationBarWidget({
     super.key,
@@ -13,6 +15,8 @@ class BottomNavigationBarWidget extends StatelessWidget {
     required this.onItemTapped,
     required this.onAddButtonPressed,
     this.isProfileScreen = false,
+    required this.isAuthenticated,
+    required this.showAuthenticationModal,
   });
 
   @override
@@ -116,7 +120,13 @@ class BottomNavigationBarWidget extends StatelessWidget {
       required Color inactiveColor}) {
     return Expanded(
       child: InkWell(
-        onTap: () => onItemTapped(index),
+        onTap: () {
+          if (isAuthenticated) {
+            onItemTapped(index);
+          } else {
+            showAuthenticationModal();
+          }
+        },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,

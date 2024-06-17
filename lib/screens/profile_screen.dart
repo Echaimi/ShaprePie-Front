@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/bottom_navigation_bar.dart';
+import 'package:nsm/widgets/join_event_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
@@ -17,6 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController usernameController;
   bool isEditing = false;
   int _selectedIndex = 0;
+  bool _isAuthenticated = false;
 
   @override
   void initState() {
@@ -51,6 +54,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     context.go(_routes[index]);
   }
 
+  Future<void> _checkAuthentication() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isAuthenticated = await authProvider.isAuthenticated();
+    setState(() {
+      _isAuthenticated = isAuthenticated;
+    });
+    if (!isAuthenticated) {
+      _showAuthenticationModal(context);
+    }
+  }
+
+  void _showAuthenticationModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BottomModal(
+          scrollController: ScrollController(),
+          child: const JoinEventModalContent(),
+        );
+      },
+    );
+  }
+
   void saveProfile() {
     // TODO: Implémentez la logique de mise à jour du profil
     // Après la mise à jour, désactivez le mode édition
@@ -76,57 +104,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      backgroundColor: const Color(0xFF0F0E17),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (user != null) ...[
-                Text(
-                  user.username,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('lib/assets/images/backgroundApp.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (user != null) ...[
+                  Text(
+                    user.username,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Mail'),
-                  enabled:
-                      isEditing, // Le champ est modifiable seulement en mode édition
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(labelText: 'Pseudo'),
-                  enabled:
-                      isEditing, // Le champ est modifiable seulement en mode édition
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: isEditing ? saveProfile : toggleEdit,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: const InputDecoration(labelText: 'Mail'),
+                    enabled:
+                        isEditing, // Le champ est modifiable seulement en mode édition
                   ),
-                  child: Text(isEditing ? 'Valider' : 'Modifier'),
-                ),
-              ] else ...[
-                const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: usernameController,
+                    decoration: const InputDecoration(labelText: 'Pseudo'),
+                    enabled:
+                        isEditing, // Le champ est modifiable seulement en mode édition
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: isEditing ? saveProfile : toggleEdit,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    child: Text(isEditing ? 'Valider' : 'Modifier'),
+                  ),
+                ] else ...[
+                  const CircularProgressIndicator(),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
+        isAuthenticated: _isAuthenticated,
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
         onAddButtonPressed: () => context.go("/home"),
         isProfileScreen: true,
+        showAuthenticationModal: () {},
       ),
     );
   }
