@@ -1,9 +1,11 @@
+import 'package:nsm/models/avatar.dart';
+
 class User {
   final int? id;
   final String email;
   final String username;
   final String role;
-  final String? avatar;
+  final Avatar avatar;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
@@ -13,7 +15,7 @@ class User {
     required this.email,
     required this.username,
     required this.role,
-    this.avatar,
+    required this.avatar,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -22,10 +24,10 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['ID'] as int?,
-      email: json['Email'] as String,
+      email: json['email'] as String,
       username: json['username'] as String,
       role: json['role'] as String,
-      avatar: json['avatar'] as String?,
+      avatar: Avatar.fromJson(json['avatar']),
       createdAt:
           json['CreatedAt'] != null ? DateTime.parse(json['CreatedAt']) : null,
       updatedAt:
@@ -38,7 +40,7 @@ class User {
   Map<String, dynamic> toJson() {
     return {
       'ID': id,
-      'Email': email,
+      'email': email,
       'username': username,
       'role': role,
       'avatar': avatar,
