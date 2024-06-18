@@ -32,12 +32,11 @@ class BottomNavigationBarWidget extends StatelessWidget {
             border: Border(
               top: BorderSide(
                 color: Colors.white,
-                width: 2.0,
+                width: 1.0,
               ),
             ),
           ),
           child: BottomAppBar(
-            notchMargin: 6.0,
             color: Theme.of(context).colorScheme.background,
             child: Padding(
               padding:

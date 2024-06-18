@@ -1,15 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:nsm/widgets/AddButton.dart';
+import 'package:nsm/widgets/event_balances_tab.dart';
+import 'package:nsm/widgets/event_expenses_tab.dart';
+import 'package:nsm/widgets/event_users_tab.dart';
 import 'package:provider/provider.dart';
-import '../providers/event_provider.dart';
 import '../providers/expense_provider.dart';
 import '../services/websocket_service.dart';
 import '../services/expense_service.dart';
-import 'package:go_router/go_router.dart';
+import '../services/event_service.dart';
+import '../services/api_service.dart';
+import '../models/event.dart';
 
-class EventScreen extends StatelessWidget {
+class EventScreen extends StatefulWidget {
   final int eventId;
 
   const EventScreen({required this.eventId, super.key});
+
+  @override
+  _EventScreenState createState() => _EventScreenState();
+}
+
+class _EventScreenState extends State<EventScreen> {
+  late Future<Event> _eventFuture;
+  late EventService _eventService;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventService =
+        EventService(Provider.of<ApiService>(context, listen: false));
+    _eventFuture = _fetchEvent();
+  }
+
+  Future<Event> _fetchEvent() async {
+    return await _eventService.getEvent(widget.eventId);
+  }
+
+  void deleteEvent() {
+    _eventService.deleteEvent(widget.eventId).then((_) {
+      Navigator.pop(context);
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to delete event: $error'),
+      ));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,93 +53,166 @@ class EventScreen extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ExpenseProvider(
             expenseService: ExpenseService(WebSocketService(
-                'ws://localhost:8080/api/v1/ws/events/$eventId')),
+                'ws://localhost:8080/api/v1/ws/events/${widget.eventId}')),
           ),
         ),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Event Details'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                Provider.of<EventProvider>(context, listen: false)
-                    .deleteEvent(eventId);
-                Navigator.pop(context);
-              },
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Delete event'),
+                        content: const Text(
+                            'Are you sure you want to delete this event?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: deleteEvent,
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+          body: FutureBuilder<Event>(
+            future: _eventFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (snapshot.hasData) {
+                final event = snapshot.data!;
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    children: [
+                      const Center(
+                        child: Text(
+                          'Anniv Pierre',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.white, width: 4.0),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            '10€',
+                            style: TextStyle(
+                              fontSize: 32.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32.0),
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                        ),
+                        child: TabBar(
+                          labelColor: Theme.of(context)
+                              .colorScheme
+                              .secondary, // Active tab color
+                          unselectedLabelColor:
+                              Colors.white, // Inactive tab color
+                          labelStyle: const TextStyle(
+                              fontSize: 14.0), // Smaller text size
+                          tabs: const [
+                            Tab(
+                              icon: Icon(Icons.person),
+                              text: 'Personnes',
+                            ),
+                            Tab(
+                              icon: Icon(Icons.attach_money),
+                              text: 'Dépenses',
+                            ),
+                            Tab(
+                              icon: Icon(Icons.balance),
+                              text: 'Équilibre',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            EventUsersTab(eventId: widget.eventId),
+                            const EventExpensesTab(),
+                            const EventBalanceTab(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return const Center(child: Text('No data available'));
+              }
+            },
+          ),
+          bottomNavigationBar: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Colors.white, width: 1.0)),
             ),
-          ],
-        ),
-        body: Consumer2<EventProvider, ExpenseProvider>(
-          builder: (context, eventProvider, expenseProvider, child) {
-            final event = eventProvider.getEventById(eventId);
-
-            if (eventProvider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (event == null) {
-              return const Center(child: Text('Event not found'));
-            }
-
-            return ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                Text(event.name,
-                    style: const TextStyle(
-                        fontSize: 24.0, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8.0),
-                Text(event.description),
-                const SizedBox(height: 8.0),
-                Text('Author: ${event.author.username}'),
-                const SizedBox(height: 8.0),
-                Text('Category: ${event.category.name}'),
-                const SizedBox(height: 8.0),
-                Image.network(event.image),
-                const SizedBox(height: 8.0),
-                Text('Goal: ${event.goal} €'),
-                const SizedBox(height: 8.0),
-                Text('Code: ${event.code}'),
-                const SizedBox(height: 8.0),
-                Text('State: ${event.state}'),
-                const SizedBox(height: 16.0),
-                const Text('Expenses:',
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                if (expenseProvider.expenses.isEmpty)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  ...expenseProvider.expenses.map((expense) {
-                    return ListTile(
-                      title: Text(expense.title),
-                      subtitle: Text('Amount: ${expense.amount} €'),
-                    );
-                  }),
-              ],
-            );
-          },
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+            child: BottomAppBar(
+              color: Theme.of(context).colorScheme.background,
+              child: const SizedBox(
+                height: 60.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Text("J'ai dépensé"),
+                        Text('0 €'),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text('On me doit'),
+                        Text('0 €'),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex:
-              0, // You can manage this state if you want to highlight the selected item
-          onTap: (index) {
-            if (index == 0) {
-              context.go('/');
-            } else if (index == 1) {
-              context.go('/profile');
-            }
-          },
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: AddButton(onPressed: () => print('test')),
         ),
       ),
     );
