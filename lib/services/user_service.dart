@@ -9,7 +9,11 @@ class UserService {
 
   Future<User> getCurrentUser() async {
     final response = await apiService.get('/users/me');
-    final data = jsonDecode(response.body);
-    return User.fromJson(data['data']);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      return User.fromJson(data['data']);
+    }
+    throw Exception('Failed to fetch user');
   }
 }
