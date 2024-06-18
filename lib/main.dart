@@ -83,6 +83,7 @@ class MyApp extends StatelessWidget {
                     primaryContainer: const Color(0xFF232136),
                     secondaryContainer: const Color(0xFF373455),
                   ),
+                  scaffoldBackgroundColor: const Color(0xFF0F0E17),
                   textTheme: theme.textTheme.copyWith(
                     titleLarge: const TextStyle(
                         fontSize: 40,

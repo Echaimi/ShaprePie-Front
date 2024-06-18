@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:nsm/models/expense.dart';
+import 'package:nsm/models/user.dart';
+
 import '../models/event.dart';
 import '../services/api_service.dart';
 
@@ -24,9 +27,33 @@ class EventService {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      return Event.fromJson(data);
+      final event = data['data'];
+      return Event.fromJson(event);
     } else {
       throw Exception('Failed to load event');
+    }
+  }
+
+  Future<List<User>> getEventUsers(int eventId) async {
+    final response = await apiService.get('/events/$eventId/users');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List users = data['data'];
+      return users.map((user) => User.fromJson(user)).toList();
+    } else {
+      throw Exception('Failed to load event users');
+    }
+  }
+
+  Future<List<Expense>> getEventExpenses(int eventId) async {
+    final response = await apiService.get('/events/$eventId/expenses');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List expenses = data['data'];
+      return expenses.map((expense) => Expense.fromJson(expense)).toList();
+    } else {
+      throw Exception('Failed to load event expenses');
     }
   }
 
