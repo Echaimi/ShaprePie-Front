@@ -13,7 +13,6 @@ class JoinEventModalContent extends StatefulWidget {
 
 class _JoinEventModalContentState extends State<JoinEventModalContent> {
   final TextEditingController _codeController = TextEditingController();
-  String? _responseMessage;
   bool _isLoading = false;
   bool _isServerError = false;
   bool _isSuccess = false;
@@ -31,7 +30,6 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
   Future<void> _joinEvent() async {
     setState(() {
       _isLoading = true;
-      _responseMessage = null;
       _isSuccess = false;
       _eventName = null;
       _eventID = null;
@@ -41,7 +39,6 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
       final response = await _eventService.joinEvent(_codeController.text);
       final jsonResponse = json.decode(response);
       setState(() {
-        _responseMessage = 'Succès: $response';
         _eventName = jsonResponse['data']['name'];
         _eventID = jsonResponse['data']['ID'].toString();
         _isSuccess = true;
@@ -49,7 +46,6 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
       });
     } catch (e) {
       setState(() {
-        _responseMessage = e.toString();
         if (e.toString().contains('User is already in the event')) {
           _isServerError = true;
         } else {
@@ -77,7 +73,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
     Widget content;
     if (_isServerError && _hasTriedOnce) {
       content = Column(
-        key: ValueKey('error'),
+        key: const ValueKey('error'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(

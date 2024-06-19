@@ -18,8 +18,15 @@ class CreateEventModalContent extends StatelessWidget {
         children: [
           Center(
             child: Text(
-              'Crée un évènement',
+              'L\'évènement',
               style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          const SizedBox(height: 26),
+          Center(
+            child: Image.asset(
+              'lib/assets/images/eventCreate.png',
+              scale: 0.8,
             ),
           ),
           const SizedBox(height: 20),

@@ -82,6 +82,23 @@ flutter:
     - lib/assets/category/
     - .env.local
     - lib/l10n/
+    - lib/assets/icons/astronaut.svg
+    - lib/assets/icons/login.png
+    - lib/assets/icons/rocket.svg
+    - lib/assets/images/joinEvent.png
+    - lib/assets/images/noEventFound.png
+    - lib/assets/images/404.png
+    - lib/assets/images/eventJoinSuccess.png
+    - lib/assets/images/backgroundApp.png
+    - lib/assets/images/login.png
+    - lib/assets/images/register.png
+    - lib/assets/images/expense.png
+    - lib/assets/images/eventCreate.png
+
+
+
+
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
