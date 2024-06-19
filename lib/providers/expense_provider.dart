@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/services/expense_service.dart';
+import 'package:nsm/services/event_websocket_service.dart';
 import '../models/expense.dart';
 
 class ExpenseProvider with ChangeNotifier {

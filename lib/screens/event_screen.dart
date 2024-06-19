@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:nsm/services/event_websocket_service.dart';
 import 'package:nsm/widgets/AddButton.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/event_balances_tab.dart';
@@ -7,12 +8,7 @@ import 'package:nsm/widgets/event_expenses_tab.dart';
 import 'package:nsm/widgets/event_users_tab.dart';
 import 'package:nsm/widgets/expense_modal_content.dart';
 import 'package:provider/provider.dart';
-import '../providers/expense_provider.dart';
 import '../services/websocket_service.dart';
-import '../services/expense_service.dart';
-import '../services/event_service.dart';
-import '../services/api_service.dart';
-import '../models/event.dart';
 
 import 'package:nsm/widgets/refound_modal_content.dart';
 
@@ -26,29 +22,25 @@ class EventScreen extends StatefulWidget {
 }
 
 class _EventScreenState extends State<EventScreen> {
-  late Future<Event> _eventFuture;
-  late EventService _eventService;
+  EventWebsocketProvider? _eventProvider;
 
   @override
   void initState() {
     super.initState();
-    _eventService =
-        EventService(Provider.of<ApiService>(context, listen: false));
-    _eventFuture = _fetchEvent();
+    _initializeWebSocket();
   }
 
-  Future<Event> _fetchEvent() async {
-    return await _eventService.getEvent(widget.eventId);
+  Future<void> _initializeWebSocket() async {
+    final webSocketService = WebSocketService(
+        'ws://localhost:8080/api/v1/ws/events/${widget.eventId}');
+    await Future.delayed(const Duration(seconds: 1));
+
+    _eventProvider = EventWebsocketProvider(webSocketService);
+    setState(() {}); // Appel pour reconstruire le widget après l'initialisation
   }
 
   void deleteEvent() {
-    _eventService.deleteEvent(widget.eventId).then((_) {
-      Navigator.pop(context);
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to delete event: $error'),
-      ));
-    });
+    // Implémentez la logique de suppression de l'événement
   }
 
   void _showAddOptions(BuildContext context) {
@@ -101,15 +93,12 @@ class _EventScreenState extends State<EventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => ExpenseProvider(
-            expenseService: ExpenseService(WebSocketService(
-                'ws://localhost:8080/api/v1/ws/events/${widget.eventId}')),
-          ),
-        ),
-      ],
+    if (_eventProvider == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return ChangeNotifierProvider<EventWebsocketProvider>(
+      create: (context) => _eventProvider!,
       child: DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -143,95 +132,91 @@ class _EventScreenState extends State<EventScreen> {
               ),
             ],
           ),
-          body: FutureBuilder<Event>(
-            future: _eventFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+          body: Consumer<EventWebsocketProvider>(
+            builder: (context, eventProvider, child) {
+              final event = eventProvider.event;
+              if (event == null) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData) {
-                final event = snapshot.data!;
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Column(
-                    children: [
-                      const Center(
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Text(
+                        event.name,
+                        style: const TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: Colors.white, width: 4.0),
+                      ),
+                      child: const Center(
                         child: Text(
-                          'Anniv Pierre',
+                          '10€',
                           style: TextStyle(
-                            fontSize: 24.0,
+                            fontSize: 32.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16.0),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: Colors.white, width: 4.0),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            '10€',
-                            style: TextStyle(
-                              fontSize: 32.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                    ),
+                    const SizedBox(height: 32.0),
+                    Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                      ),
+                      child: TabBar(
+                        indicator:
+                            const BoxDecoration(), // No indicator decoration
+                        labelColor: Theme.of(context)
+                            .colorScheme
+                            .secondary, // Active tab color
+                        unselectedLabelColor:
+                            Colors.white, // Inactive tab color
+                        labelStyle: const TextStyle(
+                            fontSize: 14.0), // Smaller text size
+                        tabs: const [
+                          Tab(
+                            icon: Icon(Icons.person),
+                            text: 'Personnes',
                           ),
-                        ),
+                          Tab(
+                            icon: Icon(Icons.attach_money),
+                            text: 'Dépenses',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.balance),
+                            text: 'Équilibre',
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 32.0),
-                      Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                        ),
-                        child: TabBar(
-                          labelColor: Theme.of(context)
-                              .colorScheme
-                              .secondary, // Active tab color
-                          unselectedLabelColor:
-                              Colors.white, // Inactive tab color
-                          labelStyle: const TextStyle(
-                              fontSize: 14.0), // Smaller text size
-                          tabs: const [
-                            Tab(
-                              icon: Icon(Icons.person),
-                              text: 'Personnes',
-                            ),
-                            Tab(
-                              icon: Icon(Icons.attach_money),
-                              text: 'Dépenses',
-                            ),
-                            Tab(
-                              icon: Icon(Icons.balance),
-                              text: 'Équilibre',
-                            ),
-                          ],
-                        ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          EventUsersTab(),
+                          EventExpensesTab(),
+                          EventBalanceTab(),
+                        ],
                       ),
-                      const SizedBox(height: 16.0),
-                      Expanded(
-                        child: TabBarView(
-                          children: [
-                            EventUsersTab(eventId: widget.eventId),
-                            const EventExpensesTab(),
-                            const EventBalanceTab(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              } else {
-                return const Center(child: Text('No data available'));
-              }
+                    ),
+                  ],
+                ),
+              );
             },
           ),
           bottomNavigationBar: Container(
