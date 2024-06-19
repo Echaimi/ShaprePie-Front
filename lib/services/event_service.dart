@@ -23,6 +23,17 @@ class EventService {
     }
   }
 
+  Future<Event> createEvent(Map<String, dynamic> data) async {
+    final response = await apiService.post('/events', data);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      final responseData = json.decode(response.body);
+      throw Exception('Failed to register: ${responseData['message']}');
+    }
+  }
+
   Future<Event> getEvent(int eventId) async {
     final response = await apiService.get('/events/$eventId');
 
