@@ -110,7 +110,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(
+                  color: Colors.white.withOpacity(0.4),
+                  width: 1.0,
+                ),
               ),
             ),
             style: textTheme.bodyMedium?.copyWith(color: Colors.white),
@@ -125,6 +128,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
+                  side: BorderSide(
+                    color: Colors.white.withOpacity(0.4),
+                    width: 1.0,
+                  ),
                 ),
               ),
               child: _isLoading
@@ -186,6 +193,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
+                  side: BorderSide(
+                    color: Colors.white.withOpacity(0.4),
+                    width: 1.0,
+                  ),
                 ),
               ),
               child: Text(
@@ -231,7 +242,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(
+                  color: Colors.white.withOpacity(0.4),
+                  width: 1.0,
+                ),
               ),
             ),
             style: textTheme.bodyMedium?.copyWith(color: Colors.white),
@@ -246,6 +260,10 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
+                  side: BorderSide(
+                    color: Colors.white.withOpacity(0.4),
+                    width: 1.0,
+                  ),
                 ),
               ),
               child: _isLoading
