@@ -80,6 +80,7 @@ flutter:
   - lib/assets/images/backgroundApp.png
   - lib/assets/images/login.png
   - lib/assets/images/register.png
+  - lib/assets/images/expense.png
 
 
 

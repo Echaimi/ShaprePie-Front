@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:nsm/widgets/AddButton.dart';
+import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/event_balances_tab.dart';
 import 'package:nsm/widgets/event_expenses_tab.dart';
 import 'package:nsm/widgets/event_users_tab.dart';
+import 'package:nsm/widgets/expense_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../providers/expense_provider.dart';
 import '../services/websocket_service.dart';
@@ -10,6 +13,8 @@ import '../services/expense_service.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';
 import '../models/event.dart';
+
+import 'package:nsm/widgets/refound_modal_content.dart';
 
 class EventScreen extends StatefulWidget {
   final int eventId;
@@ -44,6 +49,54 @@ class _EventScreenState extends State<EventScreen> {
         content: Text('Failed to delete event: $error'),
       ));
     });
+  }
+
+  void _showAddOptions(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) {
+                  return BottomModal(
+                    scrollController: ScrollController(),
+                    child: ExpenseModalContent(),
+                  );
+                },
+              );
+            },
+            child: const Text('Ajouter une dépense'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) {
+                  return BottomModal(
+                    scrollController: ScrollController(),
+                    child: RefundModalContent(),
+                  );
+                },
+              );
+            },
+            child: const Text('Ajouter un remboursement'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Annuler'),
+        ),
+      ),
+    );
   }
 
   @override
@@ -212,7 +265,8 @@ class _EventScreenState extends State<EventScreen> {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: AddButton(onPressed: () => print('test')),
+          floatingActionButton:
+              AddButton(onPressed: () => _showAddOptions(context)),
         ),
       ),
     );

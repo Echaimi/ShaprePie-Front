@@ -5,13 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:nsm/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:nsm/providers/auth_provider.dart';
-import 'package:nsm/providers/event_provider.dart';
+import 'package:nsm/services/event_service.dart';
 import 'package:nsm/services/api_service.dart';
 import 'package:nsm/services/auth_service.dart';
-import 'package:nsm/services/event_service.dart';
 import 'package:nsm/services/user_service.dart';
 import 'dart:io';
-
 import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -61,10 +59,8 @@ class MyApp extends StatelessWidget {
                 ),
             update: (context, userProvider, previous) =>
                 AuthProvider(AuthService(), userProvider)),
-        ChangeNotifierProvider(
-          create: (context) => EventProvider(
-            EventService(context.read<ApiService>()),
-          ),
+        Provider<EventService>(
+          create: (context) => EventService(context.read<ApiService>()),
         ),
       ],
       child: Builder(
@@ -117,7 +113,9 @@ class MyApp extends StatelessWidget {
                     GoRoute(
                       name: 'home',
                       path: '/',
-                      builder: (context, state) => const HomeScreen(),
+                      builder: (context, state) => HomeScreen(
+                        eventService: context.read<EventService>(),
+                      ),
                     ),
                     GoRoute(
                       name: 'profile',

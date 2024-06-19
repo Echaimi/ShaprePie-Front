@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nsm/widgets/EventNotFound.dart';
 import 'package:provider/provider.dart';
-import '../providers/event_provider.dart';
+import '../services/event_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/event.dart';
 import 'package:nsm/widgets/AddButton.dart' as add_button;
@@ -11,10 +11,12 @@ import 'package:nsm/widgets/bottom_navigation_bar.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/join_us.dart';
 import 'package:nsm/widgets/join_event_modal_content.dart';
-import 'event_screen.dart'; // Import the EventScreen widget
+import 'event_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final EventService eventService;
+
+  const HomeScreen({super.key, required this.eventService});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -23,6 +25,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   bool _isAuthenticated = false;
+  bool _isLoading = false;
+  List<Event> _events = [];
 
   static const List<String> _routes = [
     '/profile',
@@ -38,11 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _initializeScreen() async {
     await _checkAuthentication();
     if (_isAuthenticated) {
-      Future.microtask(() {
-        final eventProvider =
-            Provider.of<EventProvider>(context, listen: false);
-        eventProvider.fetchEvents();
-      });
+      await _fetchEvents();
     }
   }
 
@@ -52,6 +52,21 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _isAuthenticated = isAuthenticated;
     });
+  }
+
+  Future<void> _fetchEvents() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      _events = await widget.eventService.getEvents();
+    } catch (e) {
+      // Handle error if needed
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _showModal(BuildContext context, Widget child) {
@@ -131,92 +146,84 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: _isAuthenticated
-            ? Consumer<EventProvider>(
-                builder: (context, eventProvider, child) {
-                  if (eventProvider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (eventProvider.events.isEmpty) {
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: const EventNotFound(),
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16.0, horizontal: 16.0),
-                        child: Text(
-                          'Tes évènements',
-                          style: Theme.of(context).textTheme.titleSmall,
+            ? _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _events.isEmpty
+                    ? Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 30),
+                          child: const EventNotFound(),
                         ),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: eventProvider.events.length,
-                          itemBuilder: (context, index) {
-                            final Event event = eventProvider.events[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EventScreen(eventId: event.id),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 16.0),
+                            child: Text(
+                              'Tes évènements',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: _events.length,
+                              itemBuilder: (context, index) {
+                                final Event event = _events[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            EventScreen(eventId: event.id),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 16.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primaryContainer,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              event.name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              event.description,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 );
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 16.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          event.name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          event.description,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              )
+                            ),
+                          ),
+                        ],
+                      )
             : const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
