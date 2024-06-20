@@ -12,6 +12,7 @@ import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/join_us.dart';
 import 'package:nsm/widgets/join_event_modal_content.dart';
 import 'event_screen.dart';
+import 'dart:ui';
 
 class HomeScreen extends StatefulWidget {
   final EventService eventService;
@@ -61,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       _events = await widget.eventService.getEvents();
     } catch (e) {
-      // Handle error if needed
     } finally {
       setState(() {
         _isLoading = false;
@@ -128,6 +128,23 @@ class _HomeScreenState extends State<HomeScreen> {
     context.go(_routes[index]);
   }
 
+  String _getCategoryImagePath(int categoryId) {
+    switch (categoryId) {
+      case 1:
+        return 'lib/assets/category/travel.png';
+      case 2:
+        return 'lib/assets/category/birthday.png';
+      case 3:
+        return 'lib/assets/category/party.png';
+      case 4:
+        return 'lib/assets/category/holiday.png';
+      case 5:
+        return 'lib/assets/category/other.png';
+      default:
+        return 'lib/assets/category/other.png';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,9 +186,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Expanded(
                             child: ListView.builder(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
                               itemCount: _events.length,
                               itemBuilder: (context, index) {
                                 final Event event = _events[index];
+                                final isCategory3 = event.category.id == 3;
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(
@@ -184,38 +204,75 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 16.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primaryContainer,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              event.name,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
+                                        vertical: 8.0),
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: Container(
+                                            width: 342,
+                                            height: 80,
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primaryContainer,
+                                              border: Border.all(
+                                                color: Colors.white
+                                                    .withOpacity(0.4),
+                                                width: 1.0,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                             ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              event.description,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall,
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 22),
+                                                  child: Text(
+                                                    event.name,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyLarge,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 22),
+                                                  child: Text(
+                                                    event.description,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
+                                        Positioned(
+                                          left: -25,
+                                          top: 0,
+                                          bottom: 0,
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Image.asset(
+                                              _getCategoryImagePath(
+                                                  event.category.id),
+                                              height: isCategory3 ? 55 : 50,
+                                              width: isCategory3 ? 55 : 50,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
