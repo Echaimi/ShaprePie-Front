@@ -108,10 +108,32 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               fillColor: Colors.black.withOpacity(0.1),
               labelText: 'Code de l\'évènement',
               labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-              border: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: Colors.white.withOpacity(0.4),
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.white
+                      .withOpacity(0.4), // même couleur que enabledBorder
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.red,
+                  width: 1.0,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.grey.withOpacity(0.4),
                   width: 1.0,
                 ),
               ),
@@ -240,10 +262,32 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               fillColor: Colors.black.withOpacity(0.1),
               labelText: 'Code de l\'évènement',
               labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-              border: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: Colors.white.withOpacity(0.4),
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.white
+                      .withOpacity(0.4), // même couleur que enabledBorder
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.red,
+                  width: 1.0,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.grey.withOpacity(0.4),
                   width: 1.0,
                 ),
               ),
