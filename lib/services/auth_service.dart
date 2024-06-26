@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AuthService {
-  final String _baseUrl = 'http://localhost:8080/api/v1';
+  final String _baseUrl = 'http://172.23.143.125:8080/api/v1';
 
   AuthService();
 
