@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nsm/services/user_service.dart';
+import '../models/avatar.dart';
 import '../models/user.dart';
 
 class UserProvider with ChangeNotifier {
@@ -25,4 +26,28 @@ class UserProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+
+  Future<void> updateUserProfile(updatedData) async {
+    try {
+      if (_user == null || _user!.id == null) {
+        throw Exception('User or user ID is null, cannot update profile.');
+      }
+
+      final updatedUser = await userService.updateProfile(updatedData);
+
+      _user = updatedUser;
+
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+
+  Future<List<Avatar>> getAvatars() async {
+    return await userService.getAvatars();
+  }
+
 }
