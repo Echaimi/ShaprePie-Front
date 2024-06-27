@@ -11,7 +11,7 @@ class Participant {
     return Participant(
       id: json['id'],
       user: User.fromJson(json['user']),
-      amount: json['amount'],
+      amount: json['amount'].toDouble(),
     );
   }
 }

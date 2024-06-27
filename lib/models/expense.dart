@@ -5,7 +5,7 @@ import 'package:nsm/models/user.dart';
 
 class Expense {
   final int id;
-  final String title;
+  final String name;
   final double amount;
   final DateTime createdAt;
   final String description;
@@ -18,7 +18,7 @@ class Expense {
 
   Expense(
       {required this.id,
-      required this.title,
+      required this.name,
       required this.amount,
       required this.description,
       required this.createdAt,
@@ -32,14 +32,14 @@ class Expense {
   factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
       id: json['ID'],
-      title: json['title'],
-      amount: json['amount'],
+      name: json['name'],
+      amount: json['amount'].toDouble(),
       description: json['description'],
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.parse(json['CreatedAt']),
       author: User.fromJson(json['author']),
       image: json['image'],
       tag: Tag.fromJson(json['tag']),
-      eventId: json['event_id'],
+      eventId: json['eventId'],
       participants: (json['participants'] as List)
           .map((participant) => Participant.fromJson(participant))
           .toList(),
