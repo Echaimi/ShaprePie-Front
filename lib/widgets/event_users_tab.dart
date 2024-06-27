@@ -22,7 +22,7 @@ class EventUsersTab extends StatelessWidget {
                 border: Border(
                   bottom: index == users.length - 1
                       ? BorderSide.none
-                      : BorderSide(color: Colors.grey),
+                      : const BorderSide(color: Colors.grey),
                 ),
               ),
               child: ListTile(

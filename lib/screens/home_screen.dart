@@ -150,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Évènements',
-          style: Theme.of(context).textTheme.titleLarge,
+          'Tes évènements',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
@@ -176,14 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 16.0),
-                            child: Text(
-                              'Tes évènements',
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ),
                           Expanded(
                             child: ListView.builder(
                               padding:

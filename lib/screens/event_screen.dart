@@ -208,8 +208,8 @@ class _EventScreenState extends State<EventScreen> {
                     Expanded(
                       child: TabBarView(
                         children: [
-                          EventUsersTab(),
-                          EventExpensesTab(),
+                          const EventUsersTab(),
+                          const EventExpensesTab(),
                           EventBalanceTab(),
                         ],
                       ),

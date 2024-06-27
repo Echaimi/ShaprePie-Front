@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:nsm/models/expense.dart';
 import 'package:nsm/services/event_websocket_service.dart';
 import 'package:intl/intl.dart';
+import 'expense_details_modal.dart';
 
 class EventExpensesTab extends StatelessWidget {
   const EventExpensesTab({super.key});
@@ -19,7 +20,16 @@ class EventExpensesTab extends StatelessWidget {
           itemCount: expenses.length,
           itemBuilder: (context, index) {
             final expense = expenses[index];
-            return ExpenseItem(expense: expense);
+            return GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) => ExpenseDetailsModal(expense: expense),
+                );
+              },
+              child: ExpenseItem(expense: expense),
+            );
           },
         );
       },
@@ -52,8 +62,7 @@ class ExpenseItem extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Center the column content
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
                     children: [
@@ -92,9 +101,15 @@ class ExpenseItem extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              '${expense.amount.toStringAsFixed(2)} €',
-              style: theme.textTheme.bodyLarge,
+            SizedBox(
+              width: 100,
+              child: Center(
+                child: Text(
+                  '${expense.amount.toStringAsFixed(2)} €',
+                  style: theme.textTheme.bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           ],
         ),
