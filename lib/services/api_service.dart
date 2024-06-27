@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  final String _baseUrl = 'http://172.23.143.125:8080/api/v1';
+  final String _baseUrl = 'http://localhost:8080/api/v1';
   final _storage = const FlutterSecureStorage();
 
   ApiService();

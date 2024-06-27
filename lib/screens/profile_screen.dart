@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/avatar_modal_content.dart';
+import '../widgets/avatar_form.dart';
 import '../widgets/bottom_modal.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -56,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profil mis à jour avec succès')),
       );
-      // Ne pas rediriger, rester sur la page de profil
     } catch (e) {
       setState(() {
         isEditing = true;
@@ -75,32 +74,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final avatars = await userProvider.getAvatars();
     final user = userProvider.user;
 
-
     if (!mounted) return;
     await showModalBottomSheet<void>(
       context: context,
-      isScrollControlled: true, // Permet à la modal de prendre toute la hauteur disponible
+      isScrollControlled: true,
       builder: (context) {
         return BottomModal(
           scrollController: ScrollController(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.5, // Définissez une hauteur maximale pour la modal
-            ),
-            child: AvatarModalContent(
-              avatars: avatars,
-              currentAvatarUrl: user!.avatar.url, // Assurez-vous d'avoir l'URL de l'avatar actuel ici
-
-              onAvatarSelected: (int? avatarId) {
-                Navigator.of(context).pop(); // Fermez la modal
-                if (avatarId != null) {
-                  final updatedData = {
-                    'avatar': avatarId, // ID de l'avatar sélectionné
-                  };
-                  userProvider.updateUserProfile(updatedData);
-                }
-              },
-            ),
+          child: AvatarForm(
+            avatars: avatars,
+            currentAvatarUrl: user!.avatar.url,
+            onAvatarSelected: (int? avatarId) {
+              Navigator.of(context).pop();
+              if (avatarId != null) {
+                final updatedData = {
+                  'avatar': avatarId,
+                };
+                userProvider.updateUserProfile(updatedData);
+              }
+            },
           ),
         );
       },
@@ -121,18 +113,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       extendBodyBehindAppBar: true, // Étend le body derrière l'AppBar
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // Icône de retour en blanc
+          icon: const Icon(Icons.arrow_back,
+              color: Colors.white), // Icône de retour en blanc
           onPressed: () {
             if (GoRouter.of(context).canPop()) {
               GoRouter.of(context).pop();
             } else {
-              GoRouter.of(context).go('/'); // Retour à la page d'accueil si la pile de navigation est vide
+              GoRouter.of(context).go(
+                  '/'); // Retour à la page d'accueil si la pile de navigation est vide
             }
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white), // Icône de déconnexion en blanc
+            icon: const Icon(Icons.logout,
+                color: Colors.white), // Icône de déconnexion en blanc
             onPressed: () async {
               await authProvider.logout();
               if (!mounted) return;
@@ -146,17 +141,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('lib/assets/images/backgroundApp.png'), // Chemin vers votre image de fond
+            image: AssetImage(
+                'lib/assets/images/backgroundApp.png'), // Chemin vers votre image de fond
             fit: BoxFit.cover, // Couvre toute la zone du conteneur
           ),
         ),
-
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(height: 10), //  espace pour déplacer le titre vers le haut
+                const SizedBox(
+                    height: 10), //  espace pour déplacer le titre vers le haut
                 const Text(
                   "Mon compte",
                   style: TextStyle(
@@ -166,154 +162,173 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-              if (user != null) ...[
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    GestureDetector(
-                      onTap: selectAvatar,
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundImage: NetworkImage(user.avatar.url),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: InkWell(
+                if (user != null) ...[
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      GestureDetector(
                         onTap: selectAvatar,
-                        child: const CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.edit,
-                            size: 20,
-                            color: Colors.black,
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundImage: NetworkImage(user.avatar.url),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: selectAvatar,
+                          child: const CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.edit,
+                              size: 20,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10), // Augmentez l'espace selon vos besoins
-                Text(
-                  user.username,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    ],
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 60), // Augmentez l'espace selon vos besoins
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 342,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Mail',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.blueGrey.withOpacity(0.2), // Fond bleu nuit transparent
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(isEditing ? 1.0 : 0.6), // Contour blanc avec opacité
-                          width: 1,
+                  const SizedBox(height: 8),
+                  Text(
+                    user.username,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 342,
+                    child: TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Mail',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        fillColor: Colors.blueGrey
+                            .withOpacity(0.2), // Fond bleu nuit transparent
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(isEditing
+                                ? 1.0
+                                : 0.6), // Contour blanc avec opacité
+                            width: 1,
+                          ),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(isEditing
+                                ? 1.0
+                                : 0.6), // Contour blanc avec opacité même lorsque désactivé
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(isEditing
+                                ? 1.0
+                                : 0.6), // Contour blanc plus épais en mode édition
+                            width: 2,
+                          ),
                         ),
                       ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(isEditing ? 1.0 : 0.6), // Contour blanc avec opacité même lorsque désactivé
-                          width: 1,
+                      style: const TextStyle(color: Colors.white),
+                      enabled:
+                          isEditing, // Activez l'édition si isEditing est true
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 342,
+                    child: TextField(
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        labelText: 'Pseudo',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        fillColor: Colors.blueGrey
+                            .withOpacity(0.2), // Fond bleu nuit transparent
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(isEditing
+                                ? 1.0
+                                : 0.6), // Contour blanc avec opacité
+                            width: 1,
+                          ),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(isEditing
+                                ? 1.0
+                                : 0.6), // Contour blanc avec opacité même lorsque désactivé
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color: Colors.white.withOpacity(isEditing
+                                ? 1.0
+                                : 0.6), // Contour blanc plus épais en mode édition
+                            width: 2,
+                          ),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(isEditing ? 1.0 : 0.6), // Contour blanc plus épais en mode édition
-                          width: 2,
+                      style: const TextStyle(color: Colors.white),
+                      enabled:
+                          isEditing, // Activez l'édition si isEditing est true
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: 342,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      child: ElevatedButton(
+                        key: ValueKey<bool>(isEditing),
+                        onPressed: () {
+                          setState(() {
+                            if (isEditing) {
+                              saveProfile();
+                            }
+                            isEditing = !isEditing;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: colorScheme
+                              .secondary, // Utilisez une seule couleur de fond
+                          minimumSize: const Size(
+                              double.infinity, 50), // Taille du bouton
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(8.0), // Bord arrondi
+                          ),
+                          textStyle: textTheme.bodyLarge, // Style de texte
                         ),
+                        child: Text(isEditing ? 'Valider' : 'Modifier'),
                       ),
                     ),
-                    style: const TextStyle(color: Colors.white),
-                    enabled: isEditing, // Activez l'édition si isEditing est true
                   ),
-                ),
-
-                const SizedBox(height: 16),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 342,
-                  child: TextField(
-                    controller: usernameController,
-                    decoration: InputDecoration(
-                      labelText: 'Pseudo',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.blueGrey.withOpacity(0.2), // Fond bleu nuit transparent
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(isEditing ? 1.0 : 0.6), // Contour blanc avec opacité
-                          width: 1,
-                        ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(isEditing ? 1.0 : 0.6), // Contour blanc avec opacité même lorsque désactivé
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(isEditing ? 1.0 : 0.6), // Contour blanc plus épais en mode édition
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    style: const TextStyle(color: Colors.white),
-                    enabled: isEditing, // Activez l'édition si isEditing est true
-                  ),
-                ),
-                const SizedBox(height: 16),
-        SizedBox(
-          width: 342,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            child: ElevatedButton(
-              key: ValueKey<bool>(isEditing),
-              onPressed: () {
-                setState(() {
-                  if (isEditing) {
-                    saveProfile();
-                  }
-                  isEditing = !isEditing;
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: colorScheme.secondary, // Utilisez une seule couleur de fond
-                minimumSize: const Size(double.infinity, 50), // Taille du bouton
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Bord arrondi
-                ),
-                textStyle: textTheme.bodyLarge, // Style de texte
-              ),
-              child: Text(isEditing ? 'Valider' : 'Modifier'),
-            ),
-          ),
-                ),
-              ] else ...[
-                const CircularProgressIndicator(),
-              ],
+                ] else ...[
+                  const CircularProgressIndicator(),
+                ],
               ],
             ),
           ),
