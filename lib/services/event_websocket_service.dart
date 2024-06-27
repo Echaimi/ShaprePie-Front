@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:nsm/models/user_with_expenses.dart';
 import '../models/event.dart';
-import '../models/user.dart';
 import '../models/expense.dart';
 import '../services/websocket_service.dart';
 
 class EventWebsocketProvider with ChangeNotifier {
   final WebSocketService _webSocketService;
   Event? _event;
-  List<User> _users = [];
+  List<UserWithExpenses> _users = [];
   List<Expense> _expenses = [];
 
   Event? get event => _event;
-  List<User> get users => _users;
+  List<UserWithExpenses> get users => _users;
   List<Expense> get expenses => _expenses;
 
   EventWebsocketProvider(this._webSocketService) {
@@ -36,7 +36,9 @@ class EventWebsocketProvider with ChangeNotifier {
           _updateExpenses(expenses);
           break;
         case 'users':
-          final users = (payload as List).map((u) => User.fromJson(u)).toList();
+          final users = (payload as List)
+              .map((u) => UserWithExpenses.fromJson(u))
+              .toList();
           _updateUsers(users);
           break;
       }
@@ -53,7 +55,7 @@ class EventWebsocketProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void _updateUsers(List<User> users) {
+  void _updateUsers(List<UserWithExpenses> users) {
     _users = users;
     notifyListeners();
   }

@@ -9,7 +9,7 @@ import 'package:nsm/widgets/event_users_tab.dart';
 import 'package:nsm/widgets/expense_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../services/websocket_service.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nsm/widgets/refound_modal_content.dart';
 
 class EventScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _EventScreenState extends State<EventScreen> {
 
   Future<void> _initializeWebSocket() async {
     final webSocketService = WebSocketService(
-        'ws://localhost:8080/api/v1/ws/events/${widget.eventId}');
+        '${dotenv.env['API_WS_URL']}/ws/events/${widget.eventId}');
     await Future.delayed(const Duration(seconds: 1));
 
     _eventProvider = EventWebsocketProvider(webSocketService);

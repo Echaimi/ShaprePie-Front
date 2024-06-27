@@ -226,7 +226,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(12),
                                             ),
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.only(
+                                                left: 16,
+                                                top: 8,
+                                                bottom: 8,
+                                                right: 8),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -259,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                         Positioned(
-                                          left: -25,
+                                          left: -20,
                                           top: 0,
                                           bottom: 0,
                                           child: Align(
