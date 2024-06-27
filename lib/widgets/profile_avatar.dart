@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String imageUrl;
   final bool isSelected;
 
-  ProfileAvatar({
+  const ProfileAvatar({
     super.key,
     required this.imageUrl,
     required this.isSelected,
@@ -17,11 +16,14 @@ class ProfileAvatar extends StatelessWidget {
     final ColorScheme colorScheme = themeData.colorScheme;
 
     return Container(
-      width: 60.0,
-      height: 60.0,
+      width: 70.0,
+      height: 70.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isSelected ? colorScheme.primary : Colors.transparent,
+        border: Border.all(
+          color: isSelected ? colorScheme.primary : Colors.transparent,
+          width: 2.0,
+        ),
       ),
       child: CircleAvatar(
         backgroundImage: NetworkImage(imageUrl),
