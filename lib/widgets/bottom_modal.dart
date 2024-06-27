@@ -4,12 +4,14 @@ class BottomModal extends StatelessWidget {
   final ScrollController scrollController;
   final Widget child;
   final double heightFactor;
+  final EdgeInsetsGeometry? padding;
 
   const BottomModal({
     super.key,
     required this.scrollController,
     required this.child,
-    this.heightFactor = 0.9,
+    this.heightFactor = 0.92,
+    this.padding,
   });
 
   @override
@@ -28,7 +30,7 @@ class BottomModal extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: padding ?? const EdgeInsets.all(16.0),
           child: Column(
             children: [
               Container(
@@ -41,10 +43,7 @@ class BottomModal extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: child,
-                ),
+                child: child,
               ),
             ],
           ),
