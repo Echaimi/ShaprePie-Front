@@ -1,8 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthService {
-  final String _baseUrl = 'http://localhost:8080/api/v1';
+  final String _baseUrl = dotenv.env['API_URL']!;
 
   AuthService();
 
