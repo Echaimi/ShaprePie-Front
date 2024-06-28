@@ -1,17 +1,25 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
+import 'package:nsm/models/balance.dart';
+import 'package:nsm/models/transaction.dart';
 import 'package:nsm/models/user_with_expenses.dart';
+import 'package:nsm/providers/auth_provider.dart';
 import '../models/event.dart';
 import '../models/expense.dart';
 import '../services/websocket_service.dart';
 
 class EventWebsocketProvider with ChangeNotifier {
   final WebSocketService _webSocketService;
-
+  final AuthProvider _authProvider;
   Event? _event;
   List<UserWithExpenses> _users = [];
   List<Expense> _expenses = [];
+  List<Balance> _balances = [];
+  List<Transaction> _transactions = [];
+
+  EventWebsocketProvider(this._webSocketService, this._authProvider) {
+    _listenToWebSocket();
+  }
 
   Event? get event => _event;
 
@@ -19,23 +27,28 @@ class EventWebsocketProvider with ChangeNotifier {
 
   List<Expense> get expenses => _expenses;
 
+  List<Balance> get balances => _balances;
+
+  List<Transaction> get transactions => _transactions;
+
   double get totalExpenses {
     return _expenses.fold(0, (sum, expense) => sum + expense.amount);
   }
 
-  // double get userTotalExpenses {
-  //   final userId = _userProvider.user?.id;
-  //   print(userId);
-  //   print(_expenses.where(
-  //       (expense) => expense.payers.any((payer) => payer.user.id == userId)));
-  //   return _expenses
-  //       .where(
-  //           (expense) => expense.payers.any((payer) => payer.user.id == userId))
-  //       .fold(0, (sum, expense) => sum + expense.amount);
-  // }
+  double get userTotalExpenses {
+    final userId = _authProvider.user?.id;
+    return _expenses
+        .where(
+            (expense) => expense.payers.any((payer) => payer.user.id == userId))
+        .fold(0, (sum, expense) => sum + expense.amount);
+  }
 
-  EventWebsocketProvider(this._webSocketService) {
-    _listenToWebSocket();
+  double get userAmountOwed {
+    final userId = _authProvider.user?.id;
+
+    if (userId == null || _balances.isEmpty) return 0.00;
+
+    return _balances.firstWhere((balance) => balance.user.id == userId).amount;
   }
 
   void _listenToWebSocket() {
@@ -59,6 +72,18 @@ class EventWebsocketProvider with ChangeNotifier {
               .map((u) => UserWithExpenses.fromJson(u))
               .toList();
           _updateUsers(users);
+          break;
+        case 'balances':
+          final balances =
+              (payload as List).map((b) => Balance.fromJson(b)).toList();
+          _balances = balances;
+          notifyListeners();
+          break;
+        case 'transactions':
+          final transactions =
+              (payload as List).map((t) => Transaction.fromJson(t)).toList();
+          _transactions = transactions;
+          notifyListeners();
           break;
       }
     });

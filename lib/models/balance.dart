@@ -15,9 +15,9 @@ class Balance {
   factory Balance.fromJson(Map<String, dynamic> json) {
     return Balance(
       id: json['id'],
-      amount: json['amount'],
+      amount: json['amount'].toDouble(),
       user: User.fromJson(json['user']),
-      eventId: json['event_id'],
+      eventId: json['eventId'],
     );
   }
 }
