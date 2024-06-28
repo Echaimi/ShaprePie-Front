@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:nsm/providers/user_provider.dart';
+import 'package:nsm/models/user.dart';
+import 'package:nsm/services/user_service.dart';
 import '../services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService authService;
-  final UserProvider userProvider;
+  final UserService userService;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  late User? _user;
 
-  AuthProvider(this.authService, this.userProvider);
+  AuthProvider(this.authService, this.userService) {
+    init();
+  }
+
+  User? get user => _user;
+
+  Future<void> init() async {
+    if (await isAuthenticated()) {
+      await loadCurrentUser();
+    }
+  }
 
   Future<void> login(String email, String password) async {
     try {
       final response = await authService.login(email, password);
       await _storage.write(key: 'auth_token', value: response['token']);
-      await userProvider.getCurrentUser();
-      notifyListeners();
+      await loadCurrentUser();
     } catch (e) {
       rethrow;
     }
@@ -34,12 +45,21 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     await _storage.delete(key: 'auth_token');
-    userProvider.user = null;
+    _user = null;
     notifyListeners();
   }
 
   Future<bool> isAuthenticated() async {
     String? token = await _storage.read(key: 'auth_token');
     return token != null;
+  }
+
+  Future<void> loadCurrentUser() async {
+    try {
+      final user = await userService.getCurrentUser();
+      _user = user;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

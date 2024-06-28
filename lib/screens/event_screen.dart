@@ -35,8 +35,10 @@ class _EventScreenState extends State<EventScreen> {
         '${dotenv.env['API_WS_URL']}/ws/events/${widget.eventId}');
     await Future.delayed(const Duration(seconds: 1));
 
-    _eventProvider = EventWebsocketProvider(webSocketService);
-    setState(() {}); // Appel pour reconstruire le widget après l'initialisation
+    _eventProvider = EventWebsocketProvider(
+      webSocketService,
+    );
+    setState(() {}); // Call to rebuild the widget after initialization
   }
 
   void deleteEvent() {
@@ -134,10 +136,16 @@ class _EventScreenState extends State<EventScreen> {
           ),
           body: Consumer<EventWebsocketProvider>(
             builder: (context, eventProvider, child) {
+              final theme = Theme.of(context);
+
               final event = eventProvider.event;
+              final users = eventProvider.users;
+              final totalExpenses = eventProvider.totalExpenses;
+
               if (event == null) {
                 return const Center(child: CircularProgressIndicator());
               }
+
               return Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: Column(
@@ -157,17 +165,32 @@ class _EventScreenState extends State<EventScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 16.0),
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: Colors.white, width: 4.0),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '10€',
-                          style: TextStyle(
-                            fontSize: 32.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFF373455)),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0xFF373455),
+                            offset: Offset(
+                              6.0,
+                              6.0,
+                            ),
+                            spreadRadius: 2.0,
                           ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              '$totalExpenses €',
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            Text(
+                              'au total pour ${users.length} personnes',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -226,24 +249,31 @@ class _EventScreenState extends State<EventScreen> {
             ),
             child: BottomAppBar(
               color: Theme.of(context).colorScheme.background,
-              child: const SizedBox(
+              child: SizedBox(
                 height: 60.0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
+                child: Consumer<EventWebsocketProvider>(
+                  builder: (context, eventProvider, child) {
+                    final userTotalExpenses = 10;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("J'ai dépensé"),
-                        Text('0 €'),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("J'ai dépensé"),
+                            Text('$userTotalExpenses €'),
+                          ],
+                        ),
+                        const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('On me doit'),
+                            Text('0 €'),
+                          ],
+                        ),
                       ],
-                    ),
-                    Column(
-                      children: [
-                        Text('On me doit'),
-                        Text('0 €'),
-                      ],
-                    )
-                  ],
+                    );
+                  },
                 ),
               ),
             ),
