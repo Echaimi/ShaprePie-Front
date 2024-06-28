@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nsm/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:nsm/providers/auth_provider.dart';
 import 'package:nsm/services/event_service.dart';
@@ -51,18 +50,13 @@ class MyApp extends StatelessWidget {
         Provider<ApiService>(
           create: (_) => ApiService(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => UserProvider(
-            UserService(context.read<ApiService>()),
-          ),
+        Provider<UserService>(
+          create: (context) => UserService(context.read<ApiService>()),
         ),
-        ChangeNotifierProxyProvider<UserProvider, AuthProvider>(
-            create: (context) => AuthProvider(
-                  AuthService(),
-                  context.read<UserProvider>(),
-                ),
-            update: (context, userProvider, previous) =>
-                AuthProvider(AuthService(), userProvider)),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) =>
+              AuthProvider(AuthService(), context.read<UserService>()),
+        ),
         Provider<EventService>(
           create: (context) => EventService(context.read<ApiService>()),
         ),

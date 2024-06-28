@@ -12,7 +12,6 @@ import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/join_us.dart';
 import 'package:nsm/widgets/join_event_modal_content.dart';
 import 'event_screen.dart';
-import 'dart:ui';
 
 class HomeScreen extends StatefulWidget {
   final EventService eventService;

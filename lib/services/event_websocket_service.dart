@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:nsm/models/user_with_expenses.dart';
 import '../models/event.dart';
@@ -7,13 +8,31 @@ import '../services/websocket_service.dart';
 
 class EventWebsocketProvider with ChangeNotifier {
   final WebSocketService _webSocketService;
+
   Event? _event;
   List<UserWithExpenses> _users = [];
   List<Expense> _expenses = [];
 
   Event? get event => _event;
+
   List<UserWithExpenses> get users => _users;
+
   List<Expense> get expenses => _expenses;
+
+  double get totalExpenses {
+    return _expenses.fold(0, (sum, expense) => sum + expense.amount);
+  }
+
+  // double get userTotalExpenses {
+  //   final userId = _userProvider.user?.id;
+  //   print(userId);
+  //   print(_expenses.where(
+  //       (expense) => expense.payers.any((payer) => payer.user.id == userId)));
+  //   return _expenses
+  //       .where(
+  //           (expense) => expense.payers.any((payer) => payer.user.id == userId))
+  //       .fold(0, (sum, expense) => sum + expense.amount);
+  // }
 
   EventWebsocketProvider(this._webSocketService) {
     _listenToWebSocket();

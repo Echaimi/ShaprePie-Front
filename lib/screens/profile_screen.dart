@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nsm/models/user.dart';
+import 'package:nsm/services/user_service.dart';
 import 'package:provider/provider.dart';
-import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/avatar_form.dart';
 import '../widgets/bottom_modal.dart';
@@ -16,15 +17,21 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController emailController;
   late TextEditingController usernameController;
-  bool isEditing = false;
+  late AuthProvider authProvider;
+  late UserService userService;
+  User? user;
   int? selectedAvatarId;
 
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<UserProvider>(context, listen: false).user;
-    emailController = TextEditingController(text: user?.email);
-    usernameController = TextEditingController(text: user?.username);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userService = Provider.of<UserService>(context, listen: false);
+    this.authProvider = authProvider;
+    this.userService = userService;
+    user = authProvider.user;
+    emailController = TextEditingController(text: user?.email ?? '');
+    usernameController = TextEditingController(text: user?.username ?? '');
   }
 
   @override
@@ -35,32 +42,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void saveProfile() async {
-    if (!isEditing) return;
-
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
     final Map<String, dynamic> updatedData = {
       'email': emailController.text,
       'username': usernameController.text,
-      if (selectedAvatarId != null) 'avatar': selectedAvatarId,
     };
 
-    setState(() {
-      isEditing = false;
-    });
-
     try {
-      await userProvider.updateUserProfile(updatedData);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await userService.updateProfile(updatedData);
+      await authProvider.loadCurrentUser();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profil mis à jour avec succès')),
       );
-    } catch (e) {
       setState(() {
-        isEditing = true;
+        user = authProvider.user;
       });
-
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur lors de la mise à jour du profil: $e')),
@@ -68,11 +67,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void saveAvatar(int avatarId) async {
+    final Map<String, dynamic> updatedData = {
+      'avatar': avatarId,
+    };
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await userService.updateProfile(updatedData);
+      await authProvider.loadCurrentUser();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Avatar mis à jour avec succès')),
+      );
+      setState(() {
+        user = authProvider.user;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Erreur lors de la mise à jour de l\'avatar: $e')),
+      );
+    }
+  }
+
   void selectAvatar() async {
-    if (!mounted) return;
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final avatars = await userProvider.getAvatars();
-    final user = userProvider.user;
+    final avatars = await userService.getAvatars();
 
     if (!mounted) return;
     await showModalBottomSheet<void>(
@@ -87,10 +109,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onAvatarSelected: (int? avatarId) {
               Navigator.of(context).pop();
               if (avatarId != null) {
-                final updatedData = {
-                  'avatar': avatarId,
-                };
-                userProvider.updateUserProfile(updatedData);
+                setState(() {
+                  selectedAvatarId = avatarId;
+                });
+                saveAvatar(avatarId);
               }
             },
           ),
@@ -101,33 +123,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.user;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     final ThemeData themeData = Theme.of(context);
     final ColorScheme colorScheme = themeData.colorScheme;
     final TextTheme textTheme = themeData.textTheme;
 
     return Scaffold(
-      extendBodyBehindAppBar: true, // Étend le body derrière l'AppBar
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Colors.white), // Icône de retour en blanc
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             if (GoRouter.of(context).canPop()) {
               GoRouter.of(context).pop();
             } else {
-              GoRouter.of(context).go(
-                  '/'); // Retour à la page d'accueil si la pile de navigation est vide
+              GoRouter.of(context).go('/');
             }
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout,
-                color: Colors.white), // Icône de déconnexion en blanc
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await authProvider.logout();
               if (!mounted) return;
@@ -135,15 +152,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
         ],
-        backgroundColor: Colors.transparent, // Rend l'AppBar transparent
-        elevation: 0, // Supprime l'ombre de l'AppBar
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-                'lib/assets/images/backgroundApp.png'), // Chemin vers votre image de fond
-            fit: BoxFit.cover, // Couvre toute la zone du conteneur
+            image: AssetImage('lib/assets/images/backgroundApp.png'),
+            fit: BoxFit.cover,
           ),
         ),
         child: Center(
@@ -151,8 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(
-                    height: 10), //  espace pour déplacer le titre vers le haut
+                const SizedBox(height: 10),
                 const Text(
                   "Mon compte",
                   style: TextStyle(
@@ -162,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                if (user != null) ...[
+                if (authProvider.user != null) ...[
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
@@ -170,7 +185,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: selectAvatar,
                         child: CircleAvatar(
                           radius: 70,
-                          backgroundImage: NetworkImage(user.avatar.url),
+                          backgroundImage:
+                              NetworkImage(authProvider.user!.avatar.url),
                         ),
                       ),
                       Positioned(
@@ -193,7 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    user.username,
+                    authProvider.user!.username,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -210,40 +226,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Mail',
                         labelStyle: const TextStyle(color: Colors.white),
-                        fillColor: Colors.blueGrey
-                            .withOpacity(0.2), // Fond bleu nuit transparent
+                        fillColor: Colors.blueGrey.withOpacity(0.2),
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           borderSide: BorderSide(
-                            color: Colors.white.withOpacity(isEditing
-                                ? 1.0
-                                : 0.6), // Contour blanc avec opacité
-                            width: 1,
-                          ),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: Colors.white.withOpacity(isEditing
-                                ? 1.0
-                                : 0.6), // Contour blanc avec opacité même lorsque désactivé
+                            color: Colors.white,
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: Colors.white.withOpacity(isEditing
-                                ? 1.0
-                                : 0.6), // Contour blanc plus épais en mode édition
+                          borderSide: const BorderSide(
+                            color: Colors.white,
                             width: 2,
                           ),
                         ),
                       ),
                       style: const TextStyle(color: Colors.white),
-                      enabled:
-                          isEditing, // Activez l'édition si isEditing est true
+                      enabled: true,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -255,75 +256,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Pseudo',
                         labelStyle: const TextStyle(color: Colors.white),
-                        fillColor: Colors.blueGrey
-                            .withOpacity(0.2), // Fond bleu nuit transparent
+                        fillColor: Colors.blueGrey.withOpacity(0.2),
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           borderSide: BorderSide(
-                            color: Colors.white.withOpacity(isEditing
-                                ? 1.0
-                                : 0.6), // Contour blanc avec opacité
-                            width: 1,
-                          ),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: Colors.white.withOpacity(isEditing
-                                ? 1.0
-                                : 0.6), // Contour blanc avec opacité même lorsque désactivé
+                            color: Colors.white,
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: Colors.white.withOpacity(isEditing
-                                ? 1.0
-                                : 0.6), // Contour blanc plus épais en mode édition
+                          borderSide: const BorderSide(
+                            color: Colors.white,
                             width: 2,
                           ),
                         ),
                       ),
                       style: const TextStyle(color: Colors.white),
-                      enabled:
-                          isEditing, // Activez l'édition si isEditing est true
+                      enabled: true,
                     ),
                   ),
                   const SizedBox(height: 32),
                   SizedBox(
                     width: 342,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder:
-                          (Widget child, Animation<double> animation) {
-                        return FadeTransition(opacity: animation, child: child);
-                      },
-                      child: ElevatedButton(
-                        key: ValueKey<bool>(isEditing),
-                        onPressed: () {
-                          setState(() {
-                            if (isEditing) {
-                              saveProfile();
-                            }
-                            isEditing = !isEditing;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: colorScheme
-                              .secondary, // Utilisez une seule couleur de fond
-                          minimumSize: const Size(
-                              double.infinity, 50), // Taille du bouton
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8.0), // Bord arrondi
-                          ),
-                          textStyle: textTheme.bodyLarge, // Style de texte
+                    child: ElevatedButton(
+                      onPressed: saveProfile,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: colorScheme.secondary,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Text(isEditing ? 'Valider' : 'Modifier'),
+                        textStyle: textTheme.bodyLarge,
                       ),
+                      child: const Text('Valider'),
                     ),
                   ),
                 ] else ...[
