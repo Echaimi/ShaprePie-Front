@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:nsm/providers/auth_provider.dart';
 import 'package:nsm/services/event_websocket_service.dart';
 import 'package:nsm/widgets/AddButton.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/event_balances_tab.dart';
 import 'package:nsm/widgets/event_expenses_tab.dart';
+import 'package:nsm/widgets/event_invitation_modal.dart';
 import 'package:nsm/widgets/event_users_tab.dart';
 import 'package:nsm/widgets/expense_modal_content.dart';
+import 'package:nsm/widgets/join_event_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../services/websocket_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nsm/widgets/refound_modal_content.dart';
+import 'package:go_router/go_router.dart';
 
 class EventScreen extends StatefulWidget {
   final int eventId;
@@ -33,16 +37,18 @@ class _EventScreenState extends State<EventScreen> {
   Future<void> _initializeWebSocket() async {
     final webSocketService = WebSocketService(
         '${dotenv.env['API_WS_URL']}/ws/events/${widget.eventId}');
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await Future.delayed(const Duration(seconds: 1));
 
     _eventProvider = EventWebsocketProvider(
       webSocketService,
+      authProvider,
     );
     setState(() {}); // Call to rebuild the widget after initialization
   }
 
   void deleteEvent() {
-    // Implémentez la logique de suppression de l'événement
+    // TODO: Handle event deletion
   }
 
   void _showAddOptions(BuildContext context) {
@@ -106,9 +112,37 @@ class _EventScreenState extends State<EventScreen> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.background,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                if (GoRouter.of(context).canPop()) {
+                  GoRouter.of(context).pop();
+                } else {
+                  GoRouter.of(context).go('/');
+                }
+              },
+            ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.share_rounded, color: Colors.white),
+                onPressed: () {
+                  final eventCode = _eventProvider?.event?.code;
+
+                  if (eventCode != null && eventCode.isNotEmpty) {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return EventCodeModal(
+                          code: eventCode,
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.white),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -253,7 +287,9 @@ class _EventScreenState extends State<EventScreen> {
                 height: 60.0,
                 child: Consumer<EventWebsocketProvider>(
                   builder: (context, eventProvider, child) {
-                    final userTotalExpenses = 10;
+                    final userTotalExpenses = eventProvider.userTotalExpenses;
+                    final userAmountOwed = eventProvider.userAmountOwed;
+
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -264,11 +300,11 @@ class _EventScreenState extends State<EventScreen> {
                             Text('$userTotalExpenses €'),
                           ],
                         ),
-                        const Column(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('On me doit'),
-                            Text('0 €'),
+                            const Text('On me doit'),
+                            Text('$userAmountOwed €'),
                           ],
                         ),
                       ],
