@@ -8,7 +8,11 @@ class EventForm extends StatefulWidget {
   final TextEditingController eventNameController;
   final TextEditingController descriptionController;
   final TextEditingController goalController;
-  final VoidCallback onSubmit;
+  final Future<void> Function()
+      onSubmit; // Update to accept custom submit function
+  final Function(int)
+      onCategorySelected; // Callback to update selected category
+  final String buttonText;
 
   const EventForm({
     super.key,
@@ -16,6 +20,8 @@ class EventForm extends StatefulWidget {
     required this.descriptionController,
     required this.goalController,
     required this.onSubmit,
+    required this.buttonText,
+    required this.onCategorySelected,
   });
 
   @override
@@ -32,25 +38,6 @@ class _EventFormState extends State<EventForm> {
   void initState() {
     super.initState();
     _futureCategories = categoryService.getCategories();
-  }
-
-  Future<void> _createEvent() async {
-    final Map<String, dynamic> eventData = {
-      'name': widget.eventNameController.text,
-      'description': widget.descriptionController.text,
-      'category': selectedCategoryId, // Use selected category ID
-      'goal': int.tryParse(widget.goalController.text) ?? 0, // Parse goal as an integer
-    };
-
-    try {
-      await eventService.createEvent(eventData);
-      widget.onSubmit(); // Call the onSubmit callback
-    } catch (e) {
-      // Handle error appropriately
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create event: $e')),
-      );
-    }
   }
 
   @override
@@ -80,8 +67,7 @@ class _EventFormState extends State<EventForm> {
                 spacing: 10.0,
                 runSpacing: 10.0,
                 children: snapshot.data!
-                    .map((category) =>
-                        _buildCategoryChip(context, category))
+                    .map((category) => _buildCategoryChip(context, category))
                     .toList(),
               );
             }
@@ -144,8 +130,11 @@ class _EventFormState extends State<EventForm> {
               borderRadius: BorderRadius.circular(8.0),
             ),
           ),
-          onPressed: _createEvent, // Call the create event method
-          child: const Text('Créer', style: TextStyle(color: Colors.white)),
+          onPressed: () async {
+            await widget.onSubmit(); // Call the custom submit function
+          },
+          child: Text(widget.buttonText,
+              style: const TextStyle(color: Colors.white)),
         ),
       ],
     );
@@ -163,6 +152,7 @@ class _EventFormState extends State<EventForm> {
       onSelected: (bool selected) {
         setState(() {
           selectedCategoryId = category.id; // Update selected category ID
+          widget.onCategorySelected(selectedCategoryId); // Call the callback
         });
       },
       backgroundColor: colorScheme.primaryContainer,

@@ -37,4 +37,19 @@ class Event {
       state: json['state'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'ID': id,
+      'name': name,
+      'description': description,
+      'author': author.toJson(),
+      'category': category.toJson(),
+      'image': image,
+      'goal': goal,
+      'code': code,
+      'state': state,
+    };
+  }
+
 }
