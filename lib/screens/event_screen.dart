@@ -9,12 +9,16 @@ import 'package:nsm/widgets/event_expenses_tab.dart';
 import 'package:nsm/widgets/event_invitation_modal.dart';
 import 'package:nsm/widgets/event_users_tab.dart';
 import 'package:nsm/widgets/expense_modal_content.dart';
+import 'package:nsm/widgets/update_event_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../services/websocket_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nsm/widgets/refound_modal_content.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nsm/screens/home_screen.dart';
+import 'package:nsm/services/api_service.dart';
+import 'package:nsm/services/event_service.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -29,7 +33,7 @@ class EventScreen extends StatefulWidget {
 
 class _EventScreenState extends State<EventScreen> {
   EventWebsocketProvider? _eventProvider;
-
+  EventService eventService = EventService(ApiService());
   @override
   void initState() {
     super.initState();
@@ -49,7 +53,33 @@ class _EventScreenState extends State<EventScreen> {
     setState(() {});
   }
 
-  void _deleteEvent() {}
+  void _showModal(BuildContext context, Widget child) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BottomModal(
+          scrollController: ScrollController(),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteEvent(BuildContext context) async {
+    if (_eventProvider != null && _eventProvider!.event != null) {
+      eventService.deleteEvent(_eventProvider!.event!.id);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+              eventService:
+                  eventService), // Navigate to HomeScreen after deletion
+        ),
+      );
+    }
+  }
 
   void _archiveEvent() {}
 
@@ -144,6 +174,24 @@ class _EventScreenState extends State<EventScreen> {
                 },
               ),
               IconButton(
+                icon: const Icon(Icons.edit, color: Colors.white),
+                onPressed: () {
+                  _showModal(
+                    context,
+                    UpdateEventModalContent(
+                      eventId: _eventProvider!.event!.id,
+                      initialEventName: _eventProvider!.event!.name,
+                      initialDescription: _eventProvider!.event!.description,
+                      initialGoal: int.tryParse(
+                              _eventProvider!.event!.goal.toString()) ??
+                          0,
+                      initialCategoryId: _eventProvider!.event!.category.id,
+                      eventProvider: _eventProvider!,
+                    ),
+                  );
+                },
+              ),
+              IconButton(
                 icon: const Icon(Icons.delete, color: Colors.white),
                 onPressed: () {
                   showCupertinoModalPopup(
@@ -152,7 +200,7 @@ class _EventScreenState extends State<EventScreen> {
                       actions: <CupertinoActionSheetAction>[
                         CupertinoActionSheetAction(
                           onPressed: () {
-                            _deleteEvent();
+                            _deleteEvent(context);
                             Navigator.pop(context);
                           },
                           child: Text(t(context)!.deleteEvent),

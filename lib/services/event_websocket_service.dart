@@ -116,6 +116,10 @@ class EventWebsocketProvider with ChangeNotifier {
     _webSocketService.send({'type': 'deleteExpense', 'payload': expenseId});
   }
 
+  void updateEvent(Map<String, dynamic> data) {
+    _webSocketService.send({'type': 'updateEvent', 'payload': data});
+  }
+
   void dispose() {
     _webSocketService.dispose();
     super.dispose();
