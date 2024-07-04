@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ExpenseModalContent extends StatelessWidget {
+  const ExpenseModalContent({super.key});
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

@@ -19,6 +19,8 @@ import 'package:spaceshare/widgets/refound_modal_content.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../widgets/create_expense.dart';
+import '../widgets/full_screen_modal.dart'; // Import FullScreenModal
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -104,15 +106,13 @@ class _EventScreenState extends State<EventScreen> {
           CupertinoActionSheetAction(
             onPressed: () {
               context.pop();
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) {
-                  return BottomModal(
-                    scrollController: ScrollController(),
-                    child: ExpenseModalContent(),
-                  );
-                },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenModal(
+                    child: CreateExpense(eventId: widget.eventId),
+                  ),
+                ),
               );
             },
             child: Text(t(context)!.addExpense),
@@ -120,15 +120,14 @@ class _EventScreenState extends State<EventScreen> {
           CupertinoActionSheetAction(
             onPressed: () {
               context.pop();
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) {
-                  return BottomModal(
-                    scrollController: ScrollController(),
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenModal(
                     child: RefundModalContent(),
-                  );
-                },
+                  ),
+                ),
               );
             },
             child: Text(t(context)!.addRefund),
@@ -318,6 +317,39 @@ class _EventScreenState extends State<EventScreen> {
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 32.0),
+                    Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                      ),
+                      child: TabBar(
+                        indicator:
+                            const BoxDecoration(), // No indicator decoration
+                        labelColor: Theme.of(context)
+                            .colorScheme
+                            .secondary, // Active tab color
+                        unselectedLabelColor:
+                            Colors.white, // Inactive tab color
+                        labelStyle: const TextStyle(
+                            fontSize: 14.0), // Smaller text size
+                        tabs: const [
+                          Tab(
+                            icon: Icon(Icons.person),
+                            text: 'Personnes',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.attach_money),
+                            text: 'Dépenses',
+                          ),
+                          Tab(
+                            icon: Icon(Icons.balance),
+                            text: 'Équilibre',
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16.0),
