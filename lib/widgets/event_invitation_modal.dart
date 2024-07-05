@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventCodeModal extends StatefulWidget {
   final String code;
@@ -20,7 +23,7 @@ class _EventCodeModalState extends State<EventCodeModal> {
       _copied = true;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Code copied to clipboard!')),
+      SnackBar(content: Text(t(context)!.codeCopied)),
     );
   }
 
@@ -39,13 +42,13 @@ class _EventCodeModalState extends State<EventCodeModal> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Rassemble ton équipage.',
+                  t(context)!.gatherYourCrew,
                   style: theme.textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Dis leur simplement d’ouvrir l’app ou de la télécharger et de rejoindre l’évènement avec le code suivant :',
+                  t(context)!.shareCodeInstruction,
                   style: theme.textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -82,7 +85,7 @@ class _EventCodeModalState extends State<EventCodeModal> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _copied ? 'Copié !' : 'Clique sur le code pour copier',
+                  _copied ? t(context)!.copied : t(context)!.clickToCopy,
                   style: theme.textTheme.bodyMedium,
                 ),
               ],

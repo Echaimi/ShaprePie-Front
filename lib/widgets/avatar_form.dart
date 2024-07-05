@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nsm/widgets/profile_avatar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/avatar.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class AvatarForm extends StatefulWidget {
   final List<Avatar> avatars;
@@ -41,9 +44,9 @@ class _AvatarFormState extends State<AvatarForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                "Mon avatar",
-                style: TextStyle(
+              Text(
+                t(context)!.myAvatar,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -59,9 +62,9 @@ class _AvatarFormState extends State<AvatarForm> {
         ),
         const SizedBox(height: 32),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text(
-            "Choisis ton avatar...",
-            style: TextStyle(
+          Text(
+            t(context)!.chooseYourAvatar,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -134,7 +137,7 @@ class _AvatarFormState extends State<AvatarForm> {
               ),
               textStyle: textTheme.bodyLarge,
             ),
-            child: const Text('Choisir cet avatar'),
+            child: Text(t(context)!.chooseThisAvatar),
           ),
         ),
       ],

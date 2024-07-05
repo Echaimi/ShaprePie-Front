@@ -15,6 +15,9 @@ import '../services/websocket_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nsm/widgets/refound_modal_content.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventScreen extends StatefulWidget {
   final int eventId;
@@ -74,7 +77,7 @@ class _EventScreenState extends State<EventScreen> {
                 },
               );
             },
-            child: const Text('Ajouter une dépense'),
+            child: Text(t(context)!.addExpense),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
@@ -90,14 +93,14 @@ class _EventScreenState extends State<EventScreen> {
                 },
               );
             },
-            child: const Text('Ajouter un remboursement'),
+            child: Text(t(context)!.addRefund),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Annuler'),
+          child: Text(t(context)!.cancel),
         ),
       ),
     );
@@ -157,21 +160,21 @@ class _EventScreenState extends State<EventScreen> {
                             _deleteEvent();
                             Navigator.pop(context);
                           },
-                          child: const Text('Supprimer l\'évènement'),
+                          child: Text(t(context)!.deleteEvent),
                         ),
                         CupertinoActionSheetAction(
                           onPressed: () {
                             _archiveEvent();
                             Navigator.pop(context);
                           },
-                          child: const Text('Archiver l\'évènement'),
+                          child: Text(t(context)!.archiveEvent),
                         ),
                       ],
                       cancelButton: CupertinoActionSheetAction(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text('Annuler'),
+                        child: Text(t(context)!.cancel),
                       ),
                     ),
                   );
@@ -234,7 +237,7 @@ class _EventScreenState extends State<EventScreen> {
                               style: theme.textTheme.titleMedium,
                             ),
                             Text(
-                              'au total pour $usersCount personnes',
+                              '${t(context)!.totalFor} $usersCount ${t(context)!.persons}',
                               style: theme.textTheme.bodyMedium,
                             ),
                           ],
@@ -255,15 +258,15 @@ class _EventScreenState extends State<EventScreen> {
                       tabs: [
                         Tab(
                           icon: const Icon(Icons.person),
-                          text: 'Pers. ($usersCount)',
+                          text: '${t(context)!.persons} ($usersCount)',
                         ),
                         Tab(
                           icon: const Icon(Icons.attach_money),
-                          text: 'Dépenses ($expensesCount)',
+                          text: '${t(context)!.expenses} ($expensesCount)',
                         ),
-                        const Tab(
-                          icon: Icon(Icons.balance),
-                          text: 'Équilibre',
+                        Tab(
+                          icon: const Icon(Icons.balance),
+                          text: t(context)!.balance,
                         ),
                       ],
                     ),
@@ -302,14 +305,14 @@ class _EventScreenState extends State<EventScreen> {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("J'ai dépensé"),
+                            Text(t(context)!.iSpent),
                             Text('$userTotalExpenses €'),
                           ],
                         ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('On me doit'),
+                            Text(t(context)!.owedToMe),
                             Text('$userAmountOwed €'),
                           ],
                         ),

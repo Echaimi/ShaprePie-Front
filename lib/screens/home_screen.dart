@@ -11,7 +11,10 @@ import 'package:nsm/widgets/bottom_navigation_bar.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/join_us.dart';
 import 'package:nsm/widgets/join_event_modal_content.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'event_screen.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class HomeScreen extends StatefulWidget {
   final EventService eventService;
@@ -100,21 +103,21 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pop(context);
               context.go('/create-event');
             },
-            child: const Text('Créer un évènement'),
+            child: Text(t(context)!.createEvent),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               _showModal(context, const JoinEventModalContent());
             },
-            child: const Text('Rejoindre un évènement'),
+            child: Text(t(context)!.joinEvent),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Annuler'),
+          child: Text(t(context)!.cancel),
         ),
       ),
     );
@@ -149,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Tes évènements',
+          t(context)!.yourEvents,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,

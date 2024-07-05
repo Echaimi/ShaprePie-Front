@@ -3,6 +3,9 @@ import 'package:nsm/services/event_websocket_service.dart';
 import 'package:nsm/widgets/balances_chart.dart';
 import 'package:nsm/widgets/transaction_card.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventBalanceTab extends StatelessWidget {
   const EventBalanceTab({super.key});
@@ -15,8 +18,9 @@ class EventBalanceTab extends StatelessWidget {
         final transactions = eventProvider.transactions;
 
         if (balances.isEmpty && transactions.isEmpty) {
-          return const Center(
-              child: Text('No balances or transactions available'));
+          return Center(
+            child: Text(t(context)!.noBalancesOrTransactionsAvailable),
+          );
         }
 
         return SingleChildScrollView(
@@ -25,7 +29,7 @@ class EventBalanceTab extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  '<-- Fais défiler pour voir tout le monde -->',
+                  t(context)!.scrollToSeeEveryone,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -33,7 +37,7 @@ class EventBalanceTab extends StatelessWidget {
               BalancesChart(balances: balances),
               const SizedBox(height: 32),
               Text(
-                'Qui raque ?',
+                t(context)!.whoPays,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

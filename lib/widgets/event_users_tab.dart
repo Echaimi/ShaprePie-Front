@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nsm/services/event_websocket_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventUsersTab extends StatelessWidget {
   const EventUsersTab({super.key});
@@ -11,7 +14,7 @@ class EventUsersTab extends StatelessWidget {
       builder: (context, eventProvider, child) {
         final users = eventProvider.users;
         if (users.isEmpty) {
-          return const Center(child: Text('No users available'));
+          return Center(child: Text(t(context)!.noUsersAvailable));
         }
         return ListView.builder(
           itemCount: users.length,
@@ -47,7 +50,7 @@ class EventUsersTab extends StatelessWidget {
                               ?.copyWith(color: Colors.white),
                         ),
                         Text(
-                          '${user.expenseCount} dépenses',
+                          '${user.expenseCount} ${t(context)!.expenses}',
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall

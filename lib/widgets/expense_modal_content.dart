@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ExpenseModalContent extends StatelessWidget {
   @override
@@ -17,7 +20,7 @@ class ExpenseModalContent extends StatelessWidget {
         children: <Widget>[
           Center(
             child: Text(
-              'Ajouter une dépense',
+              t(context)!.addExpense,
               style: theme.textTheme.titleMedium!.copyWith(
                 color: Colors.white,
               ),
@@ -31,13 +34,13 @@ class ExpenseModalContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
-          _buildTextField('Montant (00.00€)', context),
+          _buildTextField(t(context)!.amountPlaceholder, context),
           const SizedBox(height: 16.0),
-          _buildTextField('Pour', context),
+          _buildTextField(t(context)!.forPlaceholder, context),
           const SizedBox(height: 16.0),
-          _buildTextField('Concerne qui ?', context),
+          _buildTextField(t(context)!.whoInvolvedPlaceholder, context),
           const SizedBox(height: 16.0),
-          _buildTextField('Fait le (00/00/0000)', context),
+          _buildTextField(t(context)!.datePlaceholder, context),
           const SizedBox(height: 16.0),
           SizedBox(
             width: 342,
@@ -54,7 +57,7 @@ class ExpenseModalContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
               ),
               child: Text(
-                'Ajouter la dépense',
+                t(context)!.addExpenseButton,
                 style:
                     theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),

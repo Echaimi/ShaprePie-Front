@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class JoinUs extends StatefulWidget {
   const JoinUs({Key? key}) : super(key: key);
@@ -21,13 +24,13 @@ class _JoinUsState extends State<JoinUs> {
   Future<void> loginUser() async {
     if (emailController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Adresse email est requise';
+        errorMessage = t(context)!.emailRequired;
       });
       return;
     }
     if (passwordController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Mot de passe est requis';
+        errorMessage = t(context)!.passwordRequired;
       });
       return;
     }
@@ -44,7 +47,7 @@ class _JoinUsState extends State<JoinUs> {
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       setState(() {
-        errorMessage = 'Échec de la connexion: ${e.toString()}';
+        errorMessage = '${t(context)!.loginFailed}: ${e.toString()}';
       });
     } finally {
       setState(() {
@@ -56,19 +59,19 @@ class _JoinUsState extends State<JoinUs> {
   Future<void> registerUser() async {
     if (usernameController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Nom d\'utilisateur est requis';
+        errorMessage = t(context)!.usernameRequired;
       });
       return;
     }
     if (emailController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Adresse email est requise';
+        errorMessage = t(context)!.emailRequired;
       });
       return;
     }
     if (passwordController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Mot de passe est requis';
+        errorMessage = t(context)!.passwordRequired;
       });
       return;
     }
@@ -97,12 +100,12 @@ class _JoinUsState extends State<JoinUs> {
         });
       } else {
         setState(() {
-          errorMessage = 'Échec de l\'inscription';
+          errorMessage = t(context)!.registrationFailed;
         });
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Échec de l\'inscription: ${e.toString()}';
+        errorMessage = '${t(context)!.registrationFailed}: ${e.toString()}';
       });
     } finally {
       setState(() {
@@ -122,8 +125,8 @@ class _JoinUsState extends State<JoinUs> {
         Center(
           child: Text(
             isRegisterView
-                ? 'Crée ton compte et décolle vers l\'infini !'
-                : 'Identifie-toi et embarque vers l\'infini',
+                ? t(context)!.createAccountAndExplore
+                : t(context)!.loginAndExplore,
             style: textTheme.titleMedium?.copyWith(color: Colors.white),
             textAlign: TextAlign.center,
           ),
@@ -154,7 +157,7 @@ class _JoinUsState extends State<JoinUs> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.transparent,
-                labelText: 'Nom d\'utilisateur',
+                labelText: t(context)!.username,
                 labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -178,7 +181,7 @@ class _JoinUsState extends State<JoinUs> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.transparent,
-              labelText: 'Adresse email',
+              labelText: t(context)!.email,
               labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -203,7 +206,7 @@ class _JoinUsState extends State<JoinUs> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.transparent,
-              labelText: 'Mot de passe',
+              labelText: t(context)!.password,
               labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -242,7 +245,9 @@ class _JoinUsState extends State<JoinUs> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   )
                 : Text(
-                    isRegisterView ? 'Créer mon compte' : 'Connexion',
+                    isRegisterView
+                        ? t(context)!.createAccount
+                        : t(context)!.login,
                     style: textTheme.bodyLarge?.copyWith(color: Colors.white),
                   ),
           ),
@@ -257,7 +262,9 @@ class _JoinUsState extends State<JoinUs> {
               });
             },
             child: Text(
-              isRegisterView ? 'J’ai déjà un compte' : 'Je n\'ai pas de compte',
+              isRegisterView
+                  ? t(context)!.alreadyHaveAccount
+                  : t(context)!.noAccount,
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.secondary,
                 fontWeight: FontWeight.w600,

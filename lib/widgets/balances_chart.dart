@@ -35,9 +35,7 @@ class BalancesChart extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(
-                    height:
-                        8.0), // Additional space between the bar and the username
+                const SizedBox(height: 8.0),
                 Text(balance.user.username),
                 Text(
                   '${balance.amount.toStringAsFixed(2)} €',

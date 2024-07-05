@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nsm/models/expense.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ExpenseDetailsModal extends StatelessWidget {
   final Expense expense;
@@ -29,7 +32,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                   style: theme.textTheme.titleMedium,
                 ),
                 Text(
-                  'Dépense du ${dateFormat.format(expense.createdAt)}',
+                  '${t(context)!.expenseDate} ${dateFormat.format(expense.createdAt)}',
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 8),
@@ -45,10 +48,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0xFF373455),
-                          offset: Offset(
-                            6.0,
-                            6.0,
-                          ),
+                          offset: Offset(6.0, 6.0),
                           spreadRadius: 2.0,
                         ),
                       ],
@@ -61,7 +61,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                             style: theme.textTheme.titleMedium,
                           ),
                           Text(
-                            'au total pour ${expense.participants.length} personnes',
+                            '${t(context)!.totalFor} ${expense.participants.length} ${t(context)!.persons}',
                             style: theme.textTheme.bodyMedium,
                           ),
                         ],
@@ -84,13 +84,13 @@ class ExpenseDetailsModal extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Modifier',
+                          t(context)!.edit,
                           style: TextStyle(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          'Supprimer',
+                          t(context)!.delete,
                           style: TextStyle(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.bold),
@@ -99,7 +99,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Payée par ...',
+                      t(context)!.paidBy,
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
@@ -123,7 +123,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'La dépense concerne',
+                      t(context)!.participants,
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
