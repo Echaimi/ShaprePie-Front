@@ -3,9 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:nsm/models/user.dart';
 import 'package:nsm/services/user_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../providers/auth_provider.dart';
 import '../widgets/avatar_form.dart';
 import '../widgets/bottom_modal.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -25,10 +29,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final userService = Provider.of<UserService>(context, listen: false);
-    this.authProvider = authProvider;
-    this.userService = userService;
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+    userService = Provider.of<UserService>(context, listen: false);
     user = authProvider.user;
     emailController = TextEditingController(text: user?.email ?? '');
     usernameController = TextEditingController(text: user?.username ?? '');
@@ -48,13 +50,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     };
 
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await userService.updateProfile(updatedData);
       await authProvider.loadCurrentUser();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profil mis à jour avec succès')),
+        SnackBar(content: Text(t(context)!.profileUpdatedSuccessfully)),
       );
       setState(() {
         user = authProvider.user;
@@ -62,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la mise à jour du profil: $e')),
+        SnackBar(content: Text('${t(context)!.errorUpdatingProfile}: $e')),
       );
     }
   }
@@ -73,13 +74,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     };
 
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await userService.updateProfile(updatedData);
       await authProvider.loadCurrentUser();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Avatar mis à jour avec succès')),
+        SnackBar(content: Text(t(context)!.avatarUpdatedSuccessfully)),
       );
       setState(() {
         user = authProvider.user;
@@ -87,8 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Erreur lors de la mise à jour de l\'avatar: $e')),
+        SnackBar(content: Text('${t(context)!.errorUpdatingAvatar}: $e')),
       );
     }
   }
@@ -168,10 +167,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 10),
-                const Text(
-                  "Mon compte",
-                  style: TextStyle(
-                    fontSize: 28,
+                Text(
+                  t(context)!.myAccount,
+                  style: const TextStyle(
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -224,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: TextField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        labelText: 'Mail',
+                        labelText: t(context)!.email,
                         labelStyle: const TextStyle(color: Colors.white),
                         fillColor: Colors.blueGrey.withOpacity(0.2),
                         filled: true,
@@ -254,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: TextField(
                       controller: usernameController,
                       decoration: InputDecoration(
-                        labelText: 'Pseudo',
+                        labelText: t(context)!.username,
                         labelStyle: const TextStyle(color: Colors.white),
                         fillColor: Colors.blueGrey.withOpacity(0.2),
                         filled: true,
@@ -291,7 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         textStyle: textTheme.bodyLarge,
                       ),
-                      child: const Text('Valider'),
+                      child: Text(t(context)!.save),
                     ),
                   ),
                 ] else ...[

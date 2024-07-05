@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:nsm/models/expense.dart';
 import 'package:nsm/services/event_websocket_service.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'expense_details_modal.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventExpensesTab extends StatelessWidget {
   const EventExpensesTab({super.key});
@@ -14,7 +17,7 @@ class EventExpensesTab extends StatelessWidget {
       builder: (context, eventProvider, child) {
         final expenses = eventProvider.expenses;
         if (expenses.isEmpty) {
-          return const Center(child: Text('No expenses available'));
+          return Center(child: Text(t(context)!.noExpensesAvailable));
         }
         return ListView.builder(
           itemCount: expenses.length,
@@ -67,7 +70,7 @@ class ExpenseItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Dépense du ${dateFormat.format(expense.createdAt)}',
+                        '${t(context)!.expenseDate} ${dateFormat.format(expense.createdAt)}',
                         style: theme.textTheme.bodySmall,
                       ),
                       const Spacer(),
@@ -79,9 +82,9 @@ class ExpenseItem extends StatelessWidget {
                             color: Colors.purple,
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          child: const Text(
-                            'New!',
-                            style: TextStyle(color: Colors.white),
+                          child: Text(
+                            t(context)!.newExpense,
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                     ],
@@ -95,7 +98,7 @@ class ExpenseItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    'Payé par ${expense.payers.map((payer) => payer.user.username).join(', ')} pour ${expense.participants.length} pers.',
+                    '${t(context)!.paidBy} ${expense.payers.map((payer) => payer.user.username).join(', ')} ${t(context)!.foru} ${expense.participants.length} ${t(context)!.persons}',
                     style: theme.textTheme.bodySmall,
                   ),
                 ],

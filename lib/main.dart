@@ -12,8 +12,9 @@ import 'dart:io';
 import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env.local");
@@ -68,7 +69,18 @@ class MyApp extends StatelessWidget {
           return Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
                 title: 'Navigation App',
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('en'),
+                  Locale('fr'),
+                ],
                 theme: theme.copyWith(
                   colorScheme: theme.colorScheme.copyWith(
                     primary: const Color(0xFFE53170),

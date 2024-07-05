@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class BottomNavigationBarWidget extends StatelessWidget {
   final int selectedIndex;
@@ -84,7 +87,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
           context,
           index: 0,
           icon: 'lib/assets/icons/astronaut.svg',
-          label: 'Compte',
+          label: t(context)!.account,
           isActive: selectedIndex == 0,
           activeColor: activeColor,
           inactiveColor: inactiveColor,
@@ -94,7 +97,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
           context,
           index: 1,
           icon: 'lib/assets/icons/rocket.svg',
-          label: 'Event',
+          label: t(context)!.event,
           isActive: selectedIndex == 1,
           activeColor: activeColor,
           inactiveColor: inactiveColor,
@@ -110,13 +113,15 @@ class BottomNavigationBarWidget extends StatelessWidget {
     );
   }
 
-  Widget buildTabItem(BuildContext context,
-      {required int index,
-      required String icon,
-      required String label,
-      required bool isActive,
-      required Color activeColor,
-      required Color inactiveColor}) {
+  Widget buildTabItem(
+    BuildContext context, {
+    required int index,
+    required String icon,
+    required String label,
+    required bool isActive,
+    required Color activeColor,
+    required Color inactiveColor,
+  }) {
     return Expanded(
       child: InkWell(
         onTap: () {

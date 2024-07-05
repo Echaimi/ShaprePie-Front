@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventNotFound extends StatelessWidget {
   const EventNotFound({Key? key}) : super(key: key);
@@ -39,7 +42,7 @@ class EventNotFound extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  'Créer ou rejoint un évènement',
+                  t(context)!.createOrJoinEvent,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -50,7 +53,7 @@ class EventNotFound extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Profite de nos différents outils pour gérer les dépenses de ton groupe de pote !',
+            t(context)!.enjoyTools,
             style: textTheme.bodyMedium?.copyWith(
               color: Colors.white,
             ),
