@@ -1,5 +1,8 @@
 {
   "@@locale": "fr",
+  "chooseLanguage": "Choisissez la langue",
+  "english": "Anglais",
+  "french": "Français",
   "profileUpdatedSuccessfully": "Profil mis à jour avec succès",
   "errorUpdatingProfile": "Erreur lors de la mise à jour du profil",
   "avatarUpdatedSuccessfully": "Avatar mis à jour avec succès",

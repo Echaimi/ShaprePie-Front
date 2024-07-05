@@ -9,6 +9,7 @@ import 'package:nsm/services/api_service.dart';
 import 'package:nsm/services/auth_service.dart';
 import 'package:nsm/services/user_service.dart';
 import 'dart:io';
+import 'providers/LanguageProvider.dart';
 import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -61,93 +62,96 @@ class MyApp extends StatelessWidget {
         Provider<EventService>(
           create: (context) => EventService(context.read<ApiService>()),
         ),
+        ChangeNotifierProvider<LanguageProvider>(
+          // Add LanguageProvider
+          create: (_) => LanguageProvider(),
+        ),
       ],
       child: Builder(
         builder: (context) {
           final ThemeData theme = ThemeData();
+          final languageProvider = Provider.of<LanguageProvider>(context);
 
-          return Consumer<AuthProvider>(
-            builder: (context, authProvider, child) {
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                title: 'Navigation App',
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('en'),
-                  Locale('fr'),
-                ],
-                theme: theme.copyWith(
-                  colorScheme: theme.colorScheme.copyWith(
-                    primary: const Color(0xFFE53170),
-                    secondary: const Color(0xFFFF8906),
-                    background: const Color(0xFF0F0E17),
-                    primaryContainer: const Color(0xFF232136),
-                    secondaryContainer: const Color(0xFF373455),
-                  ),
-                  scaffoldBackgroundColor: const Color(0xFF0F0E17),
-                  textTheme: theme.textTheme.copyWith(
-                    titleLarge: const TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFFFFFFE)),
-                    titleMedium: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFFFFFFE)),
-                    titleSmall: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFFFFFFE)),
-                    bodySmall: const TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFFFFFFFE),
-                    ),
-                    bodyMedium: const TextStyle(
-                      fontSize: 14.0,
-                      color: Color(0xFFFFFFFE),
-                    ),
-                    bodyLarge: const TextStyle(
-                      fontSize: 16.0,
-                      color: Color(0xFFFFFFFE),
-                    ),
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Navigation App',
+            locale:
+                languageProvider.locale, // Use the locale from LanguageProvider
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('fr'),
+            ],
+            theme: theme.copyWith(
+              colorScheme: theme.colorScheme.copyWith(
+                primary: const Color(0xFFE53170),
+                secondary: const Color(0xFFFF8906),
+                background: const Color(0xFF0F0E17),
+                primaryContainer: const Color(0xFF232136),
+                secondaryContainer: const Color(0xFF373455),
+              ),
+              scaffoldBackgroundColor: const Color(0xFF0F0E17),
+              textTheme: theme.textTheme.copyWith(
+                titleLarge: const TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFFFFE)),
+                titleMedium: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFFFFE)),
+                titleSmall: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFFFFE)),
+                bodySmall: const TextStyle(
+                  fontSize: 12.0,
+                  color: Color(0xFFFFFFFE),
+                ),
+                bodyMedium: const TextStyle(
+                  fontSize: 14.0,
+                  color: Color(0xFFFFFFFE),
+                ),
+                bodyLarge: const TextStyle(
+                  fontSize: 16.0,
+                  color: Color(0xFFFFFFFE),
+                ),
+              ),
+            ),
+            routerConfig: GoRouter(
+              initialLocation: '/',
+              routes: [
+                GoRoute(
+                  name: 'home',
+                  path: '/',
+                  builder: (context, state) => HomeScreen(
+                    eventService: context.read<EventService>(),
                   ),
                 ),
-                routerConfig: GoRouter(
-                  initialLocation: '/',
-                  routes: [
-                    GoRoute(
-                      name: 'home',
-                      path: '/',
-                      builder: (context, state) => HomeScreen(
-                        eventService: context.read<EventService>(),
-                      ),
-                    ),
-                    GoRoute(
-                      name: 'profile',
-                      path: '/profile',
-                      builder: (context, state) => const ProfileScreen(),
-                    ),
-                    GoRoute(
-                      name: 'event',
-                      path: '/events/:id',
-                      builder: (context, state) {
-                        final id = state.pathParameters['id'];
-                        final eventId = int.tryParse(id!);
-                        if (eventId == null) {
-                          throw const FormatException('Failed to parse ID');
-                        }
-                        return EventScreen(eventId: eventId);
-                      },
-                    ),
-                  ],
+                GoRoute(
+                  name: 'profile',
+                  path: '/profile',
+                  builder: (context, state) => const ProfileScreen(),
                 ),
-              );
-            },
+                GoRoute(
+                  name: 'event',
+                  path: '/events/:id',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id'];
+                    final eventId = int.tryParse(id!);
+                    if (eventId == null) {
+                      throw const FormatException('Failed to parse ID');
+                    }
+                    return EventScreen(eventId: eventId);
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),
