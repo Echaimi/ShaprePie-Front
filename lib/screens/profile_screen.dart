@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/avatar_form.dart';
 import '../widgets/bottom_modal.dart';
+import '../widgets/language_switcher_dialog.dart'; // Import the LanguageSwitcherModal
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -120,6 +121,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void showLanguageSwitcherModal() {
+    OverlayEntry? overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => LanguageSwitcherModal(
+        onClose: () {
+          overlayEntry?.remove();
+        },
+      ),
+    );
+
+    Overlay.of(context).insert(overlayEntry);
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -142,6 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language, color: Colors.white),
+            onPressed: showLanguageSwitcherModal,
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {

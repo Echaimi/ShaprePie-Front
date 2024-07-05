@@ -1,5 +1,8 @@
 {
   "@@locale": "en",
+  "chooseLanguage": "Choose Language",
+  "english": "English",
+  "french": "Français",
   "profileUpdatedSuccessfully": "Profile updated successfully",
   "errorUpdatingProfile": "Error updating profile",
   "avatarUpdatedSuccessfully": "Avatar updated successfully",
@@ -56,7 +59,6 @@
   "login": "Login",
   "alreadyHaveAccount": "I already have an account",
   "noAccount": "I don't have an account",
-  "username": "Username",
   "password": "Password",
   "addRefund": "Add a refund",
   "deleteEvent": "Delete event",
