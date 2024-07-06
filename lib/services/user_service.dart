@@ -36,6 +36,18 @@ class UserService {
     }
   }
 
+  Future<User> updateFirebaseToken(String token) async {
+    final response = await apiService
+        .patch('/users/firebase_token', {'firebaseToken': token});
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      return User.fromJson(data['data']);
+    } else {
+      throw Exception('Failed to update firebase token');
+    }
+  }
+
   Future<List<Avatar>> getAvatars() async {
     final response = await apiService.get('/avatars');
 
@@ -46,6 +58,4 @@ class UserService {
       throw Exception('Failed to load avatars');
     }
   }
-
-
 }

@@ -188,13 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final isCategory3 = event.category.id == 3;
                                 return GestureDetector(
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            EventScreen(eventId: event.id),
-                                      ),
-                                    );
+                                    context.push('/events/${event.id}');
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(

@@ -166,7 +166,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               await authProvider.logout();
               if (!mounted) return;
-              Navigator.pushReplacementNamed(context, '/');
             },
           ),
         ],
