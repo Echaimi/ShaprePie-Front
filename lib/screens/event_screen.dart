@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:nsm/providers/auth_provider.dart';
+import 'package:nsm/screens/home_screen.dart';
+import 'package:nsm/services/api_service.dart';
+import 'package:nsm/services/event_service.dart';
 import 'package:nsm/services/event_websocket_service.dart';
 import 'package:nsm/widgets/AddButton.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
@@ -34,6 +37,7 @@ class EventScreen extends StatefulWidget {
 class _EventScreenState extends State<EventScreen> {
   EventWebsocketProvider? _eventProvider;
   EventService eventService = EventService(ApiService());
+
   @override
   void initState() {
     super.initState();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/screens/home_screen.dart';
+import 'package:nsm/screens/event_screen.dart';
 import 'event_form.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';
@@ -16,23 +16,21 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController goalController = TextEditingController();
-  int selectedCategoryId = 1; // Default category ID
-
+  int selectedCategoryId = 1;
   Future<void> _createEvent(
       BuildContext context, Map<String, dynamic> eventData) async {
     final EventService eventService = EventService(ApiService());
 
     try {
-      await eventService.createEvent(eventData);
+      final event = await eventService.createEvent(eventData);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => HomeScreen(
-                  eventService: eventService,
+            builder: (context) => EventScreen(
+                  eventId: event.id,
                 )),
       );
     } catch (e) {
-      // Handle error appropriately
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to create event: $e')),
       );
