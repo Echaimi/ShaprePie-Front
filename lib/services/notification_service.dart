@@ -12,8 +12,6 @@ class NotificationService {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
     await _flutterLocalNotificationsPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -24,13 +22,6 @@ class NotificationService {
     _configureForegroundNotification();
     _requestPermissions();
     _configureNotificationChannels();
-  }
-
-  static Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-    print('Handling a background message ${message.messageId}');
   }
 
   void _configureForegroundNotification() {
