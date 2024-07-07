@@ -63,7 +63,10 @@
   "addRefund": "Add a refund",
   "deleteEvent": "Delete event",
   "archiveEvent": "Archive event",
+  "activateEvent": "Activate event",
+  "backToEvents": "Back to events",
   "balance": "Balance",
   "iSpent": "I spent",
-  "owedToMe": "Owed to me"
+  "owedToMe": "Owed to me",
+  "archiveEventTitle": "Archive Event" 
 }

@@ -118,8 +118,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: Colors.white
-                      .withOpacity(0.4), // même couleur que enabledBorder
+                  color: Colors.white.withOpacity(0.4),
                   width: 1.0,
                 ),
               ),

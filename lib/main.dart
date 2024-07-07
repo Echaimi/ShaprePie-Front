@@ -52,7 +52,6 @@ class MyApp extends StatelessWidget {
           create: (context) => EventService(context.read<ApiService>()),
         ),
         ChangeNotifierProvider<LanguageProvider>(
-          // Add LanguageProvider
           create: (_) => LanguageProvider(),
         ),
       ],
@@ -64,8 +63,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'Navigation App',
-            locale:
-                languageProvider.locale, // Use the locale from LanguageProvider
+            locale: languageProvider.locale,
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,

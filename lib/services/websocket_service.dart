@@ -9,7 +9,6 @@ class WebSocketService {
 
   WebSocketService._(this.url);
 
-  // Utilisation d'un constructeur factory pour initialiser de manière asynchrone
   factory WebSocketService(String url) {
     final service = WebSocketService._(url);
     service._initialize();

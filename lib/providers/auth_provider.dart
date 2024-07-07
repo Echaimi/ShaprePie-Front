@@ -19,6 +19,8 @@ class AuthProvider with ChangeNotifier {
   User? get user => _user;
   bool get isAuthenticated => _isAuthenticated;
 
+  get token => null;
+
   Future<void> init() async {
     final firebaseToken = await FirebaseMessaging.instance.getToken();
     FirebaseMessaging.instance.onTokenRefresh.listen(_firebaseTokenHandler);

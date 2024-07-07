@@ -104,6 +104,6 @@ class _ModalState extends State<Modal> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(); // Empty container because the overlay handles the modal
+    return Container();
   }
 }

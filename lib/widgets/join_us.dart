@@ -93,7 +93,6 @@ class _JoinUsState extends State<JoinUs> {
         setState(() {
           isRegisterView = false;
           errorMessage = '';
-          // Effacer les champs de saisie après l'inscription réussie
           usernameController.clear();
           emailController.clear();
           passwordController.clear();

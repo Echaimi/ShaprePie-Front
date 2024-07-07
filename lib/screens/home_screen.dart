@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:nsm/widgets/EventNotFound.dart';
 import 'package:provider/provider.dart';
 import '../services/event_service.dart';
@@ -27,7 +29,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   bool _isLoading = false;
+  bool _showArchived = false;
   List<Event> _events = [];
+  List<Event> _archivedEvents = [];
+  String _title = '';
 
   static const List<String> _routes = [
     '/profile',
@@ -48,6 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (authProvider.isAuthenticated) {
       await _fetchEvents();
     }
+    setState(() {
+      _title = t(context)?.yourEvents ?? 'Your Events';
+    });
   }
 
   Future<void> _fetchEvents() async {
@@ -55,14 +63,56 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = true;
     });
     try {
-      _events = await widget.eventService.getEvents();
-    } catch (e) {
-      // Handle error appropriately
+      List<Event> allEvents = await widget.eventService.getEvents();
+      _events = allEvents.where((event) => event.state == 'active').toList();
+      _archivedEvents =
+          allEvents.where((event) => event.state == 'archived').toList();
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _updateEventState(int eventId, String state) async {
+    try {
+      await widget.eventService.updateEventState(eventId, state);
+      await _fetchEvents();
+    } catch (e) {
+      print('Error updating event state: $e');
+    }
+  }
+
+  void _showArchiveOptions(BuildContext context, Event event) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        actions: <CupertinoActionSheetAction>[
+          if (event.state == 'active')
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(context);
+                _updateEventState(event.id, 'archived');
+              },
+              child: Text(t(context)?.archiveEvent ?? 'Archive Event'),
+            ),
+          if (event.state == 'archived')
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(context);
+                _updateEventState(event.id, 'active');
+              },
+              child: Text(t(context)?.activateEvent ?? 'Activate Event'),
+            ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(t(context)?.cancel ?? 'Cancel'),
+        ),
+      ),
+    );
   }
 
   void _showModal(BuildContext context, Widget child) {
@@ -98,21 +148,21 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pop(context);
               context.go('/create-event');
             },
-            child: Text(t(context)!.createEvent),
+            child: Text(t(context)?.createEvent ?? 'Create Event'),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               _showModal(context, const JoinEventModalContent());
             },
-            child: Text(t(context)!.joinEvent),
+            child: Text(t(context)?.joinEvent ?? 'Join Event'),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(t(context)!.cancel),
+          child: Text(t(context)?.cancel ?? 'Cancel'),
         ),
       ),
     );
@@ -147,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          t(context)!.yourEvents,
+          _title,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -169,117 +219,134 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : _events.isEmpty
-                      ? Align(
-                          alignment: Alignment.topCenter,
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 30),
-                            child: const EventNotFound(),
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: TextButton(
+                            onPressed: () async {
+                              setState(() {
+                                _showArchived = !_showArchived;
+                                _isLoading = true;
+                                _title = _showArchived
+                                    ? t(context)?.archiveEventTitle ??
+                                        'Archive Event'
+                                    : t(context)?.yourEvents ?? 'Your Events';
+                              });
+                              await _fetchEvents();
+                            },
+                            child: Text(
+                              _showArchived
+                                  ? '${t(context)?.backToEvents ?? 'Back to Events'} (${_events.length})'
+                                  : '${t(context)?.archiveEvent ?? 'Archive Event'} (${_archivedEvents.length})',
+                              style: TextStyle(color: Colors.pink),
+                            ),
                           ),
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0),
-                                itemCount: _events.length,
-                                itemBuilder: (context, index) {
-                                  final Event event = _events[index];
-                                  final isCategory3 = event.category.id == 3;
-                                  return GestureDetector(
-                                    onTap: () {
-                                      context.push('/events/${event.id}');
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          ClipRRect(
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24.0),
+                            itemCount: _showArchived
+                                ? _archivedEvents.length
+                                : _events.length,
+                            itemBuilder: (context, index) {
+                              final Event event = _showArchived
+                                  ? _archivedEvents[index]
+                                  : _events[index];
+                              final isCategory3 = event.category.id == 3;
+                              return GestureDetector(
+                                onTap: () {
+                                  context.push('/events/${event.id}');
+                                },
+                                onLongPress: () {
+                                  _showArchiveOptions(context, event);
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          width: 342,
+                                          height: 80,
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer,
+                                            border: Border.all(
+                                              color:
+                                                  Colors.white.withOpacity(0.4),
+                                              width: 1.0,
+                                            ),
                                             borderRadius:
                                                 BorderRadius.circular(12),
-                                            child: Container(
-                                              width: 342,
-                                              height: 80,
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primaryContainer,
-                                                border: Border.all(
-                                                  color: Colors.white
-                                                      .withOpacity(0.4),
-                                                  width: 1.0,
+                                          ),
+                                          padding: const EdgeInsets.only(
+                                              left: 16,
+                                              top: 8,
+                                              bottom: 8,
+                                              right: 8),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 22),
+                                                child: Text(
+                                                  event.name,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge,
                                                 ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
                                               ),
-                                              padding: const EdgeInsets.only(
-                                                  left: 16,
-                                                  top: 8,
-                                                  bottom: 8,
-                                                  right: 8),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 22),
-                                                    child: Text(
-                                                      event.name,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 4),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 22),
-                                                    child: Text(
-                                                      event.description,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodySmall,
-                                                    ),
-                                                  ),
-                                                ],
+                                              const SizedBox(height: 4),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 22),
+                                                child: Text(
+                                                  event.description,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall,
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                          Positioned(
-                                            left: -20,
-                                            top: 0,
-                                            bottom: 0,
-                                            child: Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Image.asset(
-                                                _getCategoryImagePath(
-                                                    event.category.id),
-                                                height: isCategory3 ? 55 : 50,
-                                                width: isCategory3 ? 55 : 50,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        );
+                                      Positioned(
+                                        left: -20,
+                                        top: 0,
+                                        bottom: 0,
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Image.asset(
+                                            _getCategoryImagePath(
+                                                event.category.id),
+                                            height: isCategory3 ? 55 : 50,
+                                            width: isCategory3 ? 55 : 50,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
             } else {
               return const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 30),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: EventNotFound(),

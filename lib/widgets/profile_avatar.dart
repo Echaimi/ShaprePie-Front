@@ -16,8 +16,8 @@ class ProfileAvatar extends StatelessWidget {
     final ColorScheme colorScheme = themeData.colorScheme;
 
     return Container(
-      width: 70.0,
-      height: 70.0,
+      width: 30.0,
+      height: 30.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(

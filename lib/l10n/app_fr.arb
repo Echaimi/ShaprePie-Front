@@ -63,8 +63,11 @@
   "password": "Mot de passe",
   "addRefund": "Ajouter un remboursement",
   "deleteEvent": "Supprimer l'évènement",
-  "archiveEvent": "Archiver l'évènement",
+  "archiveEvent": "Tes évènement archivé",
   "balance": "Équilibre",
   "iSpent": "J'ai dépensé",
-  "owedToMe": "On me doit"
+  "activateEvent": "evenement actif ",
+  "backToEvents": "retour aux évenements actif",
+  "owedToMe": "On me doit",
+  "archiveEventTitle": "Archiver l'évènement" 
 }
