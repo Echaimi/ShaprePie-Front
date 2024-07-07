@@ -71,11 +71,11 @@ class _AvatarFormState extends State<AvatarForm> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 230,
+            height: 240,
             child: GridView.builder(
               scrollDirection: Axis.horizontal,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
                 childAspectRatio: 1,
