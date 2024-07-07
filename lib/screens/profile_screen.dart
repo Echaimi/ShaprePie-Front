@@ -135,6 +135,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Overlay.of(context).insert(overlayEntry);
   }
 
+  void _onLogout(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.logout();
+    GoRouter.of(context).go('/');
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -163,11 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              await authProvider.logout();
-              if (!mounted) return;
-              Navigator.pushReplacementNamed(context, '/');
-            },
+            onPressed: () => _onLogout(context),
           ),
         ],
         backgroundColor: Colors.transparent,

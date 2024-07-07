@@ -12,7 +12,6 @@ import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/join_us.dart';
 import 'package:nsm/widgets/join_event_modal_content.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'event_screen.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -27,7 +26,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
-  bool _isAuthenticated = false;
   bool _isLoading = false;
   List<Event> _events = [];
 
@@ -39,22 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeScreen();
+    // Initially fetch events if already authenticated
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeScreen();
+    });
   }
 
   Future<void> _initializeScreen() async {
-    await _checkAuthentication();
-    if (_isAuthenticated) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.isAuthenticated) {
       await _fetchEvents();
     }
-  }
-
-  Future<void> _checkAuthentication() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isAuthenticated = await authProvider.isAuthenticated();
-    setState(() {
-      _isAuthenticated = isAuthenticated;
-    });
   }
 
   Future<void> _fetchEvents() async {
@@ -64,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       _events = await widget.eventService.getEvents();
     } catch (e) {
+      // Handle error appropriately
     } finally {
       setState(() {
         _isLoading = false;
@@ -86,7 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onAddButtonPressed() {
-    if (!_isAuthenticated) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (!authProvider.isAuthenticated) {
       _showModal(context, const JoinUs());
       return;
     }
@@ -164,122 +159,124 @@ class _HomeScreenState extends State<HomeScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: _isAuthenticated
-            ? _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _events.isEmpty
-                    ? Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: const EventNotFound(),
-                        ),
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: ListView.builder(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 24.0),
-                              itemCount: _events.length,
-                              itemBuilder: (context, index) {
-                                final Event event = _events[index];
-                                final isCategory3 = event.category.id == 3;
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            EventScreen(eventId: event.id),
-                                      ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          child: Container(
-                                            width: 342,
-                                            height: 80,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primaryContainer,
-                                              border: Border.all(
-                                                color: Colors.white
-                                                    .withOpacity(0.4),
-                                                width: 1.0,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            padding: const EdgeInsets.only(
-                                                left: 16,
-                                                top: 8,
-                                                bottom: 8,
-                                                right: 8),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 22),
-                                                  child: Text(
-                                                    event.name,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyLarge,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 22),
-                                                  child: Text(
-                                                    event.description,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          left: -20,
-                                          top: 0,
-                                          bottom: 0,
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Image.asset(
-                                              _getCategoryImagePath(
-                                                  event.category.id),
-                                              height: isCategory3 ? 55 : 50,
-                                              width: isCategory3 ? 55 : 50,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            if (authProvider.isAuthenticated) {
+              if (!_isLoading && _events.isEmpty) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _fetchEvents();
+                });
+              }
+              return _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _events.isEmpty
+                      ? Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 30),
+                            child: const EventNotFound(),
                           ),
-                        ],
-                      )
-            : const Column(
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0),
+                                itemCount: _events.length,
+                                itemBuilder: (context, index) {
+                                  final Event event = _events[index];
+                                  final isCategory3 = event.category.id == 3;
+                                  return GestureDetector(
+                                    onTap: () {
+                                      context.push('/events/${event.id}');
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            child: Container(
+                                              width: 342,
+                                              height: 80,
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primaryContainer,
+                                                border: Border.all(
+                                                  color: Colors.white
+                                                      .withOpacity(0.4),
+                                                  width: 1.0,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              padding: const EdgeInsets.only(
+                                                  left: 16,
+                                                  top: 8,
+                                                  bottom: 8,
+                                                  right: 8),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 22),
+                                                    child: Text(
+                                                      event.name,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 22),
+                                                    child: Text(
+                                                      event.description,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            left: -20,
+                                            top: 0,
+                                            bottom: 0,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Image.asset(
+                                                _getCategoryImagePath(
+                                                    event.category.id),
+                                                height: isCategory3 ? 55 : 50,
+                                                width: isCategory3 ? 55 : 50,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+            } else {
+              return const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: 30),
@@ -288,18 +285,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: EventNotFound(),
                   ),
                 ],
-              ),
+              );
+            }
+          },
+        ),
       ),
       floatingActionButton:
           add_button.AddButton(onPressed: _onAddButtonPressed),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBarWidget(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-        onAddButtonPressed: _onAddButtonPressed,
-        isProfileScreen: false,
-        isAuthenticated: _isAuthenticated,
-        showAuthenticationModal: () => _showModal(context, const JoinUs()),
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) {
+          return BottomNavigationBarWidget(
+            selectedIndex: _selectedIndex,
+            onItemTapped: _onItemTapped,
+            onAddButtonPressed: _onAddButtonPressed,
+            isProfileScreen: false,
+            isAuthenticated: authProvider.isAuthenticated,
+            showAuthenticationModal: () => _showModal(context, const JoinUs()),
+          );
+        },
       ),
     );
   }

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class JoinUs extends StatefulWidget {
-  const JoinUs({Key? key}) : super(key: key);
+  const JoinUs({super.key});
 
   @override
   _JoinUsState createState() => _JoinUsState();
@@ -43,8 +44,7 @@ class _JoinUsState extends State<JoinUs> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.login(emailController.text, passwordController.text);
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      context.pop();
     } catch (e) {
       setState(() {
         errorMessage = '${t(context)!.loginFailed}: ${e.toString()}';

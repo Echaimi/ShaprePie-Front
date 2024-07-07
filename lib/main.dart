@@ -1,45 +1,28 @@
-import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nsm/providers/auth_provider.dart';
-import 'package:nsm/services/event_service.dart';
 import 'package:nsm/services/api_service.dart';
 import 'package:nsm/services/auth_service.dart';
+import 'package:nsm/services/event_service.dart';
 import 'package:nsm/services/user_service.dart';
-import 'dart:io';
 import 'providers/LanguageProvider.dart';
 import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nsm/services/notification_service.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env.local");
 
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.dumpErrorToConsole(details);
-    if (kReleaseMode) {
-      exit(1);
-    }
-  };
+  final notificationService = NotificationService();
+  await notificationService.initialize();
 
-  runZonedGuarded(() {
-    runApp(const MyApp());
-  }, (error, stackTrace) {
-    if (kDebugMode) {
-      print('Caught an error: $error');
-    }
-    if (kDebugMode) {
-      print('Stack trace: $stackTrace');
-    }
-    if (kReleaseMode) {
-      exit(1);
-    }
-  });
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,16 +32,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<ApiService>(
-          create: (_) => ApiService(),
-        ),
+        Provider<ApiService>(create: (_) => ApiService()),
         Provider<UserService>(
-          create: (context) => UserService(context.read<ApiService>()),
-        ),
+            create: (context) => UserService(context.read<ApiService>())),
         ChangeNotifierProvider<AuthProvider>(
-          create: (context) =>
-              AuthProvider(AuthService(), context.read<UserService>()),
-        ),
+            create: (context) =>
+                AuthProvider(AuthService(), context.read<UserService>())),
         Provider<EventService>(
           create: (context) => EventService(context.read<ApiService>()),
         ),
