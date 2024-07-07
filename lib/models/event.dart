@@ -10,7 +10,7 @@ class Event {
   final String image;
   final double goal;
   final String code;
-  final String state;
+  late final String state;
 
   Event({
     required this.id,

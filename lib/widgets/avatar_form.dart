@@ -70,54 +70,33 @@ class _AvatarFormState extends State<AvatarForm> {
             ),
           ),
           const SizedBox(height: 16),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              children: [
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: widget.avatars
-                      .sublist(0, (widget.avatars.length + 1) ~/ 2)
-                      .map((avatar) {
-                    bool isSelected = avatar.id == selectedAvatarId;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedAvatarId = avatar.id;
-                          selectedAvatarUrl = avatar.url;
-                        });
-                      },
-                      child: ProfileAvatar(
-                        imageUrl: avatar.url,
-                        isSelected: isSelected,
-                      ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: widget.avatars
-                      .sublist((widget.avatars.length + 1) ~/ 2)
-                      .map((avatar) {
-                    bool isSelected = avatar.id == selectedAvatarId;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedAvatarId = avatar.id;
-                          selectedAvatarUrl = avatar.url;
-                        });
-                      },
-                      child: ProfileAvatar(
-                        imageUrl: avatar.url,
-                        isSelected: isSelected,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+          SizedBox(
+            height: 230,
+            child: GridView.builder(
+              scrollDirection: Axis.horizontal,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 1,
+              ),
+              itemCount: widget.avatars.length,
+              itemBuilder: (context, index) {
+                final avatar = widget.avatars[index];
+                bool isSelected = avatar.id == selectedAvatarId;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedAvatarId = avatar.id;
+                      selectedAvatarUrl = avatar.url;
+                    });
+                  },
+                  child: ProfileAvatar(
+                    imageUrl: avatar.url,
+                    isSelected: isSelected,
+                  ),
+                );
+              },
             ),
           ),
         ]),

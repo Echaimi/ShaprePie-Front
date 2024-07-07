@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:nsm/providers/auth_provider.dart';
 import 'package:nsm/services/event_websocket_service.dart';
 import 'package:nsm/widgets/AddButton.dart';
-import 'package:nsm/widgets/dialog.dart';
 import 'package:nsm/widgets/bottom_modal.dart';
 import 'package:nsm/widgets/event_balances_tab.dart';
 import 'package:nsm/widgets/event_expenses_tab.dart';
@@ -47,16 +46,12 @@ class _EventScreenState extends State<EventScreen> {
       webSocketService,
       authProvider,
     );
-    setState(() {}); // Call to rebuild the widget after initialization
+    setState(() {});
   }
 
-  void _deleteEvent() {
-    // TODO: Handle event deletion
-  }
+  void _deleteEvent() {}
 
-  void _archiveEvent() {
-    // TODO: Handle event archiving
-  }
+  void _archiveEvent() {}
 
   void _showAddOptions(BuildContext context) {
     showCupertinoModalPopup(
@@ -249,12 +244,9 @@ class _EventScreenState extends State<EventScreen> {
                       dividerColor:
                           Theme.of(context).colorScheme.primaryContainer,
                       indicatorColor: Theme.of(context).colorScheme.secondary,
-                      labelColor: Theme.of(context)
-                          .colorScheme
-                          .secondary, // Active tab color
-                      unselectedLabelColor: Colors.white, // Inactive tab color
-                      labelStyle:
-                          const TextStyle(fontSize: 12.0), // Smaller text size
+                      labelColor: Theme.of(context).colorScheme.secondary,
+                      unselectedLabelColor: Colors.white,
+                      labelStyle: const TextStyle(fontSize: 12.0),
                       tabs: [
                         Tab(
                           icon: const Icon(Icons.person),

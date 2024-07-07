@@ -1,17 +1,18 @@
 import 'dart:convert';
+
+import 'package:nsm/models/event.dart';
 import 'package:nsm/models/expense.dart';
 import 'package:nsm/models/user.dart';
-
-import '../models/event.dart';
-import '../services/api_service.dart';
+import 'package:nsm/services/api_service.dart';
 
 class EventService {
   final ApiService apiService;
 
   EventService(this.apiService);
 
-  Future<List<Event>> getEvents() async {
-    final response = await apiService.get('/events');
+  Future<List<Event>> getEvents({String? state}) async {
+    final response =
+        await apiService.get('/events${state != null ? '?state=$state' : ''}');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -88,6 +89,15 @@ class EventService {
       throw Exception("User is already in the event");
     } else {
       throw Exception('Failed to join event');
+    }
+  }
+
+  Future<void> updateEventState(int eventId, String state) async {
+    final response =
+        await apiService.patch('/events/$eventId/state', {'state': state});
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update event state');
     }
   }
 }

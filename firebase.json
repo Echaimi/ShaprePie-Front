@@ -1,0 +1,30 @@
+{
+	"flutter": {
+		"platforms": {
+			"android": {
+				"default": {
+					"projectId": "esgi-challenge-s2",
+					"appId": "1:904785155733:android:cf381687aa87c5a2e82d9c",
+					"fileOutput": "android/app/google-services.json"
+				}
+			},
+			"ios": {
+				"default": {
+					"projectId": "esgi-challenge-s2",
+					"appId": "1:904785155733:ios:4d209a5f2a0cca9de82d9c",
+					"uploadDebugSymbols": false,
+					"fileOutput": "ios/Runner/GoogleService-Info.plist"
+				}
+			},
+			"dart": {
+				"lib/firebase_options.dart": {
+					"projectId": "esgi-challenge-s2",
+					"configurations": {
+						"android": "1:904785155733:android:cf381687aa87c5a2e82d9c",
+						"ios": "1:904785155733:ios:4d209a5f2a0cca9de82d9c"
+					}
+				}
+			}
+		}
+	}
+}

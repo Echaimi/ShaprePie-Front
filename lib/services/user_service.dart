@@ -23,7 +23,6 @@ class UserService {
     if (response.statusCode == 200) {
       try {
         Map<String, dynamic> updatedData = json.decode(response.body);
-        // Si la réponse est enveloppée dans une clé "data", accédez-y correctement.
         var userData = updatedData['data'] ?? updatedData;
         return User.fromJson(userData);
       } catch (e) {
