@@ -23,8 +23,8 @@ class AuthProvider with ChangeNotifier {
     final firebaseToken = await FirebaseMessaging.instance.getToken();
     FirebaseMessaging.instance.onTokenRefresh.listen(_firebaseTokenHandler);
     _isAuthenticated = await checkAuthentication();
+
     if (_isAuthenticated) {
-      print('Is Authenticated: $_isAuthenticated');
       await loadCurrentUser();
       await _firebaseTokenHandler(firebaseToken);
     }
