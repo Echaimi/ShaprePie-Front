@@ -19,9 +19,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nsm/widgets/refound_modal_content.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:nsm/screens/home_screen.dart';
-import 'package:nsm/services/api_service.dart';
-import 'package:nsm/services/event_service.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
