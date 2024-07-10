@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/screens/event_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nsm/models/event.dart';
 import 'event_form.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';
@@ -17,23 +18,19 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController goalController = TextEditingController();
   int selectedCategoryId = 1;
-  Future<void> _createEvent(
+
+  Future<Event?> _createEvent(
       BuildContext context, Map<String, dynamic> eventData) async {
     final EventService eventService = EventService(ApiService());
 
     try {
       final event = await eventService.createEvent(eventData);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => EventScreen(
-                  eventId: event.id,
-                )),
-      );
+      return event;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to create event: $e')),
       );
+      return null; // Ensure this returns null on failure
     }
   }
 
@@ -72,7 +69,10 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
                 'goal': int.tryParse(goalController.text) ?? 0,
               };
 
-              await _createEvent(context, eventData);
+              final event = await _createEvent(context, eventData);
+              if (event != null && context.mounted) {
+                context.go('/events/${event.id}');
+              }
             },
             onCategorySelected: (int categoryId) {
               setState(() {

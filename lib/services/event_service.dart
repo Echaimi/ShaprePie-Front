@@ -27,10 +27,12 @@ class EventService {
     final response = await apiService.post('/events', data);
 
     if (response.statusCode == 200) {
-      return Event.fromJson(json.decode(response.body));
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return Event.fromJson(
+          responseData['data']); // Ensure this matches the response structure
     } else {
       final responseData = json.decode(response.body);
-      throw Exception('Failed to register: ${responseData['message']}');
+      throw Exception('Failed to create event: ${responseData['message']}');
     }
   }
 

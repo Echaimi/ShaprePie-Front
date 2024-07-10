@@ -71,14 +71,7 @@ class _EventScreenState extends State<EventScreen> {
   Future<void> _deleteEvent(BuildContext context) async {
     if (_eventProvider != null && _eventProvider!.event != null) {
       eventService.deleteEvent(_eventProvider!.event!.id);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(
-              eventService:
-                  eventService), // Navigate to HomeScreen after deletion
-        ),
-      );
+      context.go('/');
     }
   }
 
@@ -134,6 +127,8 @@ class _EventScreenState extends State<EventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     if (_eventProvider == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -174,56 +169,59 @@ class _EventScreenState extends State<EventScreen> {
                   }
                 },
               ),
-              IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white),
-                onPressed: () {
-                  _showModal(
-                    context,
-                    UpdateEventModalContent(
-                      eventId: _eventProvider!.event!.id,
-                      initialEventName: _eventProvider!.event!.name,
-                      initialDescription: _eventProvider!.event!.description,
-                      initialGoal: int.tryParse(
-                              _eventProvider!.event!.goal.toString()) ??
-                          0,
-                      initialCategoryId: _eventProvider!.event!.category.id,
-                      eventProvider: _eventProvider!,
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
-                onPressed: () {
-                  showCupertinoModalPopup(
-                    context: context,
-                    builder: (BuildContext context) => CupertinoActionSheet(
-                      actions: <CupertinoActionSheetAction>[
-                        CupertinoActionSheetAction(
-                          onPressed: () {
-                            _deleteEvent(context);
-                            Navigator.pop(context);
-                          },
-                          child: Text(t(context)!.deleteEvent),
-                        ),
-                        CupertinoActionSheetAction(
-                          onPressed: () {
-                            _archiveEvent();
-                            Navigator.pop(context);
-                          },
-                          child: Text(t(context)!.archiveEvent),
-                        ),
-                      ],
-                      cancelButton: CupertinoActionSheetAction(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(t(context)!.cancel),
+              if (_eventProvider!.event!.author.id ==
+                  authProvider.user!.id) ...[
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.white),
+                  onPressed: () {
+                    _showModal(
+                      context,
+                      UpdateEventModalContent(
+                        eventId: _eventProvider!.event!.id,
+                        initialEventName: _eventProvider!.event!.name,
+                        initialDescription: _eventProvider!.event!.description,
+                        initialGoal: int.tryParse(
+                                _eventProvider!.event!.goal.toString()) ??
+                            0,
+                        initialCategoryId: _eventProvider!.event!.category.id,
+                        eventProvider: _eventProvider!,
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.white),
+                  onPressed: () {
+                    showCupertinoModalPopup(
+                      context: context,
+                      builder: (BuildContext context) => CupertinoActionSheet(
+                        actions: <CupertinoActionSheetAction>[
+                          CupertinoActionSheetAction(
+                            onPressed: () {
+                              _deleteEvent(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Supprimer l\'évènement'),
+                          ),
+                          CupertinoActionSheetAction(
+                            onPressed: () {
+                              _archiveEvent();
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Archiver l\'évènement'),
+                          ),
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Annuler'),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ],
           ),
           body: Consumer<EventWebsocketProvider>(
