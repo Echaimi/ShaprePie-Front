@@ -1,4 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:nsm/screens/admin/admin_dashboard.dart';
+import 'package:nsm/screens/admin/admin_login_screen.dart';
+import 'package:nsm/screens/admin/categories_screen.dart';
+import 'package:nsm/screens/admin/tags_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
@@ -24,13 +29,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env.local");
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  final notificationService = NotificationService();
-  await notificationService.initialize();
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    final notificationService = NotificationService();
+    await notificationService.initialize();
+  }
 
   runApp(const MyApp());
 }
@@ -57,90 +64,147 @@ class MyApp extends StatelessWidget {
       ],
       child: Builder(
         builder: (context) {
-          final ThemeData theme = ThemeData();
-          final languageProvider = Provider.of<LanguageProvider>(context);
-
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'Navigation App',
-            locale: languageProvider.locale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale('en'),
-              Locale('fr'),
-            ],
-            theme: theme.copyWith(
-              colorScheme: theme.colorScheme.copyWith(
-                primary: const Color(0xFFE53170),
-                secondary: const Color(0xFFFF8906),
-                background: const Color(0xFF0F0E17),
-                primaryContainer: const Color(0xFF232136),
-                secondaryContainer: const Color(0xFF373455),
-              ),
-              scaffoldBackgroundColor: const Color(0xFF0F0E17),
-              textTheme: theme.textTheme.copyWith(
-                titleLarge: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFFFFE)),
-                titleMedium: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFFFFE)),
-                titleSmall: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFFFFE)),
-                bodySmall: const TextStyle(
-                  fontSize: 12.0,
-                  color: Color(0xFFFFFFFE),
-                ),
-                bodyMedium: const TextStyle(
-                  fontSize: 14.0,
-                  color: Color(0xFFFFFFFE),
-                ),
-                bodyLarge: const TextStyle(
-                  fontSize: 16.0,
-                  color: Color(0xFFFFFFFE),
-                ),
-              ),
-            ),
-            routerConfig: GoRouter(
-              initialLocation: '/',
-              routes: [
-                GoRoute(
-                  name: 'home',
-                  path: '/',
-                  builder: (context, state) => HomeScreen(
-                    eventService: context.read<EventService>(),
+          final authProvider =
+              Provider.of<AuthProvider>(context, listen: false);
+          return FutureBuilder(
+            future: authProvider.init(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const MaterialApp(
+                  home: Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
                   ),
-                ),
-                GoRoute(
-                  name: 'profile',
-                  path: '/profile',
-                  builder: (context, state) => const ProfileScreen(),
-                ),
-                GoRoute(
-                  name: 'event',
-                  path: '/events/:id',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id'];
-                    final eventId = int.tryParse(id!);
-                    if (eventId == null) {
-                      throw const FormatException('Failed to parse ID');
-                    }
-                    return EventScreen(eventId: eventId);
-                  },
-                ),
-              ],
-            ),
+                );
+              } else {
+                return const AppRouter();
+              }
+            },
           );
         },
+      ),
+    );
+  }
+}
+
+class AppRouter extends StatelessWidget {
+  const AppRouter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = ThemeData();
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final rootNavigatorKey = GlobalKey<NavigatorState>();
+    final shellNavigatorKey = GlobalKey<NavigatorState>();
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Navigation App',
+      locale: languageProvider.locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('fr'),
+      ],
+      theme: theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primary: const Color(0xFFE53170),
+          secondary: const Color(0xFFFF8906),
+          background: const Color(0xFF0F0E17),
+          primaryContainer: const Color(0xFF232136),
+          secondaryContainer: const Color(0xFF373455),
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0F0E17),
+        textTheme: theme.textTheme.copyWith(
+          titleLarge: const TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFFFFE)),
+          titleMedium: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFFFFE)),
+          titleSmall: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFFFFE)),
+          bodySmall: const TextStyle(fontSize: 12.0, color: Color(0xFFFFFFFE)),
+          bodyMedium: const TextStyle(fontSize: 14.0, color: Color(0xFFFFFFFE)),
+          bodyLarge: const TextStyle(fontSize: 16.0, color: Color(0xFFFFFFFE)),
+        ),
+      ),
+      routerConfig: GoRouter(
+        navigatorKey: rootNavigatorKey,
+        initialLocation: kIsWeb ? '/admin' : '/',
+        routes: [
+          GoRoute(
+            name: 'home',
+            path: '/',
+            builder: (context, state) => HomeScreen(
+              eventService: context.read<EventService>(),
+            ),
+          ),
+          GoRoute(
+            name: 'profile',
+            path: '/profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            name: 'event',
+            path: '/events/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id'];
+              final eventId = int.tryParse(id!);
+              if (eventId == null) {
+                throw const FormatException('Failed to parse ID');
+              }
+              return EventScreen(eventId: eventId);
+            },
+          ),
+          GoRoute(
+            name: 'admin_login',
+            path: '/admin/login',
+            redirect: (context, state) {
+              final authProvider = context.read<AuthProvider>();
+              if (authProvider.isAuthenticated) {
+                return '/admin';
+              }
+              return null; // proceed to the intended route
+            },
+            builder: (context, state) => const AdminLoginScreen(),
+          ),
+          GoRoute(
+            name: 'admin',
+            path: '/admin',
+            redirect: (context, state) => '/admin/categories',
+          ),
+          ShellRoute(
+            redirect: (context, state) {
+              final authProvider = context.read<AuthProvider>();
+              if (!authProvider.isAuthenticated ||
+                  authProvider.user?.role != 'admin') {
+                return '/admin/login';
+              }
+              return null; // proceed to the intended route
+            },
+            navigatorKey: shellNavigatorKey,
+            builder: (context, state, child) => AdminDashboard(child: child),
+            routes: [
+              GoRoute(
+                path: '/admin/categories',
+                builder: (context, state) => const CategoriesScreen(),
+              ),
+              GoRoute(
+                path: '/admin/tags',
+                builder: (context, state) => const TagsScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

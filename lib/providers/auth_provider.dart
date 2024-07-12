@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nsm/models/user.dart';
 import 'package:nsm/services/user_service.dart';
@@ -22,12 +22,16 @@ class AuthProvider with ChangeNotifier {
   get token => null;
 
   Future<void> init() async {
-    final firebaseToken = await FirebaseMessaging.instance.getToken();
-    FirebaseMessaging.instance.onTokenRefresh.listen(_firebaseTokenHandler);
+    late String? firebaseToken;
+    if (!kIsWeb) {
+      firebaseToken = await FirebaseMessaging.instance.getToken();
+      FirebaseMessaging.instance.onTokenRefresh.listen(_firebaseTokenHandler);
+    }
     _isAuthenticated = await checkAuthentication();
 
     if (_isAuthenticated) {
       await loadCurrentUser();
+      if (kIsWeb) return;
       await _firebaseTokenHandler(firebaseToken);
     }
     notifyListeners();
@@ -78,7 +82,6 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> _firebaseTokenHandler(String? token) async {
-    print('Firebase Token: $token');
     if (!_isAuthenticated) {
       return;
     }
