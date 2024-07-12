@@ -16,7 +16,6 @@ class CreateEventModalContent extends StatefulWidget {
 class _CreateEventModalContentState extends State<CreateEventModalContent> {
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController goalController = TextEditingController();
   int selectedCategoryId = 1;
 
   Future<Event?> _createEvent(
@@ -38,49 +37,42 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Center(
-            child: Text(
-              'L\'évènement',
-              style: Theme.of(context).textTheme.titleLarge,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Text(
+                'L\'évènement',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
-          ),
-          const SizedBox(height: 26),
-          Center(
-            child: Image.asset(
-              'lib/assets/images/eventCreate.png',
-              scale: 0.8,
-            ),
-          ),
-          const SizedBox(height: 20),
-          EventForm(
-            eventNameController: eventNameController,
-            descriptionController: descriptionController,
-            goalController: goalController,
-            buttonText: 'Créer',
-            onSubmit: () async {
-              final Map<String, dynamic> eventData = {
-                'name': eventNameController.text,
-                'description': descriptionController.text,
-                'category': selectedCategoryId,
-                'goal': int.tryParse(goalController.text) ?? 0,
-              };
+            const SizedBox(height: 24),
+            EventForm(
+              eventNameController: eventNameController,
+              descriptionController: descriptionController,
+              buttonText: 'Créer',
+              onSubmit: () async {
+                final Map<String, dynamic> eventData = {
+                  'name': eventNameController.text,
+                  'description': descriptionController.text,
+                  'category': selectedCategoryId,
+                };
 
-              final event = await _createEvent(context, eventData);
-              if (event != null && context.mounted) {
-                context.go('/events/${event.id}');
-              }
-            },
-            onCategorySelected: (int categoryId) {
-              setState(() {
-                selectedCategoryId = categoryId;
-              });
-            },
-          ),
-        ],
+                final event = await _createEvent(context, eventData);
+                if (event != null && context.mounted) {
+                  context.go('/events/${event.id}');
+                }
+              },
+              onCategorySelected: (int categoryId) {
+                setState(() {
+                  selectedCategoryId = categoryId;
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

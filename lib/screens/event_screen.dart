@@ -180,9 +180,6 @@ class _EventScreenState extends State<EventScreen> {
                         eventId: _eventProvider!.event!.id,
                         initialEventName: _eventProvider!.event!.name,
                         initialDescription: _eventProvider!.event!.description,
-                        initialGoal: int.tryParse(
-                                _eventProvider!.event!.goal.toString()) ??
-                            0,
                         initialCategoryId: _eventProvider!.event!.category.id,
                         eventProvider: _eventProvider!,
                       ),

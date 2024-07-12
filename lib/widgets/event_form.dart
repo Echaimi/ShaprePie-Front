@@ -7,18 +7,14 @@ import '../services/event_service.dart';
 class EventForm extends StatefulWidget {
   final TextEditingController eventNameController;
   final TextEditingController descriptionController;
-  final TextEditingController goalController;
-  final Future<void> Function()
-      onSubmit; // Update to accept custom submit function
-  final Function(int)
-      onCategorySelected; // Callback to update selected category
+  final Future<void> Function() onSubmit;
+  final Function(int) onCategorySelected;
   final String buttonText;
 
   const EventForm({
     super.key,
     required this.eventNameController,
     required this.descriptionController,
-    required this.goalController,
     required this.onSubmit,
     required this.buttonText,
     required this.onCategorySelected,
@@ -43,16 +39,15 @@ class _EventFormState extends State<EventForm> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Évènements', style: textTheme.titleSmall),
-        const SizedBox(height: 5),
         Text('Choisissez une catégorie pour votre évènement',
             style: textTheme.bodySmall),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         FutureBuilder<List<Category>>(
           future: _futureCategories,
           builder: (context, snapshot) {
@@ -64,8 +59,7 @@ class _EventFormState extends State<EventForm> {
               return const Text('No categories available');
             } else {
               return Wrap(
-                spacing: 10.0,
-                runSpacing: 10.0,
+                spacing: 8.0,
                 children: snapshot.data!
                     .map((category) => _buildCategoryChip(context, category))
                     .toList(),
@@ -75,7 +69,7 @@ class _EventFormState extends State<EventForm> {
         ),
         const SizedBox(height: 20.0),
         Text('En quel honneur ?', style: textTheme.bodySmall),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 8.0),
         TextField(
           controller: widget.eventNameController,
           decoration: InputDecoration(
@@ -90,9 +84,10 @@ class _EventFormState extends State<EventForm> {
           ),
           style: textTheme.bodyMedium?.copyWith(color: Colors.white),
         ),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 16.0),
         TextField(
           controller: widget.descriptionController,
+          maxLines: 5,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.black.withOpacity(0.1),
@@ -105,26 +100,10 @@ class _EventFormState extends State<EventForm> {
           ),
           style: textTheme.bodyMedium?.copyWith(color: Colors.white),
         ),
-        const SizedBox(height: 10.0),
-        TextField(
-          controller: widget.goalController,
-          keyboardType: TextInputType.number, // Numeric keyboard
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.black.withOpacity(0.1),
-            labelText: 'Goal',
-            labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide.none,
-            ),
-          ),
-          style: textTheme.bodyMedium?.copyWith(color: Colors.white),
-        ),
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 40.0),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange, // Set your button color here
+            backgroundColor: colorScheme.primary, // Set your button color here
             minimumSize: const Size(double.infinity, 50.0), // Full width button
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -142,12 +121,9 @@ class _EventFormState extends State<EventForm> {
 
   Widget _buildCategoryChip(BuildContext context, Category category) {
     final colorScheme = Theme.of(context).colorScheme;
-
+    final textTheme = Theme.of(context).textTheme;
     return ChoiceChip(
-      label: Text(
-        category.name,
-        style: const TextStyle(color: Colors.white),
-      ),
+      label: Text(category.name, style: textTheme.bodySmall),
       selected: selectedCategoryId == category.id,
       onSelected: (bool selected) {
         setState(() {
@@ -156,7 +132,7 @@ class _EventFormState extends State<EventForm> {
         });
       },
       backgroundColor: colorScheme.primaryContainer,
-      selectedColor: colorScheme.secondary,
+      selectedColor: colorScheme.primary,
       shape: const StadiumBorder(),
     );
   }
