@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:nsm/widgets/EventNotFound.dart';
 import 'package:nsm/widgets/create_event_modal_content.dart';
 import 'package:provider/provider.dart';
@@ -288,34 +286,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 BorderRadius.circular(12),
                                           ),
                                           padding: const EdgeInsets.only(
-                                              left: 16,
-                                              top: 8,
-                                              bottom: 8,
-                                              right: 8),
+                                              left: 40, right: 8),
                                           child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 22),
-                                                child: Text(
-                                                  event.name,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge,
-                                                ),
+                                              Text(
+                                                event.name,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge,
                                               ),
                                               const SizedBox(height: 4),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 22),
-                                                child: Text(
-                                                  event.description,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall,
-                                                ),
+                                              Text(
+                                                '${event.userCount} personne${event.userCount! > 1 ? 's' : ''}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall,
                                               ),
                                             ],
                                           ),
@@ -341,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                           ),
-                        ),
+                        )
                       ],
                     );
             } else {

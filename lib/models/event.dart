@@ -11,6 +11,7 @@ class Event {
   final double goal;
   final String code;
   late final String state;
+  final int? userCount;
 
   Event({
     required this.id,
@@ -22,6 +23,7 @@ class Event {
     required this.goal,
     required this.code,
     required this.state,
+    required this.userCount,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class Event {
       goal: json['goal'].toDouble(),
       code: json['code'],
       state: json['state'],
+      userCount: json['userCount'] as int?,
     );
   }
 
@@ -49,7 +52,7 @@ class Event {
       'goal': goal,
       'code': code,
       'state': state,
+      'userCount': userCount,
     };
   }
-
 }
