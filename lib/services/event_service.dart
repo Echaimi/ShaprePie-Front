@@ -10,9 +10,8 @@ class EventService {
 
   EventService(this.apiService);
 
-  Future<List<Event>> getEvents({String? state}) async {
-    final response =
-        await apiService.get('/events${state != null ? '?state=$state' : ''}');
+  Future<List<Event>> getEvents() async {
+    final response = await apiService.get('/events');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

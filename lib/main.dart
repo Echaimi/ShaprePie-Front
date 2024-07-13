@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nsm/screens/admin/admin_dashboard.dart';
 import 'package:nsm/screens/admin/admin_login_screen.dart';
 import 'package:nsm/screens/admin/categories_screen.dart';
+import 'package:nsm/screens/admin/events_screen.dart';
 import 'package:nsm/screens/admin/tags_screen.dart';
 import 'package:nsm/screens/admin/users_screen.dart';
 import 'package:nsm/services/category_service.dart';
@@ -214,6 +215,10 @@ class AppRouter extends StatelessWidget {
                   path: '/admin/users',
                   builder: (context, state) =>
                       UsersScreen(userService: context.read<UserService>())),
+              GoRoute(
+                  path: '/admin/events',
+                  builder: (context, state) =>
+                      EventsScreen(eventService: context.read<EventService>())),
             ],
           ),
         ],
