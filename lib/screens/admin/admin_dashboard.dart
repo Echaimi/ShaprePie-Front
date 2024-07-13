@@ -65,6 +65,12 @@ class AdminDashboard extends StatelessWidget {
                   label: 'Users',
                   index: 2,
                 ),
+                _buildSidebarItem(
+                  context,
+                  icon: Icons.event,
+                  label: 'Events',
+                  index: 3,
+                ),
               ],
             ),
           ),
@@ -97,6 +103,9 @@ class AdminDashboard extends StatelessWidget {
     if (location.startsWith('/admin/users')) {
       return 2;
     }
+    if (location.startsWith('/admin/events')) {
+      return 3;
+    }
     return 0;
   }
 
@@ -112,6 +121,8 @@ class AdminDashboard extends StatelessWidget {
           context.go('/admin/tags');
         } else if (index == 2) {
           context.go('/admin/users');
+        } else if (index == 3) {
+          context.go('/admin/events');
         }
       },
       child: Container(
