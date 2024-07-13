@@ -34,7 +34,7 @@ class CategoryService {
   Future<Category> createCategory(Map<String, dynamic> data) async {
     final response = await apiService.post('/categories', data);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       Map<String, dynamic> createdData = json.decode(response.body);
       return Category.fromJson(createdData);
     } else {
