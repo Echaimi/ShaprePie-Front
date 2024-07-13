@@ -307,11 +307,11 @@ class _EventScreenState extends State<EventScreen> {
                       ],
                     ),
                     const SizedBox(height: 24.0),
-                    Expanded(
+                    const Expanded(
                       child: TabBarView(
                         children: [
-                          const EventUsersTab(),
-                          const EventExpensesTab(),
+                          EventUsersTab(),
+                          EventExpensesTab(),
                           EventBalanceTab(),
                         ],
                       ),

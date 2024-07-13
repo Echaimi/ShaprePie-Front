@@ -4,6 +4,8 @@ import 'package:nsm/screens/admin/admin_dashboard.dart';
 import 'package:nsm/screens/admin/admin_login_screen.dart';
 import 'package:nsm/screens/admin/categories_screen.dart';
 import 'package:nsm/screens/admin/tags_screen.dart';
+import 'package:nsm/services/category_service.dart';
+import 'package:nsm/services/tag_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
@@ -173,7 +175,7 @@ class AppRouter extends StatelessWidget {
               if (authProvider.isAuthenticated) {
                 return '/admin';
               }
-              return null; // proceed to the intended route
+              return null;
             },
             builder: (context, state) => const AdminLoginScreen(),
           ),
@@ -189,19 +191,24 @@ class AppRouter extends StatelessWidget {
                   authProvider.user?.role != 'admin') {
                 return '/admin/login';
               }
-              return null; // proceed to the intended route
+              return null;
             },
             navigatorKey: shellNavigatorKey,
             builder: (context, state, child) => AdminDashboard(child: child),
             routes: [
               GoRoute(
-                path: '/admin/categories',
-                builder: (context, state) => const CategoriesScreen(),
-              ),
+                  path: '/admin/categories',
+                  builder: (context, state) {
+                    final categoryService =
+                        CategoryService(context.read<ApiService>());
+                    return CategoriesScreen(categoryService: categoryService);
+                  }),
               GoRoute(
-                path: '/admin/tags',
-                builder: (context, state) => const TagsScreen(),
-              ),
+                  path: '/admin/tags',
+                  builder: (context, state) {
+                    final tagService = TagService(context.read<ApiService>());
+                    return TagsScreen(tagService: tagService);
+                  }),
             ],
           ),
         ],

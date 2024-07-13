@@ -31,9 +31,9 @@ class AuthProvider with ChangeNotifier {
 
     if (_isAuthenticated) {
       await loadCurrentUser();
-      if (kIsWeb) return;
-      await _firebaseTokenHandler(firebaseToken);
     }
+
+    await _firebaseTokenHandler(firebaseToken);
     notifyListeners();
   }
 
@@ -82,7 +82,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> _firebaseTokenHandler(String? token) async {
-    if (!_isAuthenticated) {
+    if (!_isAuthenticated || kIsWeb) {
       return;
     }
     if (token == null) {

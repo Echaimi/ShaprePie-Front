@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:nsm/models/tag.dart';
 import 'package:nsm/services/api_service.dart';
 
@@ -35,7 +34,7 @@ class TagService {
   Future<Tag> createTag(Map<String, dynamic> data) async {
     final response = await apiService.post('/tags', data);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       Map<String, dynamic> createdData = json.decode(response.body);
       return Tag.fromJson(createdData);
     } else {
