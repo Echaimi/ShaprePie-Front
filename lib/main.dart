@@ -4,6 +4,7 @@ import 'package:nsm/screens/admin/admin_dashboard.dart';
 import 'package:nsm/screens/admin/admin_login_screen.dart';
 import 'package:nsm/screens/admin/categories_screen.dart';
 import 'package:nsm/screens/admin/tags_screen.dart';
+import 'package:nsm/screens/admin/users_screen.dart';
 import 'package:nsm/services/category_service.dart';
 import 'package:nsm/services/tag_service.dart';
 import 'package:provider/provider.dart';
@@ -209,6 +210,10 @@ class AppRouter extends StatelessWidget {
                     final tagService = TagService(context.read<ApiService>());
                     return TagsScreen(tagService: tagService);
                   }),
+              GoRoute(
+                  path: '/admin/users',
+                  builder: (context, state) =>
+                      UsersScreen(userService: context.read<UserService>())),
             ],
           ),
         ],
