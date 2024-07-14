@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:nsm/models/balance.dart';
-import 'package:nsm/models/transaction.dart';
-import 'package:nsm/models/user_with_expenses.dart';
-import 'package:nsm/providers/auth_provider.dart';
+import 'package:spaceshare/models/balance.dart';
+import 'package:spaceshare/models/transaction.dart';
+import 'package:spaceshare/models/user_with_expenses.dart';
+import 'package:spaceshare/providers/auth_provider.dart';
 import '../models/event.dart';
 import '../models/expense.dart';
 import '../services/websocket_service.dart';

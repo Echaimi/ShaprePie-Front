@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/models/transaction.dart';
+import 'package:spaceshare/models/transaction.dart';
 
 class TransactionCard extends StatelessWidget {
   final Transaction transaction;

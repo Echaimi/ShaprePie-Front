@@ -1,4 +1,4 @@
-package com.example.modernlogintute
+package com.example.spaceshare
 
 import io.flutter.embedding.android.FlutterActivity
 

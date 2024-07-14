@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:nsm/models/avatar.dart';
-import 'package:nsm/models/user.dart';
-import 'package:nsm/services/api_service.dart';
+import 'package:spaceshare/models/avatar.dart';
+import 'package:spaceshare/models/user.dart';
+import 'package:spaceshare/services/api_service.dart';
 
 class UserService {
   final ApiService apiService;

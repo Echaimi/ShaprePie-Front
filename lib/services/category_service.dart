@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:nsm/models/category.dart';
-import 'package:nsm/services/api_service.dart';
+import 'package:spaceshare/models/category.dart';
+import 'package:spaceshare/services/api_service.dart';
 
 class CategoryService {
   final ApiService apiService;

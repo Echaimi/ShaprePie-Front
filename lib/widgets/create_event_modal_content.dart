@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nsm/models/event.dart';
+import 'package:spaceshare/models/event.dart';
 import 'event_form.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';

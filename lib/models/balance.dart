@@ -1,4 +1,4 @@
-import 'package:nsm/models/user.dart';
+import 'package:spaceshare/models/user.dart';
 
 class Balance {
   final int id;

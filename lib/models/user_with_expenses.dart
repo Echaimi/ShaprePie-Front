@@ -1,5 +1,5 @@
-import 'package:nsm/models/avatar.dart';
-import 'package:nsm/models/user.dart';
+import 'package:spaceshare/models/avatar.dart';
+import 'package:spaceshare/models/user.dart';
 
 class UserWithExpenses extends User {
   final int expenseCount;

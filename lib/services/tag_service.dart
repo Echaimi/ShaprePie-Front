@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:nsm/models/tag.dart';
-import 'package:nsm/services/api_service.dart';
+import 'package:spaceshare/models/tag.dart';
+import 'package:spaceshare/services/api_service.dart';
 
 class TagService {
   final ApiService apiService;

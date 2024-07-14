@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:nsm/models/user.dart';
-import 'package:nsm/services/user_service.dart';
+import 'package:spaceshare/models/user.dart';
+import 'package:spaceshare/services/user_service.dart';
 import '../services/auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 

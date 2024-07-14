@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/services/user_service.dart';
-import 'package:nsm/models/user.dart';
+import 'package:spaceshare/services/user_service.dart';
+import 'package:spaceshare/models/user.dart';
 
 class UsersScreen extends StatefulWidget {
   final UserService userService;

@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nsm/widgets/EventNotFound.dart';
-import 'package:nsm/widgets/create_event_modal_content.dart';
+import 'package:spaceshare/widgets/EventNotFound.dart';
+import 'package:spaceshare/widgets/create_event_modal_content.dart';
 import 'package:provider/provider.dart';
 import '../services/event_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/event.dart';
-import 'package:nsm/widgets/AddButton.dart' as add_button;
-import 'package:nsm/widgets/bottom_navigation_bar.dart';
-import 'package:nsm/widgets/bottom_modal.dart';
-import 'package:nsm/widgets/join_us.dart';
-import 'package:nsm/widgets/join_event_modal_content.dart';
+import 'package:spaceshare/widgets/AddButton.dart' as add_button;
+import 'package:spaceshare/widgets/bottom_navigation_bar.dart';
+import 'package:spaceshare/widgets/bottom_modal.dart';
+import 'package:spaceshare/widgets/join_us.dart';
+import 'package:spaceshare/widgets/join_event_modal_content.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);

@@ -1,7 +1,7 @@
-import 'package:nsm/models/participant.dart';
-import 'package:nsm/models/payer.dart';
-import 'package:nsm/models/tag.dart';
-import 'package:nsm/models/user.dart';
+import 'package:spaceshare/models/participant.dart';
+import 'package:spaceshare/models/payer.dart';
+import 'package:spaceshare/models/tag.dart';
+import 'package:spaceshare/models/user.dart';
 
 class Expense {
   final int id;
