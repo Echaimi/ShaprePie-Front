@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -47,7 +48,7 @@ class ExpenseModalContent extends StatelessWidget {
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.secondary,

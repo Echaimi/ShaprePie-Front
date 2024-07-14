@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (event.state == 'active')
             CupertinoActionSheetAction(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 _updateEventState(event.id, 'archived');
               },
               child: Text(t(context)?.archiveEvent ?? 'Archive Event'),
@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (event.state == 'archived')
             CupertinoActionSheetAction(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 _updateEventState(event.id, 'active');
               },
               child: Text(t(context)?.activateEvent ?? 'Activate Event'),
@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
-            Navigator.pop(context);
+            context.pop();
           },
           child: Text(t(context)?.cancel ?? 'Cancel'),
         ),
@@ -144,14 +144,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
               _showModal(context, const CreateEventModalContent());
             },
             child: Text(t(context)?.createEvent ?? 'Create Event'),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
               _showModal(context, const JoinEventModalContent());
             },
             child: Text(t(context)?.joinEvent ?? 'Join Event'),
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
-            Navigator.pop(context);
+            context.pop();
           },
           child: Text(t(context)?.cancel ?? 'Cancel'),
         ),

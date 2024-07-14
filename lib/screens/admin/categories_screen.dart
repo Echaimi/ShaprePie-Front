@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/category_service.dart';
 import 'package:spaceshare/models/category.dart';
+import 'package:go_router/go_router.dart';
 
 class CategoriesScreen extends StatefulWidget {
   final CategoryService categoryService;
@@ -32,7 +33,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -43,7 +44,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   setState(() {
                     categoriesFuture = widget.categoryService.getCategories();
                   });
-                  Navigator.of(context).pop();
+                  context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to delete category: $e')),
@@ -91,7 +92,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -109,7 +110,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     setState(() {
                       categoriesFuture = widget.categoryService.getCategories();
                     });
-                    Navigator.of(context).pop();
+                    context.pop();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Failed to save category: $e')),

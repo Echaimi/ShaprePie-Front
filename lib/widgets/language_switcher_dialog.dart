@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaceshare/providers/LanguageProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class LanguageSwitcher extends StatelessWidget {
   @override
@@ -64,7 +65,7 @@ class LanguageSwitcher extends StatelessWidget {
                       ? const Locale('en')
                       : const Locale('fr');
                   languageProvider.setLocale(newLocale);
-                  Navigator.pop(context);
+                  context.pop();
                 },
               ),
               const SizedBox(

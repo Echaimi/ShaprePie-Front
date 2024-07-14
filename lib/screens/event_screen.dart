@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
-import 'package:spaceshare/screens/home_screen.dart';
 import 'package:spaceshare/services/api_service.dart';
 import 'package:spaceshare/services/event_service.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
@@ -84,7 +83,7 @@ class _EventScreenState extends State<EventScreen> {
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -100,7 +99,7 @@ class _EventScreenState extends State<EventScreen> {
           ),
           CupertinoActionSheetAction(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -117,7 +116,7 @@ class _EventScreenState extends State<EventScreen> {
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
-            Navigator.pop(context);
+            context.pop();
           },
           child: Text(t(context)!.cancel),
         ),
@@ -143,11 +142,7 @@ class _EventScreenState extends State<EventScreen> {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
-                if (GoRouter.of(context).canPop()) {
-                  GoRouter.of(context).pop();
-                } else {
-                  GoRouter.of(context).go('/');
-                }
+                context.go('/');
               },
             ),
             actions: [
@@ -196,21 +191,21 @@ class _EventScreenState extends State<EventScreen> {
                           CupertinoActionSheetAction(
                             onPressed: () {
                               _deleteEvent(context);
-                              Navigator.pop(context);
+                              context.go('/');
                             },
                             child: const Text('Supprimer l\'évènement'),
                           ),
                           CupertinoActionSheetAction(
                             onPressed: () {
                               _archiveEvent();
-                              Navigator.pop(context);
+                              context.go('/');
                             },
                             child: const Text('Archiver l\'évènement'),
                           ),
                         ],
                         cancelButton: CupertinoActionSheetAction(
                           onPressed: () {
-                            Navigator.pop(context);
+                            context.pop();
                           },
                           child: const Text('Annuler'),
                         ),
