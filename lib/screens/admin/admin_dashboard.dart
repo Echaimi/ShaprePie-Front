@@ -10,6 +10,10 @@ class AdminDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset('lib/assets/images/logo.png'),
+        ),
         title: const Text('Admin Dashboard',
             style: TextStyle(color: Colors.black, fontSize: 20)),
         backgroundColor: Colors.white,
@@ -25,7 +29,7 @@ class AdminDashboard extends StatelessWidget {
         ],
         shape: const Border(
           bottom: BorderSide(
-            color: Color(0xFFE0E0E0), // Light grey border
+            color: Color(0xFFE0E0E0),
             width: 1.0,
           ),
         ),

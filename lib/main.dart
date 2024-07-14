@@ -25,6 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nsm/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -42,6 +43,9 @@ Future<void> main() async {
     final notificationService = NotificationService();
     await notificationService.initialize();
   }
+
+  FlutterNativeSplash.preserve(
+      widgetsBinding: WidgetsFlutterBinding.ensureInitialized());
 
   runApp(const MyApp());
 }
@@ -80,6 +84,7 @@ class MyApp extends StatelessWidget {
                   ),
                 );
               } else {
+                FlutterNativeSplash.remove();
                 return const AppRouter();
               }
             },
