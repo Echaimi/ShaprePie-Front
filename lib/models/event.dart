@@ -10,7 +10,7 @@ class Event {
   final String image;
   final double goal;
   final String code;
-  late final String state;
+  late String state;
   final int? userCount;
 
   Event({
@@ -54,5 +54,9 @@ class Event {
       'state': state,
       'userCount': userCount,
     };
+  }
+
+  void updateState(String newState) {
+    state = newState;
   }
 }
