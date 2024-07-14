@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/event_service.dart';
 import 'package:spaceshare/models/event.dart';
+import 'package:go_router/go_router.dart';
 
 class EventsScreen extends StatefulWidget {
   final EventService eventService;
@@ -34,7 +35,7 @@ class _EventsScreenState extends State<EventsScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -50,7 +51,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   setState(() {
                     eventsFuture = widget.eventService.getEvents();
                   });
-                  Navigator.of(context).pop();
+                  context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to $action event: $e')),

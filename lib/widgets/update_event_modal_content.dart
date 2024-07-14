@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/event_websocket_service.dart';
 import 'event_form.dart';
+import 'package:go_router/go_router.dart';
 
 class UpdateEventModalContent extends StatefulWidget {
   final int eventId;
@@ -46,7 +47,7 @@ class _UpdateEventModalContentState extends State<UpdateEventModalContent> {
     };
 
     widget.eventProvider.updateEvent(eventData);
-    Navigator.pop(context); // Close the modal after updating
+    context.pop();
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/user_service.dart';
 import 'package:spaceshare/models/user.dart';
+import 'package:go_router/go_router.dart';
 
 class UsersScreen extends StatefulWidget {
   final UserService userService;
@@ -32,7 +33,7 @@ class _UsersScreenState extends State<UsersScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -43,7 +44,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   setState(() {
                     usersFuture = widget.userService.getUsers();
                   });
-                  Navigator.of(context).pop();
+                  context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to delete user: $e')),
@@ -114,7 +115,7 @@ class _UsersScreenState extends State<UsersScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -137,7 +138,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     setState(() {
                       usersFuture = widget.userService.getUsers();
                     });
-                    Navigator.of(context).pop();
+                    context.pop();
                   } catch (e) {
                     print(e);
                     ScaffoldMessenger.of(context).showSnackBar(

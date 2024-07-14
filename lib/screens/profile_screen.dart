@@ -107,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             avatars: avatars,
             currentAvatarUrl: user!.avatar.url,
             onAvatarSelected: (int? avatarId) {
-              Navigator.of(context).pop();
+              context.pop();
               if (avatarId != null) {
                 setState(() {
                   selectedAvatarId = avatarId;

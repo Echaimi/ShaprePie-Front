@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/tag_service.dart';
 import 'package:spaceshare/models/tag.dart';
+import 'package:go_router/go_router.dart';
 
 class TagsScreen extends StatefulWidget {
   final TagService tagService;
@@ -32,7 +33,7 @@ class _TagsScreenState extends State<TagsScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -43,7 +44,7 @@ class _TagsScreenState extends State<TagsScreen> {
                   setState(() {
                     tagsFuture = widget.tagService.getTags();
                   });
-                  Navigator.of(context).pop();
+                  context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to delete tag: $e')),
@@ -91,7 +92,7 @@ class _TagsScreenState extends State<TagsScreen> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -108,7 +109,7 @@ class _TagsScreenState extends State<TagsScreen> {
                     setState(() {
                       tagsFuture = widget.tagService.getTags();
                     });
-                    Navigator.of(context).pop();
+                    context.pop();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Failed to save tag: $e')),
