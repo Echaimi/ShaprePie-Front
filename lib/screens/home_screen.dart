@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/widgets/EventNotFound.dart';
 import 'package:spaceshare/widgets/create_event_modal_content.dart';
@@ -13,6 +13,7 @@ import 'package:spaceshare/widgets/bottom_modal.dart';
 import 'package:spaceshare/widgets/join_us.dart';
 import 'package:spaceshare/widgets/join_event_modal_content.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -41,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initially fetch events if already authenticated
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeScreen();
     });
@@ -83,6 +83,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showArchiveOptions(BuildContext context, Event event) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final currentUserId = authProvider.user?.id;
+
+    if (event.author.id != currentUserId) {
+      Fluttertoast.showToast(
+        msg: "Il faut être le commandant de bord de cet event pour faire cela",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        textColor: Theme.of(context).textTheme.bodySmall?.color,
+        fontSize: Theme.of(context).textTheme.bodySmall?.fontSize ?? 16.0,
+      );
+      return;
+    }
+
     showCupertinoModalPopup(
       context: context,
       builder: (context) => CupertinoActionSheet(
@@ -256,8 +272,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   : _events[index];
                               final isCategory3 = event.category.id == 3;
                               return GestureDetector(
-                                onTap: () {
-                                  context.push('/events/${event.id}');
+                                onTap: () async {
+                                  final result =
+                                      await context.push('/events/${event.id}');
+                                  if (result == true) {
+                                    _fetchEvents();
+                                  }
                                 },
                                 onLongPress: () {
                                   _showArchiveOptions(context, event);
@@ -330,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                           ),
-                        )
+                        ),
                       ],
                     );
             } else {

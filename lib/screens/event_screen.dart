@@ -18,6 +18,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spaceshare/widgets/refound_modal_content.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -70,11 +71,30 @@ class _EventScreenState extends State<EventScreen> {
   Future<void> _deleteEvent(BuildContext context) async {
     if (_eventProvider != null && _eventProvider!.event != null) {
       eventService.deleteEvent(_eventProvider!.event!.id);
+      context.pop(true); // Return true to indicate a change
       context.go('/');
     }
   }
 
-  void _archiveEvent() {}
+  Future<void> _updateEventState(int eventId, String state) async {
+    try {
+      await eventService.updateEventState(eventId, state);
+      setState(() {
+        _eventProvider!.event!.updateState(state);
+      });
+      context.pop(true); // Return true to indicate a change
+    } catch (e) {
+      print('Error updating event state: $e');
+    }
+  }
+
+  void _archiveEvent(BuildContext context) {
+    if (_eventProvider != null && _eventProvider!.event != null) {
+      final newState =
+          _eventProvider!.event!.state == 'active' ? 'archived' : 'active';
+      _updateEventState(_eventProvider!.event!.id, newState);
+    }
+  }
 
   void _showAddOptions(BuildContext context) {
     showCupertinoModalPopup(
@@ -132,6 +152,8 @@ class _EventScreenState extends State<EventScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final isArchived = _eventProvider!.event!.state == 'archived';
+
     return ChangeNotifierProvider<EventWebsocketProvider>(
       create: (context) => _eventProvider!,
       child: DefaultTabController(
@@ -142,7 +164,7 @@ class _EventScreenState extends State<EventScreen> {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
-                context.go('/');
+                context.pop();
               },
             ),
             actions: [
@@ -169,16 +191,32 @@ class _EventScreenState extends State<EventScreen> {
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.white),
                   onPressed: () {
-                    _showModal(
-                      context,
-                      UpdateEventModalContent(
-                        eventId: _eventProvider!.event!.id,
-                        initialEventName: _eventProvider!.event!.name,
-                        initialDescription: _eventProvider!.event!.description,
-                        initialCategoryId: _eventProvider!.event!.category.id,
-                        eventProvider: _eventProvider!,
-                      ),
-                    );
+                    if (isArchived) {
+                      Fluttertoast.showToast(
+                        msg:
+                            "La planète que vous essayez de consulter a été archivée et n'est plus en mission",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        textColor: Theme.of(context).textTheme.bodySmall?.color,
+                        fontSize:
+                            Theme.of(context).textTheme.bodySmall?.fontSize ??
+                                16.0,
+                      );
+                    } else {
+                      _showModal(
+                        context,
+                        UpdateEventModalContent(
+                          eventId: _eventProvider!.event!.id,
+                          initialEventName: _eventProvider!.event!.name,
+                          initialDescription:
+                              _eventProvider!.event!.description,
+                          initialCategoryId: _eventProvider!.event!.category.id,
+                          eventProvider: _eventProvider!,
+                        ),
+                      );
+                    }
                   },
                 ),
                 IconButton(
@@ -191,16 +229,20 @@ class _EventScreenState extends State<EventScreen> {
                           CupertinoActionSheetAction(
                             onPressed: () {
                               _deleteEvent(context);
-                              context.go('/');
+                              context.pop();
                             },
                             child: const Text('Supprimer l\'évènement'),
                           ),
                           CupertinoActionSheetAction(
                             onPressed: () {
-                              _archiveEvent();
-                              context.go('/');
+                              _archiveEvent(context);
+                              context.pop();
                             },
-                            child: const Text('Archiver l\'évènement'),
+                            child: Text(
+                              _eventProvider!.event!.state == 'active'
+                                  ? 'Archiver l\'évènement'
+                                  : 'Activer l\'évènement',
+                            ),
                           ),
                         ],
                         cancelButton: CupertinoActionSheetAction(
@@ -356,8 +398,25 @@ class _EventScreenState extends State<EventScreen> {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
-          floatingActionButton:
-              AddButton(onPressed: () => _showAddOptions(context)),
+          floatingActionButton: AddButton(
+            onPressed: () {
+              if (isArchived) {
+                Fluttertoast.showToast(
+                  msg:
+                      "La planète que vous essayez de consulter a été archivée et n'est plus en mission",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  textColor: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize:
+                      Theme.of(context).textTheme.bodySmall?.fontSize ?? 16.0,
+                );
+              } else {
+                _showAddOptions(context);
+              }
+            },
+          ),
         ),
       ),
     );
