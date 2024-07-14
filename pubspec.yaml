@@ -46,6 +46,8 @@ dependencies:
 
   provider: ^6.1.2
 
+  flutter_native_splash: ^2.4.1
+
   flutter_localizations:
     sdk: flutter
 
@@ -77,28 +79,12 @@ flutter:
   generate: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - lib/assets/icons/
     - lib/assets/images/
-    - lib/assets/category/
+    - lib/assets/images/category/
+    - lib/assets/icons/
+    - lib/assets/
     - .env.local
     - lib/l10n/
-    - lib/assets/icons/astronaut.svg
-    - lib/assets/icons/login.png
-    - lib/assets/icons/rocket.svg
-    - lib/assets/images/joinEvent.png
-    - lib/assets/images/noEventFound.png
-    - lib/assets/images/404.png
-    - lib/assets/images/eventJoinSuccess.png
-    - lib/assets/images/backgroundApp.png
-    - lib/assets/images/login.png
-    - lib/assets/images/register.png
-    - lib/assets/images/expense.png
-    - lib/assets/images/eventCreate.png
-
-
-
-
-
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -125,3 +111,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+  image: lib/assets/images/splash.png
+  color: "#FFFFFF"
+  android_12:
+    image: lib/assets/images/splash.png
+    color: "#FFFFFF"

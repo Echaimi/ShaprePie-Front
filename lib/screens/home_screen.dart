@@ -177,17 +177,17 @@ class _HomeScreenState extends State<HomeScreen> {
   String _getCategoryImagePath(int categoryId) {
     switch (categoryId) {
       case 1:
-        return 'lib/assets/category/travel.png';
+        return 'lib/assets/images/category/travel.png';
       case 2:
-        return 'lib/assets/category/birthday.png';
+        return 'lib/assets/images/category/birthday.png';
       case 3:
-        return 'lib/assets/category/party.png';
+        return 'lib/assets/images/category/party.png';
       case 4:
-        return 'lib/assets/category/holiday.png';
+        return 'lib/assets/images/category/holiday.png';
       case 5:
-        return 'lib/assets/category/other.png';
+        return 'lib/assets/images/category/other.png';
       default:
-        return 'lib/assets/category/other.png';
+        return 'lib/assets/images/category/other.png';
     }
   }
 
