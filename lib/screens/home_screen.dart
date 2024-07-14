@@ -14,6 +14,7 @@ import 'package:spaceshare/widgets/join_us.dart';
 import 'package:spaceshare/widgets/join_event_modal_content.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
@@ -209,6 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -233,7 +236,49 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               }
               return _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Container(
+                              height: 20,
+                              width: 180,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          Skeletonizer(
+                            enabled: true,
+                            child: Column(
+                              children: List.generate(
+                                5,
+                                (index) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Container(
+                                    height: 80,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primaryContainer,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -255,7 +300,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               _showArchived
                                   ? '${t(context)?.backToEvents ?? 'Back to Events'} (${_events.length})'
                                   : '${t(context)?.archiveEvent ?? 'Archive Event'} (${_archivedEvents.length})',
-                              style: TextStyle(color: Colors.pink),
+                              style:
+                                  TextStyle(color: theme.colorScheme.primary),
                             ),
                           ),
                         ),
@@ -291,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: Container(
-                                          width: 342,
+                                          width: double.infinity,
                                           height: 80,
                                           decoration: BoxDecoration(
                                             color: Theme.of(context)
