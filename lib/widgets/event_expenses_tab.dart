@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nsm/models/expense.dart';
-import 'package:nsm/services/event_websocket_service.dart';
+import 'package:spaceshare/models/expense.dart';
+import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'expense_details_modal.dart';

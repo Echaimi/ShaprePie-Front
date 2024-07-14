@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/services/tag_service.dart';
-import 'package:nsm/models/tag.dart';
+import 'package:spaceshare/services/tag_service.dart';
+import 'package:spaceshare/models/tag.dart';
 
 class TagsScreen extends StatefulWidget {
   final TagService tagService;

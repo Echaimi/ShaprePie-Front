@@ -1,29 +1,29 @@
 {
-  "project_info": {
-    "project_number": "904785155733",
-    "project_id": "esgi-challenge-s2",
-    "storage_bucket": "esgi-challenge-s2.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:904785155733:android:cf381687aa87c5a2e82d9c",
-        "android_client_info": {
-          "package_name": "com.example.modernlogintute"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDXOeholMIKisZ4d0hClzQiO6iSSgrUy4o"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+	"project_info": {
+		"project_number": "904785155733",
+		"project_id": "esgi-challenge-s2",
+		"storage_bucket": "esgi-challenge-s2.appspot.com"
+	},
+	"client": [
+		{
+			"client_info": {
+				"mobilesdk_app_id": "1:904785155733:android:cf381687aa87c5a2e82d9c",
+				"android_client_info": {
+					"package_name": "com.example.spaceshare"
+				}
+			},
+			"oauth_client": [],
+			"api_key": [
+				{
+					"current_key": "AIzaSyDXOeholMIKisZ4d0hClzQiO6iSSgrUy4o"
+				}
+			],
+			"services": {
+				"appinvite_service": {
+					"other_platform_oauth_client": []
+				}
+			}
+		}
+	],
+	"configuration_version": "1"
 }

@@ -1,4 +1,4 @@
-import 'package:nsm/models/avatar.dart';
+import 'package:spaceshare/models/avatar.dart';
 
 class User {
   final int? id;

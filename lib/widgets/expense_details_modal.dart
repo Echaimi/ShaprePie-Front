@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:nsm/models/expense.dart';
-import 'package:nsm/widgets/bottom_modal.dart';
+import 'package:spaceshare/models/expense.dart';
+import 'package:spaceshare/widgets/bottom_modal.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);

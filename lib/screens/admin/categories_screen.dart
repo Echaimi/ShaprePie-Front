@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/services/category_service.dart';
-import 'package:nsm/models/category.dart';
+import 'package:spaceshare/services/category_service.dart';
+import 'package:spaceshare/models/category.dart';
 
 class CategoriesScreen extends StatefulWidget {
   final CategoryService categoryService;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/services/event_service.dart';
-import 'package:nsm/models/event.dart';
+import 'package:spaceshare/services/event_service.dart';
+import 'package:spaceshare/models/event.dart';
 
 class EventsScreen extends StatefulWidget {
   final EventService eventService;

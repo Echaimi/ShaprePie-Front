@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:nsm/models/event.dart';
-import 'package:nsm/models/expense.dart';
-import 'package:nsm/models/user.dart';
-import 'package:nsm/services/api_service.dart';
+import 'package:spaceshare/models/event.dart';
+import 'package:spaceshare/models/expense.dart';
+import 'package:spaceshare/models/user.dart';
+import 'package:spaceshare/services/api_service.dart';
 
 class EventService {
   final ApiService apiService;

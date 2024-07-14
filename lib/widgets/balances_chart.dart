@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nsm/models/balance.dart';
+import 'package:spaceshare/models/balance.dart';
 
 class BalancesChart extends StatelessWidget {
   final List<Balance> balances;

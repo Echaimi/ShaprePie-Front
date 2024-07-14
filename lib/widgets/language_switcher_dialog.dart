@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nsm/providers/LanguageProvider.dart';
+import 'package:spaceshare/providers/LanguageProvider.dart';
 import 'package:provider/provider.dart';
 
 class LanguageSwitcher extends StatelessWidget {
