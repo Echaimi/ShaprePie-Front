@@ -16,6 +16,7 @@ class FullScreenModal extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            const SizedBox(height: 35.0),
             Align(
               alignment: Alignment.topLeft,
               child: TextButton(

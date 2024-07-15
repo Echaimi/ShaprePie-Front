@@ -6,7 +6,8 @@ class CreateExpense extends StatelessWidget {
   final int eventId;
   final EventWebsocketProvider eventProvider;
 
-  const CreateExpense({super.key, required this.eventId, required this.eventProvider});
+  const CreateExpense(
+      {super.key, required this.eventId, required this.eventProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class CreateExpense extends StatelessWidget {
             ExpenseForm(
               onSubmit: eventProvider.createExpense,
               users: eventProvider.users,
-              eventId: eventId, // Passer l'ID de l'événement ici
+              eventId: eventId,
             ),
           ],
         ),
