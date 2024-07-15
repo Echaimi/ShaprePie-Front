@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:nsm/services/api_service.dart';
+import 'package:spaceshare/services/api_service.dart';
 
 import '../models/tag.dart';
 

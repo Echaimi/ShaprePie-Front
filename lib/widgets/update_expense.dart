@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import '../services/event_websocket_service.dart';
+import '../models/expense.dart';
 import 'expense_form.dart';
+import 'package:spaceshare/services/event_websocket_service.dart'; // Assurez-vous que le chemin d'importation est correct
 
-class CreateExpense extends StatelessWidget {
+class UpdateExpense extends StatelessWidget {
   final int eventId;
+  final Expense expense;
   final EventWebsocketProvider eventProvider;
 
-  const CreateExpense({super.key, required this.eventId, required this.eventProvider});
+  const UpdateExpense({super.key, required this.eventId, required this.expense, required this.eventProvider});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+print(expense.tag.id);
 
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -25,7 +29,7 @@ class CreateExpense extends StatelessWidget {
           children: <Widget>[
             Center(
               child: Text(
-                'Ajouter une dépense',
+                'Mettre à jour la dépense',
                 style: theme.textTheme.titleMedium!.copyWith(
                   color: Colors.white,
                 ),
@@ -33,9 +37,12 @@ class CreateExpense extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             ExpenseForm(
-              onSubmit: eventProvider.createExpense,
+              onSubmit: (data) {
+                eventProvider.updateExpense(expense.id, data);
+              },
               users: eventProvider.users,
-              eventId: eventId, // Passer l'ID de l'événement ici
+              eventId: eventId,
+              initialExpense: expense,
             ),
           ],
         ),

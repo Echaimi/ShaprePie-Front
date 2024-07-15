@@ -28,7 +28,7 @@ class EventExpensesTab extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  builder: (context) => ExpenseDetailsModal(expense: expense),
+                  builder: (context) => ExpenseDetailsModal(expense: expense, eventProvider: eventProvider),
                 );
               },
               child: ExpenseItem(expense: expense),

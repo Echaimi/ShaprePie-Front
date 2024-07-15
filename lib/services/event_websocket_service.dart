@@ -106,14 +106,20 @@ class EventWebsocketProvider with ChangeNotifier {
 
   void createExpense(Map<String, dynamic> data) {
     _webSocketService.send({'type': 'createExpense', 'payload': data});
+    notifyListeners();
   }
 
-  void updateExpense(String expenseId, Map<String, dynamic> data) {
+  void updateExpense(int expenseId, Map<String, dynamic> data) {
+    data["id"] = expenseId;
+    print(data);
     _webSocketService.send({'type': 'updateExpense', 'payload': data});
+    notifyListeners();
   }
 
-  void deleteExpense(String expenseId) {
-    _webSocketService.send({'type': 'deleteExpense', 'payload': expenseId});
+  void deleteExpense(int expenseId) {
+    final data = {'id': expenseId};
+    _webSocketService.send({'type': 'deleteExpense', 'payload': data});
+    notifyListeners();
   }
 
   void updateEvent(Map<String, dynamic> data) {

@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:spaceshare/models/expense.dart';
 import 'package:spaceshare/widgets/bottom_modal.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:spaceshare/widgets/update_expense.dart'; // Assurez-vous que le chemin d'importation est correct
+import '../services/event_websocket_service.dart';
+import 'full_screen_modal.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ExpenseDetailsModal extends StatelessWidget {
   final Expense expense;
+  final EventWebsocketProvider eventProvider;
 
-  const ExpenseDetailsModal({super.key, required this.expense});
+  const ExpenseDetailsModal(
+      {super.key, required this.expense, required this.eventProvider});
+
+  void _openUpdateExpenseModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FullScreenModal(
+          child: UpdateExpense(
+            eventId: expense.eventId,
+            expense: expense,
+            eventProvider: eventProvider,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,17 +105,28 @@ class ExpenseDetailsModal extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          t(context)!.edit,
-                          style: TextStyle(
+                        TextButton(
+                          onPressed: () => _openUpdateExpenseModal(context),
+                          child: Text(
+                            t(context)!.edit,
+                            style: TextStyle(
                               color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        Text(
-                          t(context)!.delete,
-                          style: TextStyle(
+                        TextButton(
+                          onPressed: () {
+                            eventProvider.deleteExpense(expense.id);
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            t(context)!.delete,
+                            style: TextStyle(
                               color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),

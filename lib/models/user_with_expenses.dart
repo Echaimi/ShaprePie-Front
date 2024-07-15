@@ -20,7 +20,7 @@ class UserWithExpenses extends User {
 
   factory UserWithExpenses.fromJson(Map<String, dynamic> json) {
     return UserWithExpenses(
-      id: json['ID'] as int?,
+      id: json['ID'] as int,
       email: json['email'] as String,
       username: json['username'] as String,
       role: json['role'] as String,

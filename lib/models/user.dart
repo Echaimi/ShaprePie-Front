@@ -1,7 +1,7 @@
 import 'package:spaceshare/models/avatar.dart';
 
 class User {
-  final int? id;
+  final int id;
   final String email;
   final String username;
   final String role;
@@ -23,7 +23,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['ID'] as int?,
+      id: json['ID'] as int,
       email: json['email'] as String,
       username: json['username'] as String,
       role: json['role'] as String,
