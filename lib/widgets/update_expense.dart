@@ -40,14 +40,14 @@ class UpdateExpense extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            ExpenseForm(
-              onSubmit: (data) {
-                eventProvider.updateExpense(expense.id, data);
-              },
-              users: eventProvider.users,
-              eventId: eventId,
-              initialExpense: expense,
-            ),
+            // ExpenseForm(
+            //   onSubmit: (data) {
+            //     eventProvider.updateExpense(expense.id, data);
+            //   },
+            //   users: eventProvider.users,
+            //   eventId: eventId,
+            //   initialExpense: expense,
+            // ),
           ],
         ),
       ),

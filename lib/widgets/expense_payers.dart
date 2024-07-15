@@ -5,15 +5,16 @@ import '../models/payer.dart';
 
 class ExpensePayers extends StatefulWidget {
   final List<UserWithExpenses> users;
-  final String defaultAmount;
   final User? currentUser;
+  final double totalAmount; // Added this line
   final Function(List<Payer>) onPayersSelected;
   final List<Payer> initialPayers;
 
-  ExpensePayers({
+  const ExpensePayers({
+    super.key,
     required this.users,
-    required this.defaultAmount,
     this.currentUser,
+    required this.totalAmount, // Added this line
     required this.onPayersSelected,
     required this.initialPayers,
   });
@@ -44,19 +45,33 @@ class _ExpensePayersState extends State<ExpensePayers> {
       });
     }
 
-    selectedPayers = {for (var user in sortedUsers) user.username: false};
-    amountControllers = {for (var user in sortedUsers) user.username: TextEditingController(text: '0')};
-
-    for (var payer in widget.initialPayers) {
-      selectedPayers[payer.user.username] = true;
-      amountControllers[payer.user.username]?.text = payer.amount.toString();
+    if (widget.initialPayers.isEmpty) {
+      // Select currentUser as payer by default if no initialPayers
+      selectedPayers = {
+        for (var user in sortedUsers)
+          user.username: user.id == widget.currentUser?.id
+      };
+      amountControllers = {
+        for (var user in sortedUsers)
+          user.username: TextEditingController(
+              text: user.id == widget.currentUser?.id ? '0' : '0')
+      };
+    } else {
+      selectedPayers = {
+        for (var user in sortedUsers)
+          user.username:
+              widget.initialPayers.any((p) => p.user.username == user.username)
+      };
+      amountControllers = {
+        for (var user in sortedUsers)
+          user.username: TextEditingController(
+              text: widget.initialPayers
+                  .firstWhere((p) => p.user.username == user.username,
+                      orElse: () => Payer(user: user, amount: 0))
+                  .amount
+                  .toString())
+      };
     }
-
-    if (widget.currentUser != null && sortedUsers.any((user) => user.id == widget.currentUser!.id)) {
-      selectedPayers[widget.currentUser!.username] = true;
-      amountControllers[widget.currentUser!.username]?.text = widget.defaultAmount;
-    }
-
     _updateAmounts();
   }
 
@@ -65,36 +80,30 @@ class _ExpensePayersState extends State<ExpensePayers> {
         .map((controller) => double.tryParse(controller.text) ?? 0)
         .fold(0, (sum, amount) => sum + amount);
 
-    final double defaultAmount = double.tryParse(widget.defaultAmount) ?? 0;
     const double tolerance = 0.01; // Tolerance of 1 cent
 
     setState(() {
-      if ((totalAmount - defaultAmount).abs() <= tolerance) {
-        errorMessage = null;
-      } else if (totalAmount > defaultAmount) {
-        errorMessage = 'Le montant total dépasse le montant par défaut.';
+      if (totalAmount < 0) {
+        errorMessage = 'Le montant total ne peut pas être inférieur à zéro.';
       } else {
-        errorMessage = 'Le montant total est inférieur au montant par défaut.';
+        errorMessage = null;
       }
     });
   }
 
   void _onAmountChanged(String username, String value) {
     final double editedAmount = double.tryParse(value) ?? 0;
-    final double totalAmount = double.tryParse(widget.defaultAmount) ?? 0;
-    final int selectedCount = selectedPayers.values.where((selected) => selected).length;
+    final double totalAmount = widget.totalAmount;
+    final int selectedCount =
+        selectedPayers.values.where((selected) => selected).length;
 
-    if (editedAmount > totalAmount) {
-      setState(() {
-        errorMessage = 'Le montant saisi dépasse le montant total disponible.';
-      });
-      return;
-    }
-
+    // Calculate the remaining amount
     double remainingAmount = totalAmount - editedAmount;
 
+    // Adjust the amounts for the other selected users
     if (selectedCount > 1) {
-      final double dividedAmount = (remainingAmount / (selectedCount - 1) * 100).floor() / 100;
+      final double dividedAmount =
+          (remainingAmount / (selectedCount - 1) * 100).floor() / 100;
 
       for (var entry in amountControllers.entries) {
         if (selectedPayers[entry.key]! && entry.key != username) {
@@ -102,6 +111,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
         }
       }
 
+      // Adjust the last user's amount to account for rounding errors
       double sumOfAmounts = editedAmount;
       for (var entry in amountControllers.entries) {
         if (selectedPayers[entry.key]! && entry.key != username) {
@@ -109,9 +119,16 @@ class _ExpensePayersState extends State<ExpensePayers> {
         }
       }
       if ((sumOfAmounts - totalAmount).abs() > 0.01) {
-        final lastSelectedUser = selectedPayers.entries.lastWhere((entry) => entry.value && entry.key != username).key;
-        final double lastUserAmount = totalAmount - sumOfAmounts + (double.tryParse(amountControllers[lastSelectedUser]?.text ?? '0') ?? 0);
-        amountControllers[lastSelectedUser]?.text = lastUserAmount.toStringAsFixed(2);
+        final lastSelectedUser = selectedPayers.entries
+            .lastWhere((entry) => entry.value && entry.key != username)
+            .key;
+        final double lastUserAmount = totalAmount -
+            sumOfAmounts +
+            (double.tryParse(
+                    amountControllers[lastSelectedUser]?.text ?? '0') ??
+                0);
+        amountControllers[lastSelectedUser]?.text =
+            lastUserAmount.toStringAsFixed(2);
       }
     }
 
@@ -119,10 +136,13 @@ class _ExpensePayersState extends State<ExpensePayers> {
   }
 
   void _updateAmounts() {
-    final selectedUsersCount = selectedPayers.values.where((selected) => selected).length;
+    final double totalAmount =
+        widget.totalAmount; // Use the totalAmount from props
+    final selectedUsersCount =
+        selectedPayers.values.where((selected) => selected).length;
     if (selectedUsersCount > 0) {
-      final double totalAmount = double.tryParse(widget.defaultAmount) ?? 0;
-      final double dividedAmount = (totalAmount / selectedUsersCount * 100).floor() / 100;
+      final double dividedAmount =
+          (totalAmount / selectedUsersCount * 100).floor() / 100;
       double sumOfAmounts = 0;
 
       for (var entry in amountControllers.entries) {
@@ -133,9 +153,18 @@ class _ExpensePayersState extends State<ExpensePayers> {
       }
 
       if (sumOfAmounts < totalAmount) {
-        final lastSelectedUser = selectedPayers.entries.lastWhere((entry) => entry.value).key;
-        final double lastUserAmount = totalAmount - sumOfAmounts + dividedAmount;
-        amountControllers[lastSelectedUser]?.text = lastUserAmount.toStringAsFixed(2);
+        final lastSelectedUser =
+            selectedPayers.entries.lastWhere((entry) => entry.value).key;
+        final double lastUserAmount =
+            totalAmount - sumOfAmounts + dividedAmount;
+        amountControllers[lastSelectedUser]?.text =
+            lastUserAmount.toStringAsFixed(2);
+      }
+    } else {
+      for (var entry in amountControllers.entries) {
+        if (selectedPayers[entry.key]!) {
+          entry.value.text = '0';
+        }
       }
     }
 
@@ -153,7 +182,6 @@ class _ExpensePayersState extends State<ExpensePayers> {
       }
 
       _updateAmounts();
-      _validateAmounts();
     });
   }
 
@@ -173,14 +201,6 @@ class _ExpensePayersState extends State<ExpensePayers> {
                 color: Colors.white,
               ),
             ),
-          ),
-          const SizedBox(height: 20.0),
-          Text(
-            "Au cœur de l'arène financière, les preux payeurs s'élancent. Ici, chaque geste de générosité est un éclat de noblesse.",
-            style: theme.textTheme.bodyMedium!.copyWith(
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.left,
           ),
           const SizedBox(height: 20.0),
           Row(
@@ -213,7 +233,8 @@ class _ExpensePayersState extends State<ExpensePayers> {
             alignment: Alignment.centerRight,
             child: Text(
               'Cliquez pour modifier le montant',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.secondary),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.secondary),
             ),
           ),
           const SizedBox(height: 10.0),
@@ -257,7 +278,8 @@ class _ExpensePayersState extends State<ExpensePayers> {
                           Expanded(
                             child: Text(
                               user.username,
-                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                              style: theme.textTheme.bodyLarge
+                                  ?.copyWith(color: Colors.white),
                             ),
                           ),
                           if (selectedPayers[user.username]!)
@@ -267,23 +289,33 @@ class _ExpensePayersState extends State<ExpensePayers> {
                                 children: [
                                   Expanded(
                                     child: TextField(
-                                      controller: amountControllers[user.username],
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      controller:
+                                          amountControllers[user.username],
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                              decimal: true),
                                       decoration: InputDecoration(
                                         isDense: true,
                                         contentPadding: const EdgeInsets.all(8),
                                         border: InputBorder.none,
                                         hintText: '0',
-                                        hintStyle: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary),
+                                        hintStyle: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                                color:
+                                                    theme.colorScheme.primary),
                                       ),
-                                      style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary),
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                              color: theme.colorScheme.primary),
                                       textAlign: TextAlign.center,
-                                      onChanged: (value) => _onAmountChanged(user.username, value),
+                                      onChanged: (value) => _onAmountChanged(
+                                          user.username, value),
                                     ),
                                   ),
                                   Text(
                                     '€',
-                                    style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary),
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                        color: theme.colorScheme.primary),
                                   ),
                                 ],
                               ),
@@ -310,20 +342,26 @@ class _ExpensePayersState extends State<ExpensePayers> {
             child: ElevatedButton(
               onPressed: errorMessage == null
                   ? () {
-                List<Payer> selectedUsers = sortedUsers
-                    .where((user) => selectedPayers[user.username] ?? false)
-                    .map((user) => Payer(
-                  id: user.id,
-                  user: user,
-                  amount: double.tryParse(amountControllers[user.username]?.text ?? '0') ?? 0,
-                ))
-                    .toList();
-                widget.onPayersSelected(selectedUsers);
-                Navigator.pop(context);
-              }
+                      List<Payer> selectedUsers = sortedUsers
+                          .where(
+                              (user) => selectedPayers[user.username] ?? false)
+                          .map((user) => Payer(
+                                id: user.id,
+                                user: user,
+                                amount: double.tryParse(
+                                        amountControllers[user.username]
+                                                ?.text ??
+                                            '0') ??
+                                    0,
+                              ))
+                          .toList();
+                      widget.onPayersSelected(selectedUsers);
+                      Navigator.pop(context);
+                    }
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary.withOpacity(errorMessage == null ? 1.0 : 0.5),
+                backgroundColor: theme.colorScheme.primary
+                    .withOpacity(errorMessage == null ? 1.0 : 0.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),

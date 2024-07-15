@@ -1,39 +1,37 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:spaceshare/models/websocket_message.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spaceshare/models/balance.dart';
 import 'package:spaceshare/models/transaction.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
 import '../models/event.dart';
 import '../models/expense.dart';
-import '../services/websocket_service.dart';
 
 class EventWebsocketProvider with ChangeNotifier {
-  final WebSocketService _webSocketService;
+  WebSocketChannel? _channel;
   final AuthProvider _authProvider;
   Event? _event;
   List<UserWithExpenses> _users = [];
   List<Expense> _expenses = [];
   List<Balance> _balances = [];
   List<Transaction> _transactions = [];
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
-  EventWebsocketProvider(this._webSocketService, this._authProvider) {
-    _listenToWebSocket();
+  EventWebsocketProvider(int eventId, this._authProvider) {
+    _initialize(eventId);
   }
 
   Event? get event => _event;
-
   List<UserWithExpenses> get users => _users;
-
   List<Expense> get expenses => _expenses;
-
   List<Balance> get balances => _balances;
-
   List<Transaction> get transactions => _transactions;
-
-  double get totalExpenses {
-    return _expenses.fold(0, (sum, expense) => sum + expense.amount);
-  }
+  double get totalExpenses =>
+      _expenses.fold(0, (sum, expense) => sum + expense.amount);
 
   double get userTotalExpenses {
     final userId = _authProvider.user?.id;
@@ -51,46 +49,71 @@ class EventWebsocketProvider with ChangeNotifier {
     return _balances.firstWhere((balance) => balance.user.id == userId).amount;
   }
 
-  void _listenToWebSocket() {
-    _webSocketService.stream?.listen((message) {
-      final data = jsonDecode(message);
-      final type = data['type'];
-      final payload = data['payload'];
+  Expense? getExpenseById(int id) {
+    try {
+      return _expenses.firstWhere((expense) => expense.id == id);
+    } catch (e) {
+      print('Expense with id $id not found: $e');
+      return null;
+    }
+  }
 
-      switch (type) {
-        case 'event':
-          final event = Event.fromJson(payload);
-          _updateEvent(event);
-          break;
-        case 'expenses':
-          final expenses =
-              (payload as List).map((e) => Expense.fromJson(e)).toList();
-          _updateExpenses(expenses);
-          break;
-        case 'users':
-          final users = (payload as List)
-              .map((u) => UserWithExpenses.fromJson(u))
-              .toList();
-          _updateUsers(users);
-          break;
-        case 'balances':
-          final balances =
-              (payload as List).map((b) => Balance.fromJson(b)).toList();
-          _balances = balances;
-          notifyListeners();
-          break;
-        case 'transactions':
-          final transactions =
-              (payload as List).map((t) => Transaction.fromJson(t)).toList();
-          _transactions = transactions;
-          notifyListeners();
-          break;
+  Future<void> _initialize(int eventId) async {
+    try {
+      final token = await secureStorage.read(key: 'auth_token');
+      if (token == null) {
+        throw Exception('Token not found');
       }
-    });
+      final wsUrl =
+          '${dotenv.env['API_WS_URL']}/ws/events/$eventId?authorization=Bearer $token';
+      _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
+      _channel?.stream.listen(_handleMessage);
+    } catch (e) {
+      print('Error initializing WebSocket: $e');
+    }
+  }
+
+  void _handleMessage(message) {
+    final data = jsonDecode(message);
+    final webSocketMessage = WebSocketMessage.fromJson(data);
+
+    switch (webSocketMessage.type) {
+      case 'event':
+        final event = Event.fromJson(webSocketMessage.payload);
+        _updateEvent(event);
+        break;
+      case 'expenses':
+        final expenses = (webSocketMessage.payload as List)
+            .map((e) => Expense.fromJson(e))
+            .toList();
+        _updateExpenses(expenses);
+        break;
+      case 'users':
+        final users = (webSocketMessage.payload as List)
+            .map((u) => UserWithExpenses.fromJson(u))
+            .toList();
+        _updateUsers(users);
+        break;
+      case 'balances':
+        final balances = (webSocketMessage.payload as List)
+            .map((b) => Balance.fromJson(b))
+            .toList();
+        _balances = balances;
+        notifyListeners();
+        break;
+      case 'transactions':
+        final transactions = (webSocketMessage.payload as List)
+            .map((t) => Transaction.fromJson(t))
+            .toList();
+        _transactions = transactions;
+        notifyListeners();
+        break;
+    }
   }
 
   void _updateEvent(Event event) {
     _event = event;
+    print('Event updated: ${event.name}');
     notifyListeners();
   }
 
@@ -105,29 +128,37 @@ class EventWebsocketProvider with ChangeNotifier {
   }
 
   void createExpense(Map<String, dynamic> data) {
-    _webSocketService.send({'type': 'createExpense', 'payload': data});
+    _sendMessage(WebSocketMessage(type: 'createExpense', payload: data));
     notifyListeners();
   }
 
   void updateExpense(int expenseId, Map<String, dynamic> data) {
     data["id"] = expenseId;
-    print(data);
-    _webSocketService.send({'type': 'updateExpense', 'payload': data});
+    _sendMessage(WebSocketMessage(type: 'updateExpense', payload: data));
     notifyListeners();
   }
 
   void deleteExpense(int expenseId) {
     final data = {'id': expenseId};
-    _webSocketService.send({'type': 'deleteExpense', 'payload': data});
+    _sendMessage(WebSocketMessage(type: 'deleteExpense', payload: data));
     notifyListeners();
   }
 
   void updateEvent(Map<String, dynamic> data) {
-    _webSocketService.send({'type': 'updateEvent', 'payload': data});
+    _sendMessage(WebSocketMessage(type: 'updateEvent', payload: data));
   }
 
+  void _sendMessage(WebSocketMessage message) {
+    try {
+      _channel?.sink.add(message.toString());
+    } catch (e) {
+      print('Error sending message: $e');
+    }
+  }
+
+  @override
   void dispose() {
-    _webSocketService.dispose();
+    _channel?.sink.close();
     super.dispose();
   }
 }
