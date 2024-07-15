@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import '../models/expense.dart';
 import 'expense_form.dart';
-import 'package:spaceshare/services/event_websocket_service.dart'; // Assurez-vous que le chemin d'importation est correct
+import 'package:spaceshare/services/event_websocket_service.dart';
 
 class UpdateExpense extends StatelessWidget {
   final int eventId;
   final Expense expense;
   final EventWebsocketProvider eventProvider;
 
-  const UpdateExpense({super.key, required this.eventId, required this.expense, required this.eventProvider});
+  const UpdateExpense(
+      {super.key,
+      required this.eventId,
+      required this.expense,
+      required this.eventProvider});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-print(expense.tag.id);
+    print(expense.tag.id);
 
     return Container(
       padding: const EdgeInsets.all(16.0),

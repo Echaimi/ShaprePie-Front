@@ -67,7 +67,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _amountController.text = widget.initialExpense!.amount.toString();
       _purposeController.text = widget.initialExpense!.name;
       _descriptionController.text = widget.initialExpense!.description;
-      _dateController.text = DateFormat('dd/MM/yyyy').format(widget.initialExpense!.createdAt);
+      _dateController.text =
+          DateFormat('dd/MM/yyyy').format(widget.initialExpense!.createdAt);
       _selectedTag = widget.initialExpense?.tag;
       _selectedParticipants = widget.initialExpense!.participants;
       _selectedPayers = widget.initialExpense!.payers;
@@ -76,14 +77,26 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   void _handleSubmit() {
     setState(() {
-      _amountError = _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
-      _purposeError = _purposeController.text.isEmpty ? 'Le nom de la dépense est obligatoire' : null;
-      _payerError = _selectedPayers.isEmpty ? 'Au moins un payeur est obligatoire' : null;
-      _participantError = _selectedParticipants.isEmpty ? 'Au moins un participant est obligatoire' : null;
-      _dateError = _dateController.text.isEmpty ? 'La date est obligatoire' : null;
+      _amountError =
+          _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
+      _purposeError = _purposeController.text.isEmpty
+          ? 'Le nom de la dépense est obligatoire'
+          : null;
+      _payerError =
+          _selectedPayers.isEmpty ? 'Au moins un payeur est obligatoire' : null;
+      _participantError = _selectedParticipants.isEmpty
+          ? 'Au moins un participant est obligatoire'
+          : null;
+      _dateError =
+          _dateController.text.isEmpty ? 'La date est obligatoire' : null;
     });
 
-    if (_amountError == null && _purposeError == null && _payerError == null && _participantError == null && _dateError == null && _tagError == null) {
+    if (_amountError == null &&
+        _purposeError == null &&
+        _payerError == null &&
+        _participantError == null &&
+        _dateError == null &&
+        _tagError == null) {
       final data = {
         'name': _purposeController.text,
         'description': _descriptionController.text,
@@ -149,7 +162,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
             onParticipantsSelected: (selectedParticipants) {
               setState(() {
                 _selectedParticipants = selectedParticipants;
-                _participantController.text = selectedParticipants.map((participant) => participant.user.username).join(', ');
+                _participantController.text = selectedParticipants
+                    .map((participant) => participant.user.username)
+                    .join(', ');
               });
             },
           ),
@@ -176,7 +191,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
             onPayersSelected: (selectedPayers) {
               setState(() {
                 _selectedPayers = selectedPayers;
-                _payerController.text = selectedPayers.map((payer) => payer.user.username).join(', ');
+                _payerController.text = selectedPayers
+                    .map((payer) => payer.user.username)
+                    .join(', ');
               });
             },
           ),
@@ -206,15 +223,21 @@ class _ExpenseFormState extends State<ExpenseForm> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          _buildTextField('Montant (00.00€)', _amountController, context, keyboardType: TextInputType.number, errorText: _amountError),
+          _buildTextField('Montant (00.00€)', _amountController, context,
+              keyboardType: TextInputType.number, errorText: _amountError),
           const SizedBox(height: 16.0),
-          _buildTextField('Pour', _purposeController, context, onTap: _openReasonExpenseModal, errorText: _purposeError),
+          _buildTextField('Pour', _purposeController, context,
+              onTap: _openReasonExpenseModal, errorText: _purposeError),
           const SizedBox(height: 16.0),
-          _buildTextField('Payeurs', _payerController, context, onTap: _openExpensePayersModal, errorText: _payerError),
+          _buildTextField('Payeurs', _payerController, context,
+              onTap: _openExpensePayersModal, errorText: _payerError),
           const SizedBox(height: 16.0),
-          _buildTextField('Participants', _participantController, context, onTap: _openExpenseParticipantsModal, errorText: _participantError),
+          _buildTextField('Participants', _participantController, context,
+              onTap: _openExpenseParticipantsModal,
+              errorText: _participantError),
           const SizedBox(height: 16.0),
-          _buildTextField('Fait le (00/00/0000)', _dateController, context, onTap: () => _selectDate(context), errorText: _dateError),
+          _buildTextField('Fait le (00/00/0000)', _dateController, context,
+              onTap: () => _selectDate(context), errorText: _dateError),
           const SizedBox(height: 16.0),
           if (_tagError != null)
             Padding(
@@ -238,7 +261,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
               ),
               child: Text(
                 'Ajouter la dépense',
-                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style:
+                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -247,7 +271,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, BuildContext context, {VoidCallback? onTap, TextInputType? keyboardType, String? errorText}) {
+  Widget _buildTextField(
+      String label, TextEditingController controller, BuildContext context,
+      {VoidCallback? onTap, TextInputType? keyboardType, String? errorText}) {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
@@ -279,12 +305,14 @@ class _ExpenseFormState extends State<ExpenseForm> {
                   ),
                   labelText: label,
                   floatingLabelBehavior: FloatingLabelBehavior.auto,
-                  labelStyle: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                  labelStyle:
+                      theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
                   filled: true,
                   fillColor: theme.colorScheme.secondaryContainer,
                   errorText: errorText,
                 ),
-                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style:
+                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
             ],
           ),
