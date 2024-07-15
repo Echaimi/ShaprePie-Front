@@ -9,12 +9,10 @@ import 'package:spaceshare/widgets/event_balances_tab.dart';
 import 'package:spaceshare/widgets/event_expenses_tab.dart';
 import 'package:spaceshare/widgets/event_invitation_modal.dart';
 import 'package:spaceshare/widgets/event_users_tab.dart';
-import 'package:spaceshare/widgets/refound_modal_content.dart';
 import 'package:spaceshare/widgets/update_event_modal_content.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../widgets/full_screen_modal.dart';
 import 'package:go_router/go_router.dart';
 
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
@@ -94,15 +92,7 @@ class _EventScreenState extends State<EventScreen> {
           ),
           CupertinoActionSheetAction(
             onPressed: () {
-              context.pop();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FullScreenModal(
-                    child: RefundModalContent(),
-                  ),
-                ),
-              );
+
             },
             child: Text(t(context)!.addRefund),
           ),
