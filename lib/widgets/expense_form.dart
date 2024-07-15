@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:spaceshare/models/user_with_expenses.dart';
-import 'package:spaceshare/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:spaceshare/models/user.dart';
+import 'package:spaceshare/providers/auth_provider.dart';
+import 'package:spaceshare/services/event_websocket_service.dart';
 import '../models/expense.dart';
 import 'bottom_modal.dart';
 import 'expense_participants.dart';
@@ -14,15 +15,11 @@ import '../models/payer.dart';
 
 class ExpenseForm extends StatefulWidget {
   final Function(Map<String, dynamic>) onSubmit;
-  final List<UserWithExpenses> users;
-  final int eventId;
   final Expense? initialExpense;
 
   const ExpenseForm({
     super.key,
     required this.onSubmit,
-    required this.users,
-    required this.eventId,
     this.initialExpense,
   });
 
@@ -51,6 +48,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   @override
   void dispose() {
+    _amountController.removeListener(_updateAmounts);
     _amountController.dispose();
     _purposeController.dispose();
     _descriptionController.dispose();
@@ -63,7 +61,11 @@ class _ExpenseFormState extends State<ExpenseForm> {
   @override
   void initState() {
     super.initState();
+    final eventWebsocketProvider =
+        Provider.of<EventWebsocketProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     if (widget.initialExpense != null) {
+      print(widget.initialExpense);
       _amountController.text = widget.initialExpense!.amount.toString();
       _purposeController.text = widget.initialExpense!.name;
       _descriptionController.text = widget.initialExpense!.description;
@@ -72,6 +74,65 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _selectedTag = widget.initialExpense?.tag;
       _selectedParticipants = widget.initialExpense!.participants;
       _selectedPayers = widget.initialExpense!.payers;
+    } else {
+      _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+      // Select all users as participants by default
+      _selectedParticipants = eventWebsocketProvider.users
+          .map((user) => Participant(user: user, amount: 0))
+          .toList();
+      // Select the current user as payer by default
+      _selectedPayers = [Payer(user: authProvider.user!, amount: 0)];
+    }
+
+    // Set the initial text for participant and payer controllers
+    _updateParticipantControllerText(authProvider.user!);
+    _updatePayerControllerText(authProvider.user!);
+
+    _amountController.addListener(_updateAmounts);
+  }
+
+  void _updateAmounts() {
+    final totalAmount = double.tryParse(_amountController.text) ?? 0.0;
+    final participantsCount = _selectedParticipants.length;
+    final payersCount = _selectedPayers.length;
+
+    if (participantsCount > 0) {
+      final dividedAmount = totalAmount / participantsCount;
+      _selectedParticipants = _selectedParticipants.map((participant) {
+        return Participant(user: participant.user, amount: dividedAmount);
+      }).toList();
+    }
+
+    if (payersCount > 0) {
+      final dividedAmount = totalAmount / payersCount;
+      _selectedPayers = _selectedPayers.map((payer) {
+        return Payer(user: payer.user, amount: dividedAmount);
+      }).toList();
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _updateParticipantControllerText(authProvider.user!);
+    _updatePayerControllerText(authProvider.user!);
+  }
+
+  void _updateParticipantControllerText(User currentUser) {
+    if (_selectedParticipants.length == 1) {
+      _participantController.text =
+          _selectedParticipants.first.user.id == currentUser.id
+              ? 'Moi'
+              : _selectedParticipants.first.user.username;
+    } else {
+      _participantController.text = '${_selectedParticipants.length} personnes';
+    }
+  }
+
+  void _updatePayerControllerText(User currentUser) {
+    if (_selectedPayers.length == 1) {
+      _payerController.text = _selectedPayers.first.user.id == currentUser.id
+          ? 'Moi'
+          : _selectedPayers.first.user.username;
+    } else {
+      _payerController.text = '${_selectedPayers.length} personnes';
     }
   }
 
@@ -97,12 +158,15 @@ class _ExpenseFormState extends State<ExpenseForm> {
         _participantError == null &&
         _dateError == null &&
         _tagError == null) {
+      final eventWebsocketProvider =
+          Provider.of<EventWebsocketProvider>(context, listen: false);
+
       final data = {
         'name': _purposeController.text,
         'description': _descriptionController.text,
         'tag': _selectedTag?.id,
         'amount': double.tryParse(_amountController.text) ?? 0.0,
-        'event': widget.eventId,
+        'event': eventWebsocketProvider.event?.id,
         'participants': _selectedParticipants.map((participant) {
           return {
             'id': participant.user.id,
@@ -116,9 +180,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
           };
         }).toList(),
       };
+      print(data);
       widget.onSubmit(data);
       Navigator.pop(context);
-      print(data);
     }
   }
 
@@ -147,7 +211,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
   }
 
   void _openExpenseParticipantsModal() async {
-    String defaultAmount = _amountController.text;
+    final eventWebsocketProvider =
+        Provider.of<EventWebsocketProvider>(context, listen: false);
 
     await showModalBottomSheet(
       context: context,
@@ -156,15 +221,15 @@ class _ExpenseFormState extends State<ExpenseForm> {
         return BottomModal(
           scrollController: ScrollController(),
           child: ExpenseParticipants(
-            users: widget.users,
-            defaultAmount: defaultAmount,
+            users: eventWebsocketProvider.users,
             initialParticipants: _selectedParticipants,
+            totalAmount: double.tryParse(_amountController.text) ?? 0.0,
             onParticipantsSelected: (selectedParticipants) {
               setState(() {
                 _selectedParticipants = selectedParticipants;
-                _participantController.text = selectedParticipants
-                    .map((participant) => participant.user.username)
-                    .join(', ');
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                _updateParticipantControllerText(authProvider.user!);
               });
             },
           ),
@@ -174,8 +239,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
   }
 
   void _openExpensePayersModal() async {
+    final eventWebsocketProvider =
+        Provider.of<EventWebsocketProvider>(context, listen: false);
+
     final currentUser = Provider.of<AuthProvider>(context, listen: false).user;
-    String defaultAmount = _amountController.text;
 
     await showModalBottomSheet(
       context: context,
@@ -184,16 +251,17 @@ class _ExpenseFormState extends State<ExpenseForm> {
         return BottomModal(
           scrollController: ScrollController(),
           child: ExpensePayers(
-            users: widget.users,
-            defaultAmount: defaultAmount,
+            users: eventWebsocketProvider.users,
             currentUser: currentUser,
+            totalAmount: double.tryParse(_amountController.text) ??
+                0.0, // Pass the total amount
             initialPayers: _selectedPayers,
             onPayersSelected: (selectedPayers) {
               setState(() {
                 _selectedPayers = selectedPayers;
-                _payerController.text = selectedPayers
-                    .map((payer) => payer.user.username)
-                    .join(', ');
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                _updatePayerControllerText(authProvider.user!);
               });
             },
           ),

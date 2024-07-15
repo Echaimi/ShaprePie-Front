@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:spaceshare/models/participant.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
-import '../models/participant.dart';
 
 class ExpenseParticipants extends StatefulWidget {
   final List<UserWithExpenses> users;
-  final String defaultAmount;
   final Function(List<Participant>) onParticipantsSelected;
   final List<Participant> initialParticipants;
+  final double totalAmount;
 
-  ExpenseParticipants({
+  const ExpenseParticipants({
+    super.key,
     required this.users,
-    required this.defaultAmount,
     required this.onParticipantsSelected,
     required this.initialParticipants,
+    required this.totalAmount,
   });
 
   @override
@@ -27,14 +28,33 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
   @override
   void initState() {
     super.initState();
-    selectedParticipants = {for (var user in widget.users) user.username: true};
-    amountControllers = {for (var user in widget.users) user.username: TextEditingController(text: '0')};
-
-    for (var participant in widget.initialParticipants) {
-      selectedParticipants[participant.user.username] = true;
-      amountControllers[participant.user.username]?.text = participant.amount.toString();
+    if (widget.initialParticipants.isEmpty) {
+      // Select all users as participants by default
+      selectedParticipants = {
+        for (var user in widget.users) user.username: true
+      };
+      amountControllers = {
+        for (var user in widget.users)
+          user.username: TextEditingController(
+              text:
+                  (widget.totalAmount / widget.users.length).toStringAsFixed(2))
+      };
+    } else {
+      selectedParticipants = {
+        for (var user in widget.users)
+          user.username: widget.initialParticipants
+              .any((p) => p.user.username == user.username)
+      };
+      amountControllers = {
+        for (var user in widget.users)
+          user.username: TextEditingController(
+              text: widget.initialParticipants
+                  .firstWhere((p) => p.user.username == user.username,
+                      orElse: () => Participant(user: user, amount: 0))
+                  .amount
+                  .toString())
+      };
     }
-
     _updateAmounts();
   }
 
@@ -43,39 +63,28 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
         .map((controller) => double.tryParse(controller.text) ?? 0)
         .fold(0, (sum, amount) => sum + amount);
 
-    final double defaultAmount = double.tryParse(widget.defaultAmount) ?? 0;
-    final double tolerance = 0.01; // Tolérance de 1 centime
-
     setState(() {
-      if ((totalAmount - defaultAmount).abs() <= tolerance) {
-        errorMessage = null;
-      } else if (totalAmount > defaultAmount) {
-        errorMessage = 'Le montant total dépasse le montant par défaut.';
+      if (totalAmount < 0) {
+        errorMessage = 'Le montant total ne peut pas être inférieur à zéro.';
       } else {
-        errorMessage = 'Le montant total est inférieur au montant par défaut.';
+        errorMessage = null;
       }
     });
   }
 
   void _onAmountChanged(String username, String value) {
     final double editedAmount = double.tryParse(value) ?? 0;
-    final double totalAmount = double.tryParse(widget.defaultAmount) ?? 0;
-    final int selectedCount = selectedParticipants.values.where((selected) => selected).length;
+    final double totalAmount = widget.totalAmount;
+    final int selectedCount =
+        selectedParticipants.values.where((selected) => selected).length;
 
-    // Valider si le montant édité dépasse le montant total
-    if (editedAmount > totalAmount) {
-      setState(() {
-        errorMessage = 'Le montant saisi dépasse le montant total disponible.';
-      });
-      return;
-    }
-
-    // Calculer le montant restant après avoir modifié le montant de l'utilisateur actuel
+    // Calculate the remaining amount
     double remainingAmount = totalAmount - editedAmount;
 
-    // Répartir le montant restant entre les autres utilisateurs sélectionnés
+    // Adjust the amounts for the other selected users
     if (selectedCount > 1) {
-      final double dividedAmount = (remainingAmount / (selectedCount - 1) * 100).floor() / 100;
+      final double dividedAmount =
+          (remainingAmount / (selectedCount - 1) * 100).floor() / 100;
 
       for (var entry in amountControllers.entries) {
         if (selectedParticipants[entry.key]! && entry.key != username) {
@@ -83,7 +92,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
         }
       }
 
-      // Ajuster le montant du dernier utilisateur pour compenser les erreurs d'arrondi
+      // Adjust the last user's amount to account for rounding errors
       double sumOfAmounts = editedAmount;
       for (var entry in amountControllers.entries) {
         if (selectedParticipants[entry.key]! && entry.key != username) {
@@ -91,21 +100,30 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
         }
       }
       if ((sumOfAmounts - totalAmount).abs() > 0.01) {
-        final lastSelectedUser = selectedParticipants.entries.lastWhere((entry) => entry.value && entry.key != username).key;
-        final double lastUserAmount = totalAmount - sumOfAmounts + (double.tryParse(amountControllers[lastSelectedUser]?.text ?? '0') ?? 0);
-        amountControllers[lastSelectedUser]?.text = lastUserAmount.toStringAsFixed(2);
+        final lastSelectedUser = selectedParticipants.entries
+            .lastWhere((entry) => entry.value && entry.key != username)
+            .key;
+        final double lastUserAmount = totalAmount -
+            sumOfAmounts +
+            (double.tryParse(
+                    amountControllers[lastSelectedUser]?.text ?? '0') ??
+                0);
+        amountControllers[lastSelectedUser]?.text =
+            lastUserAmount.toStringAsFixed(2);
       }
     }
 
-    // Valider les montants après la modification
     _validateAmounts();
   }
 
   void _updateAmounts() {
-    final selectedUsersCount = selectedParticipants.values.where((selected) => selected).length;
-    if (selectedUsersCount > 0) {
-      final double totalAmount = double.tryParse(widget.defaultAmount) ?? 0;
-      final double dividedAmount = (totalAmount / selectedUsersCount * 100).floor() / 100;
+    final double totalAmount = widget.totalAmount;
+    final selectedUsersCount =
+        selectedParticipants.values.where((selected) => selected).length;
+
+    if (selectedUsersCount > 0 && totalAmount > 0) {
+      final double dividedAmount =
+          (totalAmount / selectedUsersCount * 100).floor() / 100;
       double sumOfAmounts = 0;
 
       for (var entry in amountControllers.entries) {
@@ -115,11 +133,19 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
         }
       }
 
-      // Si la somme des montants est inférieure au montant total, ajustez le montant du dernier utilisateur sélectionné
       if (sumOfAmounts < totalAmount) {
-        final lastSelectedUser = selectedParticipants.entries.lastWhere((entry) => entry.value).key;
-        final double lastUserAmount = totalAmount - sumOfAmounts + dividedAmount;
-        amountControllers[lastSelectedUser]?.text = lastUserAmount.toStringAsFixed(2);
+        final lastSelectedUser =
+            selectedParticipants.entries.lastWhere((entry) => entry.value).key;
+        final double lastUserAmount =
+            totalAmount - sumOfAmounts + dividedAmount;
+        amountControllers[lastSelectedUser]?.text =
+            lastUserAmount.toStringAsFixed(2);
+      }
+    } else {
+      for (var entry in amountControllers.entries) {
+        if (selectedParticipants[entry.key]!) {
+          entry.value.text = '0';
+        }
       }
     }
 
@@ -136,8 +162,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
         amountControllers[username]?.text = '0';
       }
 
-      _updateAmounts();  // Recalculate amounts when selection changes
-      _validateAmounts();  // Validate amounts after recalculation
+      _updateAmounts();
     });
   }
 
@@ -158,15 +183,6 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
               ),
             ),
           ),
-          const SizedBox(height: 20.0),
-              Text(
-                "Si tu es un escroc, essaie de rajouter une personne qui n'a pas participé. Si tu es démasqué, force à toi",
-                style: theme.textTheme.bodyMedium!.copyWith(
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.left,
-              ),
-
           const SizedBox(height: 20.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,7 +214,8 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
             alignment: Alignment.centerRight,
             child: Text(
               'Cliquez pour modifier le montant',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.secondary),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.secondary),
             ),
           ),
           const SizedBox(height: 10.0),
@@ -242,7 +259,8 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                           Expanded(
                             child: Text(
                               user.username,
-                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                              style: theme.textTheme.bodyLarge
+                                  ?.copyWith(color: Colors.white),
                             ),
                           ),
                           if (selectedParticipants[user.username]!)
@@ -252,23 +270,33 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                                 children: [
                                   Expanded(
                                     child: TextField(
-                                      controller: amountControllers[user.username],
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      controller:
+                                          amountControllers[user.username],
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                              decimal: true),
                                       decoration: InputDecoration(
                                         isDense: true,
                                         contentPadding: const EdgeInsets.all(8),
                                         border: InputBorder.none,
                                         hintText: '0',
-                                        hintStyle: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary),
+                                        hintStyle: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                                color:
+                                                    theme.colorScheme.primary),
                                       ),
-                                      style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary),
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                              color: theme.colorScheme.primary),
                                       textAlign: TextAlign.center,
-                                      onChanged: (value) => _onAmountChanged(user.username, value),
+                                      onChanged: (value) => _onAmountChanged(
+                                          user.username, value),
                                     ),
                                   ),
                                   Text(
                                     '€',
-                                    style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary),
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                        color: theme.colorScheme.primary),
                                   ),
                                 ],
                               ),
@@ -295,20 +323,26 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
             child: ElevatedButton(
               onPressed: errorMessage == null
                   ? () {
-                List<Participant> selectedUsers = widget.users
-                    .where((user) => selectedParticipants[user.username] ?? false)
-                    .map((user) => Participant(
-                  id: user.id,
-                  user: user,
-                  amount: double.tryParse(amountControllers[user.username]?.text ?? '0') ?? 0,
-                ))
-                    .toList();
-                widget.onParticipantsSelected(selectedUsers);
-                Navigator.pop(context);
-              }
+                      List<Participant> selectedUsers = widget.users
+                          .where((user) =>
+                              selectedParticipants[user.username] ?? false)
+                          .map((user) => Participant(
+                                id: user.id,
+                                user: user,
+                                amount: double.tryParse(
+                                        amountControllers[user.username]
+                                                ?.text ??
+                                            '0') ??
+                                    0,
+                              ))
+                          .toList();
+                      widget.onParticipantsSelected(selectedUsers);
+                      Navigator.pop(context);
+                    }
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary.withOpacity(errorMessage == null ? 1.0 : 0.5),
+                backgroundColor: theme.colorScheme.primary
+                    .withOpacity(errorMessage == null ? 1.0 : 0.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),

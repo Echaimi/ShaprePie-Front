@@ -6,7 +6,10 @@ import 'package:spaceshare/screens/admin/categories_screen.dart';
 import 'package:spaceshare/screens/admin/events_screen.dart';
 import 'package:spaceshare/screens/admin/tags_screen.dart';
 import 'package:spaceshare/screens/admin/users_screen.dart';
+import 'package:spaceshare/screens/create_expense_screen.dart';
+import 'package:spaceshare/screens/update_event_screen.dart';
 import 'package:spaceshare/services/category_service.dart';
+import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:spaceshare/services/tag_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -162,17 +165,59 @@ class AppRouter extends StatelessWidget {
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
           ),
-          GoRoute(
-            name: 'event',
-            path: '/events/:id',
-            builder: (context, state) {
+          ShellRoute(
+            navigatorKey: shellNavigatorKey,
+            builder: (context, state, child) {
               final id = state.pathParameters['id'];
               final eventId = int.tryParse(id!);
               if (eventId == null) {
                 throw const FormatException('Failed to parse ID');
               }
-              return EventScreen(eventId: eventId);
+              final authProvider =
+                  Provider.of<AuthProvider>(context, listen: false);
+
+              return ChangeNotifierProvider(
+                create: (_) => EventWebsocketProvider(eventId, authProvider),
+                child: child,
+              );
             },
+            routes: [
+              GoRoute(
+                name: 'event',
+                path: '/events/:id',
+                builder: (context, state) {
+                  final id = state.pathParameters['id'];
+                  final eventId = int.tryParse(id!);
+                  if (eventId == null) {
+                    throw const FormatException('Failed to parse ID');
+                  }
+                  final eventService = context.read<EventService>();
+                  return EventScreen(
+                      eventId: eventId, eventService: eventService);
+                },
+                routes: [
+                  GoRoute(
+                    name: 'create_expense',
+                    path: 'expenses/create',
+                    builder: (context, state) => const CreateExpenseScreen(),
+                  ),
+                  GoRoute(
+                    name: 'edit_expense',
+                    path: 'expenses/:expenseId/edit',
+                    builder: (context, state) {
+                      final id = state.pathParameters['expenseId'];
+                      final expenseId = int.tryParse(id!);
+                      if (expenseId == null) {
+                        throw const FormatException('Failed to parse ID');
+                      }
+                      return UpdateExpenseScreen(
+                        expenseId: expenseId,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
           GoRoute(
             name: 'admin_login',
