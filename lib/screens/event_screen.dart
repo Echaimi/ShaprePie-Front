@@ -110,7 +110,12 @@ class _EventScreenState extends State<EventScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => FullScreenModal(
-                    child: CreateExpense(eventId: widget.eventId),
+                    child: CreateExpense(
+                      eventId: widget.eventId,
+                      eventProvider: Provider.of<EventWebsocketProvider>(
+                          context,
+                          listen: false),
+                    ),
                   ),
                 ),
               );
@@ -320,39 +325,6 @@ class _EventScreenState extends State<EventScreen> {
                       ),
                     ),
                     const SizedBox(height: 32.0),
-                    Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                      ),
-                      child: TabBar(
-                        indicator:
-                            const BoxDecoration(), // No indicator decoration
-                        labelColor: Theme.of(context)
-                            .colorScheme
-                            .secondary, // Active tab color
-                        unselectedLabelColor:
-                            Colors.white, // Inactive tab color
-                        labelStyle: const TextStyle(
-                            fontSize: 14.0), // Smaller text size
-                        tabs: const [
-                          Tab(
-                            icon: Icon(Icons.person),
-                            text: 'Personnes',
-                          ),
-                          Tab(
-                            icon: Icon(Icons.attach_money),
-                            text: 'Dépenses',
-                          ),
-                          Tab(
-                            icon: Icon(Icons.balance),
-                            text: 'Équilibre',
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
                     TabBar(
                       dividerColor:
                           Theme.of(context).colorScheme.primaryContainer,
