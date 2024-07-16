@@ -89,7 +89,6 @@ class ExpenseDetailsModal extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () {
-                            context.pop();
                             context.go(
                                 '/events/${expense.eventId}/expenses/${expense.id}/edit');
                           },

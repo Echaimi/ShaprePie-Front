@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:spaceshare/widgets/expense_form.dart';
+import 'package:go_router/go_router.dart';
 
 class UpdateExpenseScreen extends StatelessWidget {
   final int expenseId;
@@ -24,7 +25,7 @@ class UpdateExpenseScreen extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  context.pop();
                 },
                 child: const Text(
                   'Fermer',
@@ -36,6 +37,7 @@ class UpdateExpenseScreen extends StatelessWidget {
               child: ExpenseForm(
                 onSubmit: (data) {
                   eventWebsocketProvider.updateExpense(expenseId, data);
+                  context.pop();
                 },
                 initialExpense: expense,
               ),

@@ -37,9 +37,11 @@ class _ReasonExpenseState extends State<ReasonExpense> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.initialReason);
-    descriptionController = TextEditingController(text: widget.initialDescription);
+    descriptionController =
+        TextEditingController(text: widget.initialDescription);
     _selectedTag = widget.initialTag;
     _tagService = TagService(ApiService());
+    _showTagList = widget.initialTag != null;
     _fetchTags();
   }
 
@@ -72,12 +74,17 @@ class _ReasonExpenseState extends State<ReasonExpense> {
 
   void _validateReason() {
     setState(() {
-      _nameError = nameController.text.isEmpty ? 'Le nom de la dépense est obligatoire' : null;
-      _tagError = _selectedTag == null ? 'La sélection d\'un tag est obligatoire' : null;
+      _nameError = nameController.text.isEmpty
+          ? 'Le nom de la dépense est obligatoire'
+          : null;
+      _tagError = _selectedTag == null
+          ? 'La sélection d\'un tag est obligatoire'
+          : null;
     });
 
     if (_nameError == null && _tagError == null) {
-      widget.onReasonSelected(nameController.text, descriptionController.text, _selectedTag, _showTagList);
+      widget.onReasonSelected(nameController.text, descriptionController.text,
+          _selectedTag, _showTagList);
       Navigator.pop(context);
     }
   }
@@ -106,9 +113,11 @@ class _ReasonExpenseState extends State<ReasonExpense> {
               textAlign: TextAlign.left,
             ),
             const SizedBox(height: 24.0),
-            _buildTextField('Nom de la dépense', nameController, context, errorText: _nameError),
+            _buildTextField('Nom de la dépense', nameController, context,
+                errorText: _nameError),
             const SizedBox(height: 16.0),
-            _buildDescriptionField('Description', descriptionController, context),
+            _buildDescriptionField(
+                'Description', descriptionController, context),
             const SizedBox(height: 16.0),
             GestureDetector(
               onTap: _toggleTagListVisibility,
@@ -123,8 +132,8 @@ class _ReasonExpenseState extends State<ReasonExpense> {
             const SizedBox(height: 16.0),
             _showTagList
                 ? _isLoading
-                ? const CircularProgressIndicator()
-                : _buildTagList()
+                    ? const CircularProgressIndicator()
+                    : _buildTagList()
                 : Container(),
             if (_tagError != null)
               Padding(
@@ -148,7 +157,8 @@ class _ReasonExpenseState extends State<ReasonExpense> {
                 ),
                 child: Text(
                   'Valider la raison',
-                  style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                  style:
+                      theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),
               ),
             ),
@@ -158,7 +168,9 @@ class _ReasonExpenseState extends State<ReasonExpense> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, BuildContext context, {String? errorText}) {
+  Widget _buildTextField(
+      String label, TextEditingController controller, BuildContext context,
+      {String? errorText}) {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -194,7 +206,8 @@ class _ReasonExpenseState extends State<ReasonExpense> {
     );
   }
 
-  Widget _buildDescriptionField(String label, TextEditingController controller, BuildContext context) {
+  Widget _buildDescriptionField(
+      String label, TextEditingController controller, BuildContext context) {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -236,13 +249,16 @@ class _ReasonExpenseState extends State<ReasonExpense> {
       spacing: 8.0,
       runSpacing: 12.0,
       children: _tags.map((tag) {
-        final isSelected = _selectedTag != null && _selectedTag!.id == tag.id;  // Comparer les ID des tags
+        final isSelected = _selectedTag != null &&
+            _selectedTag!.id == tag.id; // Comparer les ID des tags
         return GestureDetector(
           onTap: () => _toggleTagSelection(tag),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+              color:
+                  isSelected ? theme.colorScheme.primary : Colors.transparent,
               border: Border.all(color: theme.colorScheme.primary),
               borderRadius: BorderRadius.circular(16.0),
             ),
