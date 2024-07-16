@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:spaceshare/services/event_service.dart';
@@ -91,9 +92,7 @@ class _EventScreenState extends State<EventScreen> {
             child: Text(t(context)!.addExpense),
           ),
           CupertinoActionSheetAction(
-            onPressed: () {
-
-            },
+            onPressed: () {},
             child: Text(t(context)!.addRefund),
           ),
         ],
@@ -121,7 +120,7 @@ class _EventScreenState extends State<EventScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              context.pop();
+              context.go('/');
             },
           ),
           actions: [
@@ -224,7 +223,166 @@ class _EventScreenState extends State<EventScreen> {
             final expensesCount = eventProvider.expenses.length;
 
             if (event == null) {
-              return const Center(child: CircularProgressIndicator());
+              return Skeletonizer(
+                enabled: true,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 200,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 100,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              const SizedBox(height: 8.0),
+                              Container(
+                                width: 150,
+                                height: 16,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 40.0),
+                      Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              width: 70,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            Container(
+                              width: 70,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            Container(
+                              width: 70,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8.0),
+                        Container(
+                          width: double.infinity,
+                          height: 2,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 24.0),
+                      Expanded(
+                        child: Column(
+                          children: List.generate(
+                            8,
+                            (index) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              color: theme
+                                                  .colorScheme.primaryContainer,
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16.0),
+                                          Container(
+                                            width: 100,
+                                            height: 12,
+                                            decoration: BoxDecoration(
+                                              color: theme
+                                                  .colorScheme.primaryContainer,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        width: 50,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                          color: theme
+                                              .colorScheme.primaryContainer,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 2,
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primaryContainer,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             }
 
             return Padding(
