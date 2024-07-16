@@ -71,7 +71,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _purposeController.text = widget.initialExpense!.name;
       _descriptionController.text = widget.initialExpense!.description;
       _dateController.text =
-          DateFormat('dd/MM/yyyy').format(widget.initialExpense!.createdAt);
+          DateFormat('dd/MM/yyyy').format(widget.initialExpense!.date);
       _selectedTag = widget.initialExpense?.tag;
       _selectedParticipants = widget.initialExpense!.participants;
       _selectedPayers = widget.initialExpense!.payers;
@@ -180,6 +180,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
             'amount': payer.amount,
           };
         }).toList(),
+        'date': DateFormat('yyyy-MM-dd')
+            .format(DateFormat('dd/MM/yyyy').parse(_dateController.text)),
       };
       widget.onSubmit(data);
     }
@@ -270,9 +272,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
   }
 
   void _selectDate(BuildContext context) async {
+    DateTime? initialDate = widget.initialExpense?.date ?? DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initialDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
