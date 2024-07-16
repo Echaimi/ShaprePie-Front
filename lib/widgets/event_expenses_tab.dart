@@ -28,7 +28,8 @@ class EventExpensesTab extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  builder: (context) => ExpenseDetailsModal(expense: expense, eventProvider: eventProvider),
+                  builder: (context) => ExpenseDetailsModal(
+                      expense: expense, eventProvider: eventProvider),
                 );
               },
               child: ExpenseItem(expense: expense),
@@ -70,7 +71,7 @@ class ExpenseItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '${t(context)!.expenseDate} ${dateFormat.format(expense.createdAt)}',
+                        '${t(context)!.expenseDate} ${dateFormat.format(expense.date)}',
                         style: theme.textTheme.bodySmall,
                       ),
                       const Spacer(),

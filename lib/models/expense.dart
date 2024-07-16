@@ -15,19 +15,22 @@ class Expense {
   final int eventId;
   final List<Participant> participants;
   final List<Payer> payers;
+  final DateTime date;
 
-  Expense(
-      {required this.id,
-      required this.name,
-      required this.amount,
-      required this.description,
-      required this.createdAt,
-      required this.author,
-      required this.image,
-      required this.tag,
-      required this.eventId,
-      required this.participants,
-      required this.payers});
+  Expense({
+    required this.id,
+    required this.name,
+    required this.amount,
+    required this.description,
+    required this.createdAt,
+    required this.author,
+    required this.image,
+    required this.tag,
+    required this.eventId,
+    required this.participants,
+    required this.payers,
+    required this.date,
+  });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
@@ -46,6 +49,7 @@ class Expense {
       payers: (json['payers'] as List)
           .map((payer) => Payer.fromJson(payer))
           .toList(),
+      date: DateTime.parse(json['date']),
     );
   }
 }

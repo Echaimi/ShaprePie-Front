@@ -36,7 +36,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                   style: theme.textTheme.titleMedium,
                 ),
                 Text(
-                  '${t(context)!.expenseDate} ${dateFormat.format(expense.createdAt)}',
+                  '${t(context)!.expenseDate} ${dateFormat.format(expense.date)}',
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 8),
