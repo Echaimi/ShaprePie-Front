@@ -101,8 +101,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   cardColor: Colors.grey[50],
                   dividerColor: Colors.black,
                   textTheme: const TextTheme(
-                    bodyMedium:
-                        TextStyle(color: Colors.black), // Pagination text
+                    bodyMedium: TextStyle(color: Colors.black),
                   ),
                 ),
                 child: LayoutBuilder(

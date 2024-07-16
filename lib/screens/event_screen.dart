@@ -4,7 +4,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:spaceshare/services/event_service.dart';
-import 'package:spaceshare/widgets/AddButton.dart';
+import 'package:spaceshare/widgets/add_button.dart';
 import 'package:spaceshare/widgets/bottom_modal.dart';
 import 'package:spaceshare/widgets/event_balances_tab.dart';
 import 'package:spaceshare/widgets/event_expenses_tab.dart';
@@ -92,7 +92,10 @@ class _EventScreenState extends State<EventScreen> {
             child: Text(t(context)!.addExpense),
           ),
           CupertinoActionSheetAction(
-            onPressed: () {},
+            onPressed: () {
+              context.pop();
+              context.push('/events/${widget.eventId}/refunds/create');
+            },
             child: Text(t(context)!.addRefund),
           ),
         ],
@@ -222,7 +225,8 @@ class _EventScreenState extends State<EventScreen> {
             final userTotalExpenses = eventProvider.userTotalExpenses;
             final userAmountOwed = eventProvider.userAmountOwed;
             final usersCount = users.length;
-            final expensesCount = eventProvider.expenses.length;
+            final expensesCount =
+                eventProvider.expenses.length + eventProvider.refunds.length;
             final userBalance = eventProvider.userBalance;
             final userBalanceIsPositive = (userBalance?.amount ?? 0) >= 0;
 
@@ -477,8 +481,8 @@ class _EventScreenState extends State<EventScreen> {
                   TabBar(
                     dividerColor:
                         Theme.of(context).colorScheme.primaryContainer,
-                    indicatorColor: Theme.of(context).colorScheme.secondary,
-                    labelColor: Theme.of(context).colorScheme.secondary,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    labelColor: Theme.of(context).colorScheme.primary,
                     unselectedLabelColor: Colors.white,
                     labelStyle: const TextStyle(fontSize: 12.0),
                     tabs: [
