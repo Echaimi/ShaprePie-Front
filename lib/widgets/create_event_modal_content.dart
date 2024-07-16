@@ -29,7 +29,7 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to create event: $e')),
       );
-      return null; // Ensure this returns null on failure
+      return null;
     }
   }
 

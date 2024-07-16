@@ -69,5 +69,13 @@
   "activateEvent": "evenement actif ",
   "backToEvents": "retour aux évenements actif",
   "owedToMe": "On me doit",
-  "archiveEventTitle": "Archiver l'évènement" 
+  "archiveEventTitle": "Archiver l'évènement",
+  "refundDate": "Date de remboursement",
+  "refundDetails": "Détails du remboursement",
+  "refundFrom": "Remboursement de",
+  "refundTo": "Remboursement à",
+  "amount": "Montant",
+  "close": "Fermer",
+  "to": "à",
+  "details":"details"
 }

@@ -29,7 +29,6 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
   void initState() {
     super.initState();
     if (widget.initialParticipants.isEmpty) {
-      // Select all users as participants by default
       selectedParticipants = {
         for (var user in widget.users) user.username: true
       };
@@ -78,10 +77,8 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
     final int selectedCount =
         selectedParticipants.values.where((selected) => selected).length;
 
-    // Calculate the remaining amount
     double remainingAmount = totalAmount - editedAmount;
 
-    // Adjust the amounts for the other selected users
     if (selectedCount > 1) {
       final double dividedAmount =
           (remainingAmount / (selectedCount - 1) * 100).floor() / 100;
@@ -92,7 +89,6 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
         }
       }
 
-      // Adjust the last user's amount to account for rounding errors
       double sumOfAmounts = editedAmount;
       for (var entry in amountControllers.entries) {
         if (selectedParticipants[entry.key]! && entry.key != username) {

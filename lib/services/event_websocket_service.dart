@@ -10,6 +10,7 @@ import 'package:spaceshare/models/user_with_expenses.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
 import '../models/event.dart';
 import '../models/expense.dart';
+import '../models/refund.dart';
 
 class EventWebsocketProvider with ChangeNotifier {
   WebSocketChannel? _channel;
@@ -19,6 +20,7 @@ class EventWebsocketProvider with ChangeNotifier {
   List<Expense> _expenses = [];
   List<Balance> _balances = [];
   List<Transaction> _transactions = [];
+  List<Refund> _refunds = [];
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   EventWebsocketProvider(int eventId, this._authProvider) {
@@ -30,6 +32,8 @@ class EventWebsocketProvider with ChangeNotifier {
   List<Expense> get expenses => _expenses;
   List<Balance> get balances => _balances;
   List<Transaction> get transactions => _transactions;
+  List<Refund> get refunds => _refunds;
+
   double get totalExpenses =>
       _expenses.fold(0, (sum, expense) => sum + expense.amount);
 
@@ -65,6 +69,15 @@ class EventWebsocketProvider with ChangeNotifier {
     return _balances.firstWhere((balance) => balance.user.id == userId);
   }
 
+  Refund? getRefundById(int id) {
+    try {
+      return _refunds.firstWhere((refund) => refund.id == id);
+    } catch (e) {
+      print('Refund with id $id not found: $e');
+      return null;
+    }
+  }
+
   Future<void> _initialize(int eventId) async {
     try {
       final token = await secureStorage.read(key: 'auth_token');
@@ -95,6 +108,17 @@ class EventWebsocketProvider with ChangeNotifier {
             .toList();
         _updateExpenses(expenses);
         break;
+      case 'refunds':
+        try {
+          final refunds = (webSocketMessage.payload as List)
+              .map((r) => Refund.fromJson(r))
+              .toList();
+          _updateRefunds(refunds);
+        } catch (e, stackTrace) {
+          print('Error parsing refunds: $e');
+          print(stackTrace);
+        }
+        break;
       case 'users':
         final users = (webSocketMessage.payload as List)
             .map((u) => UserWithExpenses.fromJson(u))
@@ -118,6 +142,17 @@ class EventWebsocketProvider with ChangeNotifier {
     }
   }
 
+  void createRefund(Map<String, dynamic> data) {
+    _sendMessage(WebSocketMessage(type: 'createRefund', payload: data));
+    notifyListeners();
+  }
+
+  void updateRefund(int refundId, Map<String, dynamic> data) {
+    data["id"] = refundId;
+    _sendMessage(WebSocketMessage(type: 'updateRefund', payload: data));
+    notifyListeners();
+  }
+
   void _updateEvent(Event event) {
     _event = event;
     print('Event updated: ${event.name}');
@@ -126,6 +161,18 @@ class EventWebsocketProvider with ChangeNotifier {
 
   void _updateExpenses(List<Expense> expenses) {
     _expenses = expenses;
+    notifyListeners();
+  }
+
+  void _updateRefunds(List<Refund> refunds) {
+    print('Updating refunds: $refunds');
+    _refunds = refunds;
+    notifyListeners();
+  }
+
+  void deleteRefund(int refundId) {
+    final data = {'id': refundId};
+    _sendMessage(WebSocketMessage(type: 'deleteRefund', payload: data));
     notifyListeners();
   }
 

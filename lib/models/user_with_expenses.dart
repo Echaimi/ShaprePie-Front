@@ -4,6 +4,7 @@ import 'package:spaceshare/models/user.dart';
 class UserWithExpenses extends User {
   final int expenseCount;
   final double totalExpenses;
+  final double refundAmount;
 
   UserWithExpenses({
     required super.id,
@@ -16,6 +17,7 @@ class UserWithExpenses extends User {
     super.deletedAt,
     required this.expenseCount,
     required this.totalExpenses,
+    required this.refundAmount,
   });
 
   factory UserWithExpenses.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class UserWithExpenses extends User {
           json['DeletedAt'] != null ? DateTime.parse(json['DeletedAt']) : null,
       expenseCount: json['expense_count'] as int,
       totalExpenses: (json['total_expenses'] as num).toDouble(),
+      refundAmount: (json['refund_amount'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -41,6 +44,7 @@ class UserWithExpenses extends User {
     final json = super.toJson();
     json['expense_count'] = expenseCount;
     json['total_expenses'] = totalExpenses;
+    json['refund_amount'] = refundAmount;
     return json;
   }
 }

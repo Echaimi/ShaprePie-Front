@@ -130,7 +130,7 @@ class _UsersScreenState extends State<UsersScreen> {
                         'password': 'newpassword123456789', // Default password
                       });
                     } else {
-                      await widget.userService.updateUser(user.id!, {
+                      await widget.userService.updateUser(user.id, {
                         'email': email,
                         'username': username,
                       });
@@ -283,7 +283,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                                   color: Colors.black),
                                               onPressed: () =>
                                                   _showDeleteConfirmationDialog(
-                                                      user.id!),
+                                                      user.id),
                                             ),
                                           ],
                                         ),
