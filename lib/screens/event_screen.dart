@@ -219,8 +219,12 @@ class _EventScreenState extends State<EventScreen> {
             final event = eventProvider.event;
             final users = eventProvider.users;
             final totalExpenses = eventProvider.totalExpenses;
+            final userTotalExpenses = eventProvider.userTotalExpenses;
+            final userAmountOwed = eventProvider.userAmountOwed;
             final usersCount = users.length;
             final expensesCount = eventProvider.expenses.length;
+            final userBalance = eventProvider.userBalance;
+            final userBalanceIsPositive = (userBalance?.amount ?? 0) >= 0;
 
             if (event == null) {
               return Skeletonizer(
@@ -430,6 +434,45 @@ class _EventScreenState extends State<EventScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(children: [
+                          Text(
+                            '${t(context)!.iSpent}: ',
+                            style: theme.textTheme.bodyLarge,
+                          ),
+                          Text(
+                            '$userTotalExpenses €',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ]),
+                        const SizedBox(width: 32.0),
+                        Row(
+                          children: [
+                            Text(
+                              '${t(context)!.owedToMe}: ',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                            Text(
+                              '$userAmountOwed €',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: userBalanceIsPositive
+                                    ? const Color(0xFF3E908E)
+                                    : Colors.white,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 32.0),
                   TabBar(
                     dividerColor:
@@ -468,45 +511,7 @@ class _EventScreenState extends State<EventScreen> {
             );
           },
         ),
-        bottomNavigationBar: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Colors.white, width: 1.0)),
-          ),
-          child: BottomAppBar(
-            color: Theme.of(context).colorScheme.background,
-            child: SizedBox(
-              height: 60.0,
-              child: Consumer<EventWebsocketProvider>(
-                builder: (context, eventProvider, child) {
-                  final userTotalExpenses = eventProvider.userTotalExpenses;
-                  final userAmountOwed = eventProvider.userAmountOwed;
-
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(t(context)!.iSpent),
-                          Text('$userTotalExpenses €'),
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(t(context)!.owedToMe),
-                          Text('$userAmountOwed €'),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: AddButton(
           onPressed: () {
             if (isArchived == true) {

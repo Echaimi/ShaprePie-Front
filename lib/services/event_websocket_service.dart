@@ -41,7 +41,7 @@ class EventWebsocketProvider with ChangeNotifier {
         .fold(0, (sum, expense) => sum + expense.amount);
   }
 
-  double get userAmountOwed {
+  double? get userAmountOwed {
     final userId = _authProvider.user?.id;
 
     if (userId == null || _balances.isEmpty) return 0.00;
@@ -56,6 +56,13 @@ class EventWebsocketProvider with ChangeNotifier {
       print('Expense with id $id not found: $e');
       return null;
     }
+  }
+
+  Balance? get userBalance {
+    final userId = _authProvider.user?.id;
+    if (userId == null || _balances.isEmpty) return null;
+
+    return _balances.firstWhere((balance) => balance.user.id == userId);
   }
 
   Future<void> _initialize(int eventId) async {

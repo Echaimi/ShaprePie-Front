@@ -311,9 +311,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 24.0),
                           child: Row(
                             children: [
-                              Icon(Icons.rocket,
-                                  color: theme.colorScheme.primary),
-                              SizedBox(width: 8),
+                              const Icon(Icons.rocket, color: Colors.white),
+                              const SizedBox(width: 8),
                               Text(
                                 'Tes évènements',
                                 style: Theme.of(context).textTheme.titleMedium,
@@ -322,96 +321,42 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Expanded(
-                          child: ListView.builder(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
-                            itemCount: _showArchived
-                                ? _archivedEvents.length
-                                : _events.length,
-                            itemBuilder: (context, index) {
-                              final Event event = _showArchived
-                                  ? _archivedEvents[index]
-                                  : _events[index];
-                              final isCategory3 = event.category.id == 3;
-                              return GestureDetector(
-                                onTap: () async {
-                                  final result =
-                                      await context.push('/events/${event.id}');
-                                  if (result == true) {
-                                    _fetchEvents();
-                                  }
-                                },
-                                onLongPress: () {
-                                  _showArchiveOptions(context, event);
-                                },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Container(
-                                          width: double.infinity,
-                                          height: 80,
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primaryContainer,
-                                            border: Border.all(
-                                              color:
-                                                  Colors.white.withOpacity(0.4),
-                                              width: 1.0,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          padding: const EdgeInsets.only(
-                                              left: 40, right: 8),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                event.name,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyLarge,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                '${event.userCount} personne${event.userCount! > 1 ? 's' : ''}',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                          child: _showArchived
+                              ? _archivedEvents.isEmpty
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Text(
+                                        'Aucun évènement dans cette galaxie pour l\'instant',
+                                        style: theme.textTheme.bodyMedium,
                                       ),
-                                      Positioned(
-                                        left: -20,
-                                        top: 0,
-                                        bottom: 0,
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Image.asset(
-                                            _getCategoryImagePath(
-                                                event.category.id),
-                                            height: isCategory3 ? 55 : 50,
-                                            width: isCategory3 ? 55 : 50,
-                                          ),
-                                        ),
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 24.0),
+                                      itemCount: _archivedEvents.length,
+                                      itemBuilder: (context, index) {
+                                        final Event event =
+                                            _archivedEvents[index];
+                                        return _buildEventItem(context, event);
+                                      },
+                                    )
+                              : _events.isEmpty
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Text(
+                                        'Aucun évènement dans cette galaxie pour l\'instant',
+                                        style: theme.textTheme.bodyMedium,
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 24.0),
+                                      itemCount: _events.length,
+                                      itemBuilder: (context, index) {
+                                        final Event event = _events[index];
+                                        return _buildEventItem(context, event);
+                                      },
+                                    ),
                         ),
                       ],
                     );
@@ -432,6 +377,75 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton:
           add_button.AddButton(onPressed: _onAddButtonPressed),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildEventItem(BuildContext context, Event event) {
+    final isCategory3 = event.category.id == 3;
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: () async {
+        final result = await context.push('/events/${event.id}');
+        if (result == true) {
+          _fetchEvents();
+        }
+      },
+      onLongPress: () {
+        _showArchiveOptions(context, event);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: double.infinity,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.4),
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.only(left: 40, right: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.name,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${event.userCount} personne${event.userCount! > 1 ? 's' : ''}',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              left: -20,
+              top: 0,
+              bottom: 0,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  _getCategoryImagePath(event.category.id),
+                  height: isCategory3 ? 55 : 50,
+                  width: isCategory3 ? 55 : 50,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
