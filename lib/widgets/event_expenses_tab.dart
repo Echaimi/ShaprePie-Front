@@ -54,9 +54,9 @@ class ExpenseItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: Colors.grey),
+            bottom: BorderSide(color: theme.colorScheme.primaryContainer),
           ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16.0),

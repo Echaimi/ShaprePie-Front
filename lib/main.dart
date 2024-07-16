@@ -129,6 +129,7 @@ class AppRouter extends StatelessWidget {
           background: const Color(0xFF0F0E17),
           primaryContainer: const Color(0xFF232136),
           secondaryContainer: const Color(0xFF373455),
+          error: const Color(0xFFCF7564),
         ),
         scaffoldBackgroundColor: const Color(0xFF0F0E17),
         textTheme: theme.textTheme.copyWith(

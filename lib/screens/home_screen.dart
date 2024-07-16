@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/widgets/EventNotFound.dart';
 import 'package:spaceshare/widgets/create_event_modal_content.dart';
@@ -8,7 +9,6 @@ import '../services/event_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/event.dart';
 import 'package:spaceshare/widgets/AddButton.dart' as add_button;
-import 'package:spaceshare/widgets/bottom_navigation_bar.dart';
 import 'package:spaceshare/widgets/bottom_modal.dart';
 import 'package:spaceshare/widgets/join_us.dart';
 import 'package:spaceshare/widgets/join_event_modal_content.dart';
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await _fetchEvents();
     }
     setState(() {
-      _title = t(context)?.yourEvents ?? 'Your Events';
+      _title = t(context)?.yourEvents ?? 'Vos Évènements';
     });
   }
 
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 context.pop();
                 _updateEventState(event.id, 'archived');
               },
-              child: Text(t(context)?.archiveEvent ?? 'Archive Event'),
+              child: Text(t(context)?.archiveEvent ?? 'Archiver l\'événement'),
             ),
           if (event.state == 'archived')
             CupertinoActionSheetAction(
@@ -118,14 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 context.pop();
                 _updateEventState(event.id, 'active');
               },
-              child: Text(t(context)?.activateEvent ?? 'Activate Event'),
+              child: Text(t(context)?.activateEvent ?? 'Activer l\'événement'),
             ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             context.pop();
           },
-          child: Text(t(context)?.cancel ?? 'Cancel'),
+          child: Text(t(context)?.cancel ?? 'Annuler'),
         ),
       ),
     );
@@ -164,21 +164,21 @@ class _HomeScreenState extends State<HomeScreen> {
               context.pop();
               _showModal(context, const CreateEventModalContent());
             },
-            child: Text(t(context)?.createEvent ?? 'Create Event'),
+            child: Text(t(context)?.createEvent ?? 'Créer un événement'),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               context.pop();
               _showModal(context, const JoinEventModalContent());
             },
-            child: Text(t(context)?.joinEvent ?? 'Join Event'),
+            child: Text(t(context)?.joinEvent ?? 'Rejoindre un événement'),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () {
             context.pop();
           },
-          child: Text(t(context)?.cancel ?? 'Cancel'),
+          child: Text(t(context)?.cancel ?? 'Annuler'),
         ),
       ),
     );
@@ -214,11 +214,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _title,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
         backgroundColor: Theme.of(context).colorScheme.background,
+        title: IconButton(
+          icon: Text(
+            _showArchived
+                ? '${t(context)?.backToEvents ?? 'Retour aux événements'} (${_events.length})'
+                : '${t(context)?.archiveEvent ?? 'Événements archivés'} (${_archivedEvents.length})',
+            style: TextStyle(color: theme.colorScheme.primary),
+          ),
+          onPressed: () async {
+            setState(() {
+              _showArchived = !_showArchived;
+              _isLoading = true;
+            });
+            await _fetchEvents();
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: SvgPicture.asset(
+              'lib/assets/icons/astronaut.svg',
+              height: 24.0,
+              width: 24.0,
+              placeholderBuilder: (BuildContext context) =>
+                  Icon(Icons.error, color: theme.colorScheme.error),
+            ),
+            onPressed: () {
+              context.go('/profile');
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -284,25 +309,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: TextButton(
-                            onPressed: () async {
-                              setState(() {
-                                _showArchived = !_showArchived;
-                                _isLoading = true;
-                                _title = _showArchived
-                                    ? t(context)?.archiveEventTitle ??
-                                        'Archive Event'
-                                    : t(context)?.yourEvents ?? 'Your Events';
-                              });
-                              await _fetchEvents();
-                            },
-                            child: Text(
-                              _showArchived
-                                  ? '${t(context)?.backToEvents ?? 'Back to Events'} (${_events.length})'
-                                  : '${t(context)?.archiveEvent ?? 'Archive Event'} (${_archivedEvents.length})',
-                              style:
-                                  TextStyle(color: theme.colorScheme.primary),
-                            ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.rocket,
+                                  color: theme.colorScheme.primary),
+                              SizedBox(width: 8),
+                              Text(
+                                'Tes évènements',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
                           ),
                         ),
                         Expanded(
@@ -415,19 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton:
           add_button.AddButton(onPressed: _onAddButtonPressed),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          return BottomNavigationBarWidget(
-            selectedIndex: _selectedIndex,
-            onItemTapped: _onItemTapped,
-            onAddButtonPressed: _onAddButtonPressed,
-            isProfileScreen: false,
-            isAuthenticated: authProvider.isAuthenticated,
-            showAuthenticationModal: () => _showModal(context, const JoinUs()),
-          );
-        },
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

@@ -13,6 +13,7 @@ class EventUsersTab extends StatelessWidget {
     return Consumer<EventWebsocketProvider>(
       builder: (context, eventProvider, child) {
         final users = eventProvider.users;
+        final theme = Theme.of(context);
         if (users.isEmpty) {
           return Center(child: Text(t(context)!.noUsersAvailable));
         }
@@ -25,7 +26,7 @@ class EventUsersTab extends StatelessWidget {
                 border: Border(
                   bottom: index == users.length - 1
                       ? BorderSide.none
-                      : const BorderSide(color: Colors.grey),
+                      : BorderSide(color: theme.colorScheme.primaryContainer),
                 ),
               ),
               child: ListTile(

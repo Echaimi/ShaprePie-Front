@@ -8,12 +8,14 @@ class BalancesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: balances.map((balance) {
           return Container(
-            width: 60.0,
+            width: 76.0,
             margin: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -24,11 +26,12 @@ class BalancesChart extends StatelessWidget {
                     alignment: Alignment.bottomCenter,
                     children: [
                       Container(
-                        width: 40.0,
+                        width: 60.0,
                         height: (balance.amount.abs() / _maxAmount()) * 200,
                         decoration: BoxDecoration(
-                          color:
-                              balance.amount >= 0 ? Colors.green : Colors.red,
+                          color: balance.amount >= 0
+                              ? const Color(0xFF3E908E)
+                              : theme.colorScheme.error,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
@@ -38,10 +41,13 @@ class BalancesChart extends StatelessWidget {
                 const SizedBox(height: 8.0),
                 Text(balance.user.username),
                 Text(
-                  '${balance.amount.toStringAsFixed(2)} €',
+                  '${balance.amount >= 0 ? '+' : ''}${balance.amount.toStringAsFixed(2)} €',
                   style: TextStyle(
-                    color: balance.amount >= 0 ? Colors.green : Colors.red,
-                  ),
+                      color: balance.amount >= 0
+                          ? const Color(0xFF3E908E)
+                          : theme.colorScheme.error,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0),
                 ),
               ],
             ),
