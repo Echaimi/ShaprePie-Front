@@ -14,7 +14,7 @@ class CreateRefundScreen extends StatelessWidget {
     final eventWebsocketProvider = Provider.of<EventWebsocketProvider>(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.primaryContainer,
+      backgroundColor: const Color(0xFF3E908E),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
