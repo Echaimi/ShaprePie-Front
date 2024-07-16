@@ -77,7 +77,7 @@ class _EventCodeModalState extends State<EventCodeModal> {
                       widget.code,
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: _copied
-                            ? Colors.green
+                            ? const Color(0xFF3E908E)
                             : theme.colorScheme.onPrimary,
                       ),
                     ),

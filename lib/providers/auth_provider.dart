@@ -43,6 +43,8 @@ class AuthProvider with ChangeNotifier {
       await _storage.write(key: 'auth_token', value: response['token']);
       await loadCurrentUser();
       _isAuthenticated = true;
+      final firebaseToken = await FirebaseMessaging.instance.getToken();
+      _firebaseTokenHandler(firebaseToken);
       notifyListeners();
     } catch (e) {
       rethrow;
