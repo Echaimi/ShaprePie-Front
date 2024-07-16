@@ -12,6 +12,7 @@ import 'expense_reason.dart';
 import '../models/tag.dart';
 import '../models/participant.dart';
 import '../models/payer.dart';
+import 'package:go_router/go_router.dart';
 
 class ExpenseForm extends StatefulWidget {
   final Function(Map<String, dynamic>) onSubmit;
@@ -180,9 +181,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
           };
         }).toList(),
       };
-      print(data);
       widget.onSubmit(data);
-      Navigator.pop(context);
     }
   }
 
