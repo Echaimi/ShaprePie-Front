@@ -27,8 +27,7 @@ class EventService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
-      return Event.fromJson(
-          responseData['data']); // Ensure this matches the response structure
+      return Event.fromJson(responseData['data']);
     } else {
       final responseData = json.decode(response.body);
       throw Exception('Failed to create event: ${responseData['message']}');

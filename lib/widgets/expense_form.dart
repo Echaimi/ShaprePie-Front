@@ -77,15 +77,12 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _selectedPayers = widget.initialExpense!.payers;
     } else {
       _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
-      // Select all users as participants by default
       _selectedParticipants = eventWebsocketProvider.users
           .map((user) => Participant(user: user, amount: 0))
           .toList();
-      // Select the current user as payer by default
       _selectedPayers = [Payer(user: authProvider.user!, amount: 0)];
     }
 
-    // Set the initial text for participant and payer controllers
     _updateParticipantControllerText(authProvider.user!);
     _updatePayerControllerText(authProvider.user!);
 
@@ -254,8 +251,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
           child: ExpensePayers(
             users: eventWebsocketProvider.users,
             currentUser: currentUser,
-            totalAmount: double.tryParse(_amountController.text) ??
-                0.0, // Pass the total amount
+            totalAmount: double.tryParse(_amountController.text) ?? 0.0,
             initialPayers: _selectedPayers,
             onPayersSelected: (selectedPayers) {
               setState(() {

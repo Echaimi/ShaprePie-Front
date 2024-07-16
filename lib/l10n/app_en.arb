@@ -68,5 +68,13 @@
   "balance": "Balance",
   "iSpent": "I spent",
   "owedToMe": "Owed to me",
-  "archiveEventTitle": "Archive Event" 
+  "archiveEventTitle": "Archive Event",
+  "refundDetails": "Refund Details",
+  "refundFrom": "Refund From",
+  "refundTo": "Refund To",
+  "amount": "Amount",
+  "close": "Close",
+  "refundDate": "Refund Date",
+  "to": "to",
+  "details":"details"
 }

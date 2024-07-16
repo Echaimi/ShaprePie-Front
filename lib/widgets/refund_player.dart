@@ -3,14 +3,14 @@ import 'package:spaceshare/models/user.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
 import '../models/payer.dart';
 
-class ExpensePayers extends StatefulWidget {
+class RefundPayers extends StatefulWidget {
   final List<UserWithExpenses> users;
   final User? currentUser;
   final double totalAmount;
   final Function(List<Payer>) onPayersSelected;
   final List<Payer> initialPayers;
 
-  const ExpensePayers({
+  const RefundPayers({
     super.key,
     required this.users,
     this.currentUser,
@@ -20,10 +20,10 @@ class ExpensePayers extends StatefulWidget {
   });
 
   @override
-  _ExpensePayersState createState() => _ExpensePayersState();
+  _RefundPayersState createState() => _RefundPayersState();
 }
 
-class _ExpensePayersState extends State<ExpensePayers> {
+class _RefundPayersState extends State<RefundPayers> {
   late List<UserWithExpenses> sortedUsers;
   late Map<String, bool> selectedPayers;
   late Map<String, TextEditingController> amountControllers;
@@ -53,7 +53,9 @@ class _ExpensePayersState extends State<ExpensePayers> {
       amountControllers = {
         for (var user in sortedUsers)
           user.username: TextEditingController(
-              text: user.id == widget.currentUser?.id ? '0' : '0')
+              text: user.id == widget.currentUser?.id
+                  ? widget.totalAmount.toString()
+                  : '0')
       };
     } else {
       selectedPayers = {
@@ -80,7 +82,6 @@ class _ExpensePayersState extends State<ExpensePayers> {
         .fold(0, (sum, amount) => sum + amount);
 
     const double tolerance = 0.01;
-
     setState(() {
       if (totalAmount < 0) {
         errorMessage = 'Le montant total ne peut pas être inférieur à zéro.';
@@ -191,7 +192,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
         children: [
           Center(
             child: Text(
-              'Qui a Khalass ?',
+              'Qui doit rembourser ?',
               style: theme.textTheme.titleSmall!.copyWith(
                 color: Colors.white,
               ),

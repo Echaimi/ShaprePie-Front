@@ -20,6 +20,7 @@ import 'package:spaceshare/services/auth_service.dart';
 import 'package:spaceshare/services/event_service.dart';
 import 'package:spaceshare/services/user_service.dart';
 import 'providers/LanguageProvider.dart';
+import 'screens/create_refund_screen.dart';
 import 'screens/event_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -29,6 +30,8 @@ import 'package:spaceshare/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+
+import 'screens/update_refund_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -213,6 +216,43 @@ class AppRouter extends StatelessWidget {
                       }
                       return UpdateExpenseScreen(
                         expenseId: expenseId,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    name: 'create_refund',
+                    path: 'refunds/create',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id'];
+                      final eventId = int.tryParse(id!);
+                      if (eventId == null) {
+                        throw const FormatException('Failed to parse ID');
+                      }
+                      final eventProvider = Provider.of<EventWebsocketProvider>(
+                          context,
+                          listen: false);
+                      return CreateRefundScreen(eventProvider: eventProvider);
+                    },
+                  ),
+                  GoRoute(
+                    name: 'edit_refund',
+                    path: 'refunds/:refundId/edit',
+                    builder: (context, state) {
+                      final id = state.pathParameters['refundId'];
+                      final refundId = int.tryParse(id!);
+                      if (refundId == null) {
+                        throw const FormatException('Failed to parse ID');
+                      }
+                      final eventProvider = Provider.of<EventWebsocketProvider>(
+                          context,
+                          listen: false);
+                      final refund = eventProvider.getRefundById(refundId);
+                      if (refund == null) {
+                        throw const FormatException('Failed to find Refund');
+                      }
+                      return UpdateRefundScreen(
+                        refund: refund,
+                        eventProvider: eventProvider,
                       );
                     },
                   ),

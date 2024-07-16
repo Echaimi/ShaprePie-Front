@@ -127,8 +127,8 @@ class _EventFormState extends State<EventForm> {
       selected: selectedCategoryId == category.id,
       onSelected: (bool selected) {
         setState(() {
-          selectedCategoryId = category.id; // Update selected category ID
-          widget.onCategorySelected(selectedCategoryId); // Call the callback
+          selectedCategoryId = category.id;
+          widget.onCategorySelected(selectedCategoryId);
         });
       },
       backgroundColor: colorScheme.primaryContainer,
