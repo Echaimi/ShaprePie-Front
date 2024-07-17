@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 
-import '../widgets/refundForm.dart';
+import '../widgets/refund_form.dart';
 
 class CreateRefundScreen extends StatelessWidget {
   const CreateRefundScreen(

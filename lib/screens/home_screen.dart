@@ -211,39 +211,51 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: isAuthenticated
-            ? IconButton(
-                icon: Text(
-                  _showArchived
-                      ? '${t(context)?.backToEvents ?? 'Retour aux événements'} (${_events.length})'
-                      : '${t(context)?.archiveEvent ?? 'Événements archivés'} (${_archivedEvents.length})',
-                  style: TextStyle(color: theme.colorScheme.primary),
-                ),
-                onPressed: () async {
+            ? GestureDetector(
+                onTap: () async {
                   setState(() {
                     _showArchived = !_showArchived;
                     _isLoading = true;
                   });
                   await _fetchEvents();
                 },
+                child: Text(
+                  _showArchived
+                      ? '${t(context)?.backToEvents ?? 'Retour aux événements'} (${_events.length})'
+                      : '${t(context)?.archiveEvent ?? 'Événements archivés'} (${_archivedEvents.length})',
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontSize: 12.0,
+                  ),
+                ),
               )
             : null,
         actions: [
           if (authProvider.user != null)
             Row(
               children: [
-                Text(authProvider.user?.username ?? '',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    )),
-                const SizedBox(width: 4),
-                IconButton(
-                  icon: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(authProvider.user?.avatar.url ?? ''),
+                Padding(
+                  padding: const EdgeInsets.only(right: 28.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        authProvider.user?.username ?? '',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      GestureDetector(
+                        onTap: () {
+                          context.go('/profile');
+                        },
+                        child: CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(authProvider.user?.avatar.url ?? ''),
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    context.go('/profile');
-                  },
                 ),
               ],
             ),

@@ -12,7 +12,7 @@ class CreateExpenseScreen extends StatelessWidget {
     final eventWebsocketProvider = Provider.of<EventWebsocketProvider>(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.primaryContainer,
+      backgroundColor: const Color(0xFF8685EF),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
