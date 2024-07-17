@@ -92,7 +92,7 @@ class ExpenseItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: theme.colorScheme.primaryContainer),
+            bottom: BorderSide(color: theme.colorScheme.secondaryContainer),
           ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -121,7 +121,7 @@ class ExpenseItem extends StatelessWidget {
                           ),
                           child: Text(
                             t(context)!.newExpense,
-                            style: const TextStyle(color: Colors.white),
+                            style: theme.textTheme.bodyMedium,
                           ),
                         ),
                     ],
@@ -129,9 +129,7 @@ class ExpenseItem extends StatelessWidget {
                   const SizedBox(height: 8.0),
                   Text(
                     expense.name,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+                    style: theme.textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 4.0),
                   Text(

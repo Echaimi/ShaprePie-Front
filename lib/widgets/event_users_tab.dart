@@ -26,7 +26,7 @@ class EventUsersTab extends StatelessWidget {
                 border: Border(
                   bottom: index == users.length - 1
                       ? BorderSide.none
-                      : BorderSide(color: theme.colorScheme.primaryContainer),
+                      : BorderSide(color: theme.colorScheme.secondaryContainer),
                 ),
               ),
               child: ListTile(
@@ -37,25 +37,20 @@ class EventUsersTab extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(user.username,
-                          style: const TextStyle(color: Colors.white)),
-                    ),
+                        child: Text(
+                      user.username,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    )),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
                           '${user.totalExpenses.toStringAsFixed(2)} €',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: Colors.white),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
                           '${user.expenseCount} ${t(context)!.expenses}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: Colors.white),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),

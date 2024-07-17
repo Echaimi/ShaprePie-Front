@@ -114,21 +114,22 @@ class _EventScreenState extends State<EventScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final eventProvider = Provider.of<EventWebsocketProvider>(context);
     final isArchived = eventProvider.event?.state == 'archived';
+    final theme = Theme.of(context);
 
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: theme.colorScheme.primary),
             onPressed: () {
               context.go('/');
             },
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.share_rounded, color: Colors.white),
+              icon: Icon(Icons.share_rounded, color: theme.colorScheme.primary),
               onPressed: () {
                 final eventCode = eventProvider.event?.code;
 
@@ -147,7 +148,7 @@ class _EventScreenState extends State<EventScreen> {
             ),
             if (eventProvider.event?.author.id == authProvider.user!.id) ...[
               IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white),
+                icon: Icon(Icons.edit, color: theme.colorScheme.primary),
                 onPressed: () {
                   if (isArchived == true) {
                     Fluttertoast.showToast(
@@ -177,7 +178,7 @@ class _EventScreenState extends State<EventScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
+                icon: Icon(Icons.delete, color: theme.colorScheme.primary),
                 onPressed: () {
                   showCupertinoModalPopup(
                     context: context,
@@ -242,7 +243,7 @@ class _EventScreenState extends State<EventScreen> {
                           width: 200,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primaryContainer,
+                            color: theme.colorScheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
@@ -252,7 +253,7 @@ class _EventScreenState extends State<EventScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 16.0),
                         padding: const EdgeInsets.all(16.0),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer,
+                          color: theme.colorScheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
@@ -288,7 +289,7 @@ class _EventScreenState extends State<EventScreen> {
                               width: 70,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer,
+                                color: theme.colorScheme.secondaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
@@ -296,7 +297,7 @@ class _EventScreenState extends State<EventScreen> {
                               width: 70,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer,
+                                color: theme.colorScheme.secondaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
@@ -304,7 +305,7 @@ class _EventScreenState extends State<EventScreen> {
                               width: 70,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer,
+                                color: theme.colorScheme.secondaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
@@ -315,7 +316,7 @@ class _EventScreenState extends State<EventScreen> {
                           width: double.infinity,
                           height: 2,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primaryContainer,
+                            color: theme.colorScheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
@@ -340,8 +341,8 @@ class _EventScreenState extends State<EventScreen> {
                                             width: 32,
                                             height: 32,
                                             decoration: BoxDecoration(
-                                              color: theme
-                                                  .colorScheme.primaryContainer,
+                                              color: theme.colorScheme
+                                                  .secondaryContainer,
                                               borderRadius:
                                                   BorderRadius.circular(999),
                                             ),
@@ -351,8 +352,8 @@ class _EventScreenState extends State<EventScreen> {
                                             width: 100,
                                             height: 12,
                                             decoration: BoxDecoration(
-                                              color: theme
-                                                  .colorScheme.primaryContainer,
+                                              color: theme.colorScheme
+                                                  .secondaryContainer,
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
@@ -365,7 +366,7 @@ class _EventScreenState extends State<EventScreen> {
                                         height: 30,
                                         decoration: BoxDecoration(
                                           color: theme
-                                              .colorScheme.primaryContainer,
+                                              .colorScheme.secondaryContainer,
                                           borderRadius:
                                               BorderRadius.circular(8),
                                         ),
@@ -377,7 +378,8 @@ class _EventScreenState extends State<EventScreen> {
                                     width: double.infinity,
                                     height: 2,
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.primaryContainer,
+                                      color:
+                                          theme.colorScheme.secondaryContainer,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
@@ -400,10 +402,10 @@ class _EventScreenState extends State<EventScreen> {
                   Center(
                     child: Text(
                       event.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
@@ -469,7 +471,7 @@ class _EventScreenState extends State<EventScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: userBalanceIsPositive
                                     ? const Color(0xFF3E908E)
-                                    : Colors.white,
+                                    : theme.colorScheme.primary,
                               ),
                             ),
                           ],
@@ -480,10 +482,10 @@ class _EventScreenState extends State<EventScreen> {
                   const SizedBox(height: 32.0),
                   TabBar(
                     dividerColor:
-                        Theme.of(context).colorScheme.primaryContainer,
+                        Theme.of(context).colorScheme.secondaryContainer,
                     indicatorColor: Theme.of(context).colorScheme.primary,
                     labelColor: Theme.of(context).colorScheme.primary,
-                    unselectedLabelColor: Colors.white,
+                    unselectedLabelColor: theme.colorScheme.primary,
                     labelStyle: const TextStyle(fontSize: 12.0),
                     tabs: [
                       Tab(

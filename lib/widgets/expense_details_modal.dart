@@ -78,7 +78,7 @@ class ExpenseDetailsModal extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: theme.colorScheme.background,
+              color: theme.colorScheme.surface,
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
                 child: Column(

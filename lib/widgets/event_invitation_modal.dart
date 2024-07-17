@@ -59,7 +59,7 @@ class _EventCodeModalState extends State<EventCodeModal> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 40, vertical: 16),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.background,
+                      color: theme.colorScheme.surface,
                       border: Border.all(color: const Color(0xFF373455)),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
@@ -78,7 +78,7 @@ class _EventCodeModalState extends State<EventCodeModal> {
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: _copied
                             ? const Color(0xFF3E908E)
-                            : theme.colorScheme.onPrimary,
+                            : theme.colorScheme.primary,
                       ),
                     ),
                   ),
