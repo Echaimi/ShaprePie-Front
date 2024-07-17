@@ -184,192 +184,204 @@ class _ExpensePayersState extends State<ExpensePayers> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              'Qui a Khalass ?',
-              style: theme.textTheme.titleSmall!.copyWith(
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: _selectAll,
+              Center(
                 child: Text(
-                  'Tout sélectionner',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.primary,
-                    decoration: TextDecoration.none,
-                  ),
+                  'Qui a Khalass ?',
+                  style: theme.textTheme.titleSmall!.copyWith(),
                 ),
               ),
-              GestureDetector(
-                onTap: _resetAmounts,
-                child: Text(
-                  'Réinitialiser',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.primary,
-                    decoration: TextDecoration.none,
+              const SizedBox(height: 20.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: _selectAll,
+                    child: Text(
+                      'Tout sélectionner',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
                   ),
+                  GestureDetector(
+                    onTap: _resetAmounts,
+                    child: Text(
+                      'Réinitialiser',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20.0),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'Cliquez pour modifier le montant',
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.secondary),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 20.0),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              'Cliquez pour modifier le montant',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.secondary),
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          Expanded(
-            child: ListView.builder(
-              itemCount: sortedUsers.length,
-              itemBuilder: (context, index) {
-                final user = sortedUsers[index];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (index == 0)
-                      Container(
-                        alignment: Alignment.centerRight,
-                        margin: const EdgeInsets.only(right: 36.0),
-                        child: Icon(
-                          Icons.arrow_downward,
-                          color: theme.colorScheme.secondary,
-                          size: 16.0,
-                        ),
-                      ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      decoration: BoxDecoration(
-                        color: selectedPayers[user.username]!
-                            ? theme.colorScheme.secondaryContainer
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      margin: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: selectedPayers[user.username],
-                            onChanged: (bool? value) {
-                              _onUserSelectionChanged(user.username, value!);
-                            },
-                            activeColor: Colors.green,
-                            checkColor: Colors.white,
-                          ),
-                          Expanded(
-                            child: Text(
-                              user.username,
-                              style: theme.textTheme.bodyLarge
-                                  ?.copyWith(color: Colors.white),
+              const SizedBox(height: 10.0),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: sortedUsers.length,
+                  itemBuilder: (context, index) {
+                    final user = sortedUsers[index];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (index == 0)
+                          Container(
+                            alignment: Alignment.centerRight,
+                            margin: const EdgeInsets.only(right: 36.0),
+                            child: Icon(
+                              Icons.arrow_downward,
+                              color: theme.colorScheme.secondary,
+                              size: 16.0,
                             ),
                           ),
-                          if (selectedPayers[user.username]!)
-                            SizedBox(
-                              width: 70,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller:
-                                          amountControllers[user.username],
-                                      keyboardType:
-                                          const TextInputType.numberWithOptions(
-                                              decimal: true),
-                                      decoration: InputDecoration(
-                                        isDense: true,
-                                        contentPadding: const EdgeInsets.all(8),
-                                        border: InputBorder.none,
-                                        hintText: '0',
-                                        hintStyle: theme.textTheme.bodyLarge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          decoration: BoxDecoration(
+                            color: selectedPayers[user.username]!
+                                ? theme.colorScheme.secondaryContainer
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: selectedPayers[user.username],
+                                onChanged: (bool? value) {
+                                  _onUserSelectionChanged(
+                                      user.username, value!);
+                                },
+                                activeColor: Colors.green,
+                                checkColor: Colors.white,
+                              ),
+                              Expanded(
+                                child: Text(user.username,
+                                    style: theme.textTheme.bodyLarge),
+                              ),
+                              if (selectedPayers[user.username]!)
+                                SizedBox(
+                                  width: 70,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller:
+                                              amountControllers[user.username],
+                                          keyboardType: const TextInputType
+                                              .numberWithOptions(decimal: true),
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            contentPadding:
+                                                const EdgeInsets.all(8),
+                                            border: InputBorder.none,
+                                            hintText: '0',
+                                            hintStyle: theme.textTheme.bodyLarge
+                                                ?.copyWith(
+                                                    color: theme
+                                                        .colorScheme.primary),
+                                          ),
+                                          style: theme.textTheme.bodyLarge
+                                              ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme.primary),
+                                          textAlign: TextAlign.center,
+                                          onChanged: (value) =>
+                                              _onAmountChanged(
+                                                  user.username, value),
+                                        ),
+                                      ),
+                                      Text(
+                                        '€',
+                                        style: theme.textTheme.bodyLarge
                                             ?.copyWith(
                                                 color:
                                                     theme.colorScheme.primary),
                                       ),
-                                      style: theme.textTheme.bodyLarge
-                                          ?.copyWith(
-                                              color: theme.colorScheme.primary),
-                                      textAlign: TextAlign.center,
-                                      onChanged: (value) => _onAmountChanged(
-                                          user.username, value),
-                                    ),
+                                    ],
                                   ),
-                                  Text(
-                                    '€',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                        color: theme.colorScheme.primary),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-          if (errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                errorMessage!,
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
-            ),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: errorMessage == null
-                  ? () {
-                      List<Payer> selectedUsers = sortedUsers
-                          .where(
-                              (user) => selectedPayers[user.username] ?? false)
-                          .map((user) => Payer(
-                                id: user.id,
-                                user: user,
-                                amount: double.tryParse(
-                                        amountControllers[user.username]
-                                                ?.text ??
-                                            '0') ??
-                                    0,
-                              ))
-                          .toList();
-                      widget.onPayersSelected(selectedUsers);
-                      Navigator.pop(context);
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary
-                    .withOpacity(errorMessage == null ? 1.0 : 0.5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
               ),
-              child: Text(
-                'Valider les payeurs',
-                style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    errorMessage!,
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Positioned(
+          bottom: 50,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: SizedBox(
+              width: 302,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: errorMessage == null
+                    ? () {
+                        List<Payer> selectedUsers = sortedUsers
+                            .where((user) =>
+                                selectedPayers[user.username] ?? false)
+                            .map((user) => Payer(
+                                  id: user.id,
+                                  user: user,
+                                  amount: double.tryParse(
+                                          amountControllers[user.username]
+                                                  ?.text ??
+                                              '0') ??
+                                      0,
+                                ))
+                            .toList();
+                        widget.onPayersSelected(selectedUsers);
+                        Navigator.pop(context);
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary
+                      .withOpacity(errorMessage == null ? 1.0 : 0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                ),
+                child: Text(
+                  'Valider les payeurs',
+                  style:
+                      theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

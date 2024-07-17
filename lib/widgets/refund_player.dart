@@ -193,9 +193,7 @@ class _RefundPayersState extends State<RefundPayers> {
           Center(
             child: Text(
               'Qui doit rembourser ?',
-              style: theme.textTheme.titleSmall!.copyWith(
-                color: Colors.white,
-              ),
+              style: theme.textTheme.titleSmall!.copyWith(),
             ),
           ),
           const SizedBox(height: 20.0),

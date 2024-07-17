@@ -15,7 +15,7 @@ class UpdateExpenseScreen extends StatelessWidget {
     final expense = eventWebsocketProvider.getExpenseById(expenseId);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.primaryContainer,
+      backgroundColor: const Color(0xFF8685EF),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

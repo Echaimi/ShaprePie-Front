@@ -287,49 +287,67 @@ class _ExpenseFormState extends State<ExpenseForm> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          _buildTextField('Montant (00.00€)', _amountController, context,
-              keyboardType: TextInputType.number, errorText: _amountError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Pour', _purposeController, context,
-              onTap: _openReasonExpenseModal, errorText: _purposeError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Payeurs', _payerController, context,
-              onTap: _openExpensePayersModal, errorText: _payerError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Participants', _participantController, context,
-              onTap: _openExpenseParticipantsModal,
-              errorText: _participantError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Fait le (00/00/0000)', _dateController, context,
-              onTap: () => _selectDate(context), errorText: _dateError),
-          const SizedBox(height: 16.0),
-          if (_tagError != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                _tagError!,
-                style: TextStyle(color: theme.colorScheme.error),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 100.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    _buildLabeledField(
+                        'Montant (00.00€)', _amountController, context,
+                        keyboardType: TextInputType.number,
+                        errorText: _amountError),
+                    const SizedBox(height: 24.0),
+                    _buildLabeledField('Pour', _purposeController, context,
+                        errorText: _purposeError,
+                        onTap: _openReasonExpenseModal),
+                    const SizedBox(height: 24.0),
+                    _buildLabeledField('Payeurs', _payerController, context,
+                        errorText: _payerError, onTap: _openExpensePayersModal),
+                    const SizedBox(height: 24.0),
+                    _buildLabeledField(
+                        'Participants', _participantController, context,
+                        errorText: _participantError,
+                        onTap: _openExpenseParticipantsModal),
+                    const SizedBox(height: 24.0),
+                    _buildLabeledField(
+                        'Fait le (00/00/0000)', _dateController, context,
+                        onTap: () => _selectDate(context),
+                        errorText: _dateError),
+                  ],
+                ),
               ),
             ),
-          SizedBox(
-            width: 342,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _handleSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+          ),
+          Positioned(
+            bottom: 50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SizedBox(
+                width: 302,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _handleSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  ),
+                  child: Text(
+                    'Ajouter la dépense',
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: Colors.white),
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-              ),
-              child: Text(
-                'Ajouter la dépense',
-                style:
-                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -338,25 +356,31 @@ class _ExpenseFormState extends State<ExpenseForm> {
     );
   }
 
-  Widget _buildTextField(
+  Widget _buildLabeledField(
       String label, TextEditingController controller, BuildContext context,
       {VoidCallback? onTap, TextInputType? keyboardType, String? errorText}) {
     final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 342,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(8.0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
         ),
-        child: AbsorbPointer(
-          absorbing: onTap != null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
+        const SizedBox(height: 8.0),
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 200,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: AbsorbPointer(
+              absorbing: onTap != null,
+              child: TextField(
+                textAlign: TextAlign.center,
                 controller: controller,
                 keyboardType: keyboardType,
                 decoration: InputDecoration(
@@ -370,21 +394,15 @@ class _ExpenseFormState extends State<ExpenseForm> {
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  labelText: label,
-                  floatingLabelBehavior: FloatingLabelBehavior.auto,
-                  labelStyle:
-                      theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  filled: true,
-                  fillColor: theme.colorScheme.secondaryContainer,
                   errorText: errorText,
                 ),
                 style:
                     theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

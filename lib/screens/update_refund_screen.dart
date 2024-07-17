@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:spaceshare/models/refund.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 
-import '../widgets/refundForm.dart';
+import '../widgets/refund_form.dart';
 
 class UpdateRefundScreen extends StatelessWidget {
   final Refund refund;
