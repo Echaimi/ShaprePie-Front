@@ -126,7 +126,7 @@ class _JoinUsState extends State<JoinUs> {
             isRegisterView
                 ? t(context)!.createAccountAndExplore
                 : t(context)!.loginAndExplore,
-            style: textTheme.titleMedium?.copyWith(color: Colors.white),
+            style: textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
         ),
@@ -143,111 +143,119 @@ class _JoinUsState extends State<JoinUs> {
         ),
         const SizedBox(height: 2),
         if (isRegisterView)
-          Container(
+          SizedBox(
             width: 342,
             height: 53,
-            decoration: BoxDecoration(
-              color: const Color(0xFF232136),
-              border: Border.all(color: const Color(0x66FFFFFF)),
-              borderRadius: BorderRadius.circular(8),
-            ),
             child: TextField(
               controller: usernameController,
               decoration: InputDecoration(
+                labelText: t(context)!.email,
+                labelStyle: TextStyle(color: colorScheme.primary),
+                fillColor: colorScheme.secondaryContainer,
                 filled: true,
-                fillColor: Colors.transparent,
-                labelText: t(context)!.username,
-                labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-                border: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
+                    width: 1,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(
+                    color: colorScheme.secondaryContainer,
+                    width: 2,
+                  ),
                 ),
               ),
-              style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+              style: textTheme.bodyMedium,
             ),
           ),
         const SizedBox(height: 16),
-        Container(
+        SizedBox(
           width: 342,
           height: 53,
-          decoration: BoxDecoration(
-            color: const Color(0xFF232136),
-            border: Border.all(color: const Color(0x66FFFFFF)),
-            borderRadius: BorderRadius.circular(8),
-          ),
           child: TextField(
             controller: emailController,
             decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.transparent,
               labelText: t(context)!.email,
-              labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-              border: OutlineInputBorder(
+              labelStyle: TextStyle(color: colorScheme.primary),
+              fillColor: colorScheme.secondaryContainer,
+              filled: true,
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(
+                  color: colorScheme.primary,
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: colorScheme.secondaryContainer,
+                  width: 2,
+                ),
               ),
             ),
-            style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+            style: textTheme.bodyMedium,
           ),
         ),
         const SizedBox(height: 16),
-        Container(
+        SizedBox(
           width: 342,
           height: 53,
-          decoration: BoxDecoration(
-            color: const Color(0xFF232136),
-            border: Border.all(color: const Color(0x66FFFFFF)),
-            borderRadius: BorderRadius.circular(8),
-          ),
           child: TextField(
             controller: passwordController,
             obscureText: !isPasswordVisible,
             decoration: InputDecoration(
+              labelText: t(context)!.email,
+              labelStyle: TextStyle(color: colorScheme.primary),
+              fillColor: colorScheme.secondaryContainer,
               filled: true,
-              fillColor: Colors.transparent,
-              labelText: t(context)!.password,
-              labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-              border: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide.none,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.white,
+                borderSide: BorderSide(
+                  color: colorScheme.primary,
+                  width: 1,
                 ),
-                onPressed: () {
-                  setState(() {
-                    isPasswordVisible = !isPasswordVisible;
-                  });
-                },
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: colorScheme.secondaryContainer,
+                  width: 2,
+                ),
               ),
             ),
-            style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+            style: textTheme.bodyMedium,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 32),
         SizedBox(
           width: 342,
           child: ElevatedButton(
             onPressed:
                 isLoading ? null : (isRegisterView ? registerUser : loginUser),
             style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.secondary,
+              backgroundColor: colorScheme.primary,
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
             child: isLoading
-                ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ? CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(colorScheme.surface),
                   )
                 : Text(
                     isRegisterView
                         ? t(context)!.createAccount
                         : t(context)!.login,
-                    style: textTheme.bodyLarge?.copyWith(color: Colors.white),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.surface,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
           ),
         ),
@@ -265,7 +273,6 @@ class _JoinUsState extends State<JoinUs> {
                   ? t(context)!.alreadyHaveAccount
                   : t(context)!.noAccount,
               style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.secondary,
                 fontWeight: FontWeight.w600,
               ),
             ),

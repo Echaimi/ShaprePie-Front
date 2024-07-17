@@ -171,7 +171,7 @@ class RefundItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: theme.colorScheme.primaryContainer),
+            bottom: BorderSide(color: theme.colorScheme.secondaryContainer),
           ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -190,9 +190,7 @@ class RefundItem extends StatelessWidget {
                   const SizedBox(height: 8.0),
                   Text(
                     '${t(context)!.refundFrom} ${refund.from.username} ${t(context)!.to} ${refund.to.username}',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+                    style: theme.textTheme.bodyLarge,
                   ),
                 ],
               ),
