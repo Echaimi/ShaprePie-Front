@@ -332,6 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 8),
                           Expanded(
                             child: _showArchived
                                 ? _archivedEvents.isEmpty
@@ -445,10 +446,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      event.name,
-                      style: theme.textTheme.bodyLarge,
-                    ),
+                    Text(event.name,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        )),
                     const SizedBox(height: 4),
                     Text(
                       '${event.userCount} personne${event.userCount! > 1 ? 's' : ''}',
@@ -459,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Positioned(
-              left: -20,
+              left: -16,
               top: 0,
               bottom: 0,
               child: Align(

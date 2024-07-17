@@ -7,12 +7,14 @@ class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SizedBox(
       width: 65,
       height: 65,
       child: FloatingActionButton(
         onPressed: onPressed,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: theme.primaryColor,
         elevation: 4.0,
         highlightElevation: 0.0,
         shape: RoundedRectangleBorder(

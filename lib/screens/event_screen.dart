@@ -51,7 +51,6 @@ class _EventScreenState extends State<EventScreen> {
       BuildContext context, EventWebsocketProvider eventProvider) async {
     if (eventProvider.event != null) {
       await widget.eventService.deleteEvent(eventProvider.event!.id);
-      context.pop(true);
       context.go('/');
     }
   }
@@ -63,7 +62,7 @@ class _EventScreenState extends State<EventScreen> {
       setState(() {
         eventProvider.event!.updateState(state);
       });
-      context.pop(true);
+      context.pop();
     } catch (e) {
       print('Error updating event state: $e');
     }
@@ -403,11 +402,7 @@ class _EventScreenState extends State<EventScreen> {
                   Center(
                     child: Text(
                       event.name,
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                      ),
+                      style: theme.textTheme.titleMedium,
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -417,11 +412,12 @@ class _EventScreenState extends State<EventScreen> {
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF373455)),
-                      boxShadow: const [
+                      border: Border.all(
+                          color: theme.colorScheme.primary, width: 2),
+                      boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF373455),
-                          offset: Offset(6.0, 6.0),
+                          color: theme.colorScheme.primary.withOpacity(0.9),
+                          offset: const Offset(6.0, 6.0),
                           spreadRadius: 2.0,
                         ),
                       ],
@@ -429,10 +425,10 @@ class _EventScreenState extends State<EventScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          Text(
-                            '$totalExpenses €',
-                            style: theme.textTheme.titleMedium,
-                          ),
+                          Text('${totalExpenses.toStringAsFixed(2)} €',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: theme.primaryColor,
+                              )),
                           Text(
                             '${t(context)!.totalFor} $usersCount ${t(context)!.persons}',
                             style: theme.textTheme.bodyMedium,
@@ -453,7 +449,7 @@ class _EventScreenState extends State<EventScreen> {
                             style: theme.textTheme.bodyLarge,
                           ),
                           Text(
-                            '$userTotalExpenses €',
+                            '${userTotalExpenses.toStringAsFixed(2)} €',
                             style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -467,7 +463,7 @@ class _EventScreenState extends State<EventScreen> {
                               style: theme.textTheme.bodyLarge,
                             ),
                             Text(
-                              '$userAmountOwed €',
+                              '${userAmountOwed?.toStringAsFixed(2)} €',
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: userBalanceIsPositive
