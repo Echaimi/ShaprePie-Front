@@ -139,7 +139,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: themeData.colorScheme.primary),
+          icon: Icon(Icons.arrow_back,
+              color: themeData.textTheme.bodyMedium?.color),
           onPressed: () {
             if (GoRouter.of(context).canPop()) {
               GoRouter.of(context).pop();
@@ -151,7 +152,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           LanguageSwitcher(),
           IconButton(
-            icon: Icon(Icons.logout, color: themeData.colorScheme.primary),
+            icon: Icon(Icons.logout,
+                color: themeData.textTheme.bodyMedium?.color),
             onPressed: () => _onLogout(context),
           ),
         ],

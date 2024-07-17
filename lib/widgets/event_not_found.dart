@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
+import 'package:spaceshare/widgets/bottom_modal.dart';
+import 'package:spaceshare/widgets/join_us.dart';
 
 class EventNotFound extends StatelessWidget {
   const EventNotFound({super.key});
@@ -10,54 +9,50 @@ class EventNotFound extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final containerColor = colorScheme.primaryContainer;
 
-    return Container(
-      width: 342,
-      height: 152,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: colorScheme.primary),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary,
-            offset: const Offset(8, 8),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                'lib/assets/images/noEventFound.png',
-                width: 64,
-                height: 64,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  t(context)!.createOrJoinEvent,
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Explore the Galaxy", style: textTheme.titleLarge),
+        const SizedBox(height: 4),
+        Text("Manage your expenses with ease", style: textTheme.titleSmall),
+        const SizedBox(height: 8),
+        Text(
+          "Join us and embark on a journey to better financial management",
+          style: textTheme.bodyLarge,
+          textAlign: TextAlign.start,
+        ),
+        const SizedBox(height: 32),
+        Row(
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  builder: (BuildContext context) {
+                    return BottomModal(
+                      scrollController: ScrollController(),
+                      child: const JoinUs(),
+                    );
+                  },
+                );
+              },
+              label: const Text("Nous rejoindre"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            t(context)!.enjoyTools,
-            style: textTheme.bodyMedium,
-            textAlign: TextAlign.start,
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -19,6 +19,7 @@ import 'package:spaceshare/services/api_service.dart';
 import 'package:spaceshare/services/auth_service.dart';
 import 'package:spaceshare/services/event_service.dart';
 import 'package:spaceshare/services/user_service.dart';
+import 'package:spaceshare/utils/theme.dart';
 import 'providers/LanguageProvider.dart';
 import 'screens/create_refund_screen.dart';
 import 'screens/event_screen.dart';
@@ -32,6 +33,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'screens/update_refund_screen.dart';
+import 'package:spaceshare/utils/theme.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -106,7 +108,6 @@ class AppRouter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = ThemeData();
     final languageProvider = Provider.of<LanguageProvider>(context);
     final rootNavigatorKey = GlobalKey<NavigatorState>();
     final shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -125,34 +126,9 @@ class AppRouter extends StatelessWidget {
         Locale('en'),
         Locale('fr'),
       ],
-      theme: theme.copyWith(
-        colorScheme: theme.colorScheme.copyWith(
-          primary: const Color(0xFF171717),
-          secondary: const Color(0xFFFF8906),
-          surface: const Color(0xFFFAFAFA),
-          primaryContainer: const Color(0xFFFFFFFF),
-          secondaryContainer: const Color(0xFFF2F2F2),
-          error: const Color(0xFFE5484D),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFFAFAFA),
-        textTheme: theme.textTheme.copyWith(
-          titleLarge: const TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: Color(0xE7000000)),
-          titleMedium: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Color(0xE7000000)),
-          titleSmall: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xE7000000)),
-          bodySmall: const TextStyle(fontSize: 12.0, color: Color(0xE7000000)),
-          bodyMedium: const TextStyle(fontSize: 14.0, color: Color(0xE7000000)),
-          bodyLarge: const TextStyle(fontSize: 16.0, color: Color(0xE7000000)),
-        ),
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
       routerConfig: GoRouter(
         navigatorKey: rootNavigatorKey,
         initialLocation: kIsWeb ? '/admin' : '/',

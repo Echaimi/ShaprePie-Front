@@ -7,8 +7,9 @@ import 'package:go_router/go_router.dart';
 class LanguageSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return IconButton(
-      icon: const Icon(Icons.language, color: Colors.white),
+      icon: Icon(Icons.language, color: theme.textTheme.bodyMedium!.color),
       onPressed: () {
         _showLanguagePicker(context);
       },

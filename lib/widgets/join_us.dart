@@ -272,9 +272,7 @@ class _JoinUsState extends State<JoinUs> {
               isRegisterView
                   ? t(context)!.alreadyHaveAccount
                   : t(context)!.noAccount,
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: textTheme.bodyMedium,
             ),
           ),
         ),
