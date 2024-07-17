@@ -25,7 +25,7 @@ class EventNotFound extends StatelessWidget {
         const SizedBox(height: 32),
         Row(
           children: [
-            ElevatedButton.icon(
+            ElevatedButton(
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -39,7 +39,6 @@ class EventNotFound extends StatelessWidget {
                   },
                 );
               },
-              label: const Text("Nous rejoindre"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
@@ -49,9 +48,10 @@ class EventNotFound extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
+              child: const Text("Nous rejoindre"),
             ),
           ],
-        ),
+        )
       ],
     );
   }
