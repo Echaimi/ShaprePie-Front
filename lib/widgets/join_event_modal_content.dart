@@ -5,7 +5,7 @@ import '../services/api_service.dart';
 import 'dart:convert';
 
 class JoinEventModalContent extends StatefulWidget {
-  const JoinEventModalContent({Key? key}) : super(key: key);
+  const JoinEventModalContent({super.key});
 
   @override
   _JoinEventModalContentState createState() => _JoinEventModalContentState();
@@ -104,7 +104,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               filled: true,
               fillColor: Colors.black.withOpacity(0.1),
               labelText: 'Code de l\'évènement',
-              labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
+              labelStyle: textTheme.bodyMedium,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
@@ -134,7 +134,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 ),
               ),
             ),
-            style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+            style: textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -142,7 +142,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
             child: ElevatedButton(
               onPressed: _isLoading ? null : _joinEvent,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                backgroundColor: colorScheme.primary,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -158,7 +158,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                     )
                   : Text(
                       'Rejoindre',
-                      style: textTheme.bodyLarge?.copyWith(color: Colors.white),
+                      style: textTheme.bodyLarge,
                     ),
             ),
           ),
@@ -176,12 +176,12 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 children: [
                   TextSpan(
                     text: 'Vous avez rejoint\n',
-                    style: textTheme.titleMedium?.copyWith(color: Colors.white),
+                    style: textTheme.titleMedium,
                   ),
                   TextSpan(
                     text: '“$_eventName”',
-                    style: textTheme.titleMedium?.copyWith(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -207,19 +207,17 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
             child: ElevatedButton(
               onPressed: _viewEvent,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  side: BorderSide(
-                    color: colorScheme.secondaryContainer,
-                    width: 1.0,
+                  foregroundColor: colorScheme.surface,
+                  backgroundColor: colorScheme.primary,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ),
-              ),
-              child: Text(
+                  textStyle: textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  )),
+              child: const Text(
                 'Voir l\'évènement',
-                style: textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
             ),
           ),
