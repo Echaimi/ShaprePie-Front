@@ -8,10 +8,12 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: theme.colorScheme.primary),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Row(

@@ -28,12 +28,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
   bool _isLoading = false;
   bool _showArchived = false;
   List<Event> _events = [];
   List<Event> _archivedEvents = [];
-  String _title = '';
 
   static const List<String> _routes = [
     '/profile',
@@ -53,9 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (authProvider.isAuthenticated) {
       await _fetchEvents();
     }
-    setState(() {
-      _title = t(context)?.yourEvents ?? 'Vos Évènements';
-    });
+    setState(() {});
   }
 
   Future<void> _fetchEvents() async {
@@ -93,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         textColor: Theme.of(context).textTheme.bodySmall?.color,
         fontSize: Theme.of(context).textTheme.bodySmall?.fontSize ?? 16.0,
       );
@@ -135,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (BuildContext context) {
         return BottomModal(
           scrollController: ScrollController(),
@@ -185,9 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() {});
     context.go(_routes[index]);
   }
 
@@ -211,10 +205,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userAvatar = authProvider.user?.avatar.url;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: IconButton(
           icon: Text(
             _showArchived
@@ -232,12 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: SvgPicture.asset(
-              'lib/assets/icons/astronaut.svg',
-              height: 24.0,
-              width: 24.0,
-              placeholderBuilder: (BuildContext context) =>
-                  Icon(Icons.error, color: theme.colorScheme.error),
+            icon: CircleAvatar(
+              backgroundImage: NetworkImage(userAvatar ?? ''),
             ),
             onPressed: () {
               context.go('/profile');
@@ -245,134 +237,123 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('lib/assets/images/backgroundApp.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) {
-            if (authProvider.isAuthenticated) {
-              if (!_isLoading && _events.isEmpty) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _fetchEvents();
-                });
-              }
-              return _isLoading
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Container(
-                              height: 20,
-                              width: 180,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+      body: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) {
+          if (authProvider.isAuthenticated) {
+            if (!_isLoading && _events.isEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _fetchEvents();
+              });
+            }
+            return _isLoading
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Container(
+                            height: 20,
+                            width: 180,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.secondaryContainer,
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          Skeletonizer(
-                            enabled: true,
-                            child: Column(
-                              children: List.generate(
-                                5,
-                                (index) => Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Container(
-                                    height: 80,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primaryContainer,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                        ),
+                        Skeletonizer(
+                          enabled: true,
+                          child: Column(
+                            children: List.generate(
+                              5,
+                              (index) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Container(
+                                  height: 80,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.secondaryContainer,
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.rocket, color: Colors.white),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Tes évènements',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: _showArchived
-                              ? _archivedEvents.isEmpty
-                                  ? Padding(
-                                      padding: const EdgeInsets.all(24.0),
-                                      child: Text(
-                                        'Aucun évènement dans cette galaxie pour l\'instant',
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 24.0),
-                                      itemCount: _archivedEvents.length,
-                                      itemBuilder: (context, index) {
-                                        final Event event =
-                                            _archivedEvents[index];
-                                        return _buildEventItem(context, event);
-                                      },
-                                    )
-                              : _events.isEmpty
-                                  ? Padding(
-                                      padding: const EdgeInsets.all(24.0),
-                                      child: Text(
-                                        'Aucun évènement dans cette galaxie pour l\'instant',
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 24.0),
-                                      itemCount: _events.length,
-                                      itemBuilder: (context, index) {
-                                        final Event event = _events[index];
-                                        return _buildEventItem(context, event);
-                                      },
-                                    ),
                         ),
                       ],
-                    );
-            } else {
-              return const Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: EventNotFound(),
-                  ),
-                ],
-              );
-            }
-          },
-        ),
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.rocket,
+                                color: theme.colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Tes évènements',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: _showArchived
+                            ? _archivedEvents.isEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Text(
+                                      'Aucun évènement dans cette galaxie pour l\'instant',
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0),
+                                    itemCount: _archivedEvents.length,
+                                    itemBuilder: (context, index) {
+                                      final Event event =
+                                          _archivedEvents[index];
+                                      return _buildEventItem(context, event);
+                                    },
+                                  )
+                            : _events.isEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Text(
+                                      'Aucun évènement dans cette galaxie pour l\'instant',
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0),
+                                    itemCount: _events.length,
+                                    itemBuilder: (context, index) {
+                                      final Event event = _events[index];
+                                      return _buildEventItem(context, event);
+                                    },
+                                  ),
+                      ),
+                    ],
+                  );
+          } else {
+            return const Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: EventNotFound(),
+                ),
+              ],
+            );
+          }
+        },
       ),
       floatingActionButton:
           add_button.AddButton(onPressed: _onAddButtonPressed),
@@ -407,8 +388,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.4),
-                    width: 1.0,
+                    color: theme.colorScheme.primary,
+                    width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),

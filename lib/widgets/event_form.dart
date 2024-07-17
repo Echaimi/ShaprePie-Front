@@ -76,13 +76,16 @@ class _EventFormState extends State<EventForm> {
             filled: true,
             fillColor: Colors.black.withOpacity(0.1),
             labelText: 'Event name',
-            labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-            border: OutlineInputBorder(
+            labelStyle: textTheme.bodyMedium,
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(
+                color: colorScheme.primary,
+                width: 1,
+              ),
             ),
           ),
-          style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 16.0),
         TextField(
@@ -92,13 +95,16 @@ class _EventFormState extends State<EventForm> {
             filled: true,
             fillColor: Colors.black.withOpacity(0.1),
             labelText: 'Description',
-            labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-            border: OutlineInputBorder(
+            labelStyle: textTheme.bodyMedium,
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(
+                color: colorScheme.primary,
+                width: 1,
+              ),
             ),
           ),
-          style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 40.0),
         ElevatedButton(
@@ -123,7 +129,10 @@ class _EventFormState extends State<EventForm> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return ChoiceChip(
-      label: Text(category.name, style: textTheme.bodySmall),
+      label: Text(category.name,
+          style: selectedCategoryId == category.id
+              ? textTheme.bodySmall?.copyWith(color: colorScheme.surface)
+              : textTheme.bodySmall),
       selected: selectedCategoryId == category.id,
       onSelected: (bool selected) {
         setState(() {

@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: themeData.colorScheme.primary),
           onPressed: () {
             if (GoRouter.of(context).canPop()) {
               GoRouter.of(context).pop();
@@ -151,157 +151,148 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           LanguageSwitcher(),
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
+            icon: Icon(Icons.logout, color: themeData.colorScheme.primary),
             onPressed: () => _onLogout(context),
           ),
         ],
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('lib/assets/images/backgroundApp.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                Text(
-                  t(context)!.myAccount,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                if (authProvider.user != null) ...[
-                  Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      GestureDetector(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 10),
+              Text(
+                t(context)!.myAccount,
+                style: themeData.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 20),
+              if (authProvider.user != null) ...[
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    GestureDetector(
+                      onTap: selectAvatar,
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundImage:
+                            NetworkImage(authProvider.user!.avatar.url),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: InkWell(
                         onTap: selectAvatar,
                         child: CircleAvatar(
-                          radius: 70,
-                          backgroundImage:
-                              NetworkImage(authProvider.user!.avatar.url),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: InkWell(
-                          onTap: selectAvatar,
-                          child: const CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.edit,
-                              size: 20,
-                              color: Colors.black,
-                            ),
+                          radius: 20,
+                          backgroundColor: themeData.colorScheme.primary,
+                          child: Icon(
+                            Icons.edit,
+                            size: 20,
+                            color: themeData.colorScheme.surface,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    authProvider.user!.username,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
                     ),
-                    textAlign: TextAlign.center,
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  authProvider.user!.username,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: themeData.colorScheme.primary,
                   ),
-                  const SizedBox(height: 48),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 342,
-                    child: TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        labelText: t(context)!.email,
-                        labelStyle: const TextStyle(color: Colors.white),
-                        fillColor: Colors.blueGrey.withOpacity(0.2),
-                        filled: true,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: Colors.white,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 2,
-                          ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 48),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: 342,
+                  child: TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: t(context)!.email,
+                      labelStyle:
+                          TextStyle(color: themeData.colorScheme.primary),
+                      fillColor: Colors.blueGrey.withOpacity(0.2),
+                      filled: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: themeData.colorScheme.primary,
+                          width: 1,
                         ),
                       ),
-                      style: const TextStyle(color: Colors.white),
-                      enabled: true,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 342,
-                    child: TextField(
-                      controller: usernameController,
-                      decoration: InputDecoration(
-                        labelText: t(context)!.username,
-                        labelStyle: const TextStyle(color: Colors.white),
-                        fillColor: Colors.blueGrey.withOpacity(0.2),
-                        filled: true,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: Colors.white,
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 2,
-                          ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: themeData.colorScheme.secondaryContainer,
+                          width: 2,
                         ),
                       ),
-                      style: const TextStyle(color: Colors.white),
-                      enabled: true,
                     ),
+                    style: TextStyle(color: themeData.colorScheme.primary),
+                    enabled: true,
                   ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: 342,
-                    child: ElevatedButton(
-                      onPressed: saveProfile,
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: colorScheme.secondary,
+                ),
+                const SizedBox(height: 24),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: 342,
+                  child: TextField(
+                    controller: usernameController,
+                    decoration: InputDecoration(
+                      labelText: t(context)!.username,
+                      labelStyle:
+                          TextStyle(color: themeData.colorScheme.primary),
+                      fillColor: Colors.blueGrey.withOpacity(0.2),
+                      filled: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: themeData.colorScheme.primary,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(
+                          color: themeData.colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    style: TextStyle(color: themeData.colorScheme.primary),
+                    enabled: true,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: 342,
+                  child: ElevatedButton(
+                    onPressed: saveProfile,
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: themeData.colorScheme.surface,
+                        backgroundColor: colorScheme.primary,
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        textStyle: textTheme.bodyLarge,
-                      ),
-                      child: Text(t(context)!.save),
-                    ),
+                        textStyle: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        )),
+                    child: Text(t(context)!.save),
                   ),
-                ] else ...[
-                  const CircularProgressIndicator(),
-                ],
+                ),
+              ] else ...[
+                const CircularProgressIndicator(),
               ],
-            ),
+            ],
           ),
         ),
       ),
