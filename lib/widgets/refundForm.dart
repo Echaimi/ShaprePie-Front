@@ -285,8 +285,11 @@ class _RefundFormState extends State<RefundForm> {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.secondaryContainer,
+                      width: 2,
+                    ),
                   ),
                   errorText: errorText,
                 ),

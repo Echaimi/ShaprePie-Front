@@ -192,7 +192,10 @@ class _ReasonExpenseState extends State<ReasonExpense> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(
+              color: theme.colorScheme.primary,
+              width: 2,
+            ),
           ),
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.auto,

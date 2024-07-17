@@ -180,6 +180,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         'date': DateFormat('yyyy-MM-dd')
             .format(DateFormat('dd/MM/yyyy').parse(_dateController.text)),
       };
+      print(data);
       widget.onSubmit(data);
     }
   }

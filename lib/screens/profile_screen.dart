@@ -233,7 +233,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: themeData.colorScheme.secondaryContainer,
+                          color: themeData.colorScheme.primary,
                           width: 2,
                         ),
                       ),

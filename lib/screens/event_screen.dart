@@ -169,7 +169,8 @@ class _EventScreenState extends State<EventScreen> {
                       UpdateEventModalContent(
                         eventId: eventProvider.event!.id,
                         initialEventName: eventProvider.event!.name,
-                        initialDescription: eventProvider.event!.description,
+                        initialDescription:
+                            eventProvider.event!.description ?? '',
                         initialCategoryId: eventProvider.event!.category.id,
                         eventProvider: eventProvider,
                       ),
