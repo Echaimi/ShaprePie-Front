@@ -9,7 +9,7 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService;
   final UserService _userService;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  late User? _user;
+  User? _user = null;
   bool _isAuthenticated = false;
 
   AuthProvider(this._authService, this._userService) {

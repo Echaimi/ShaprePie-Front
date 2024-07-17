@@ -206,154 +206,191 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final authProvider = Provider.of<AuthProvider>(context);
-    final userAvatar = authProvider.user?.avatar.url;
+    final isAuthenticated = authProvider.isAuthenticated;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: IconButton(
-          icon: Text(
-            _showArchived
-                ? '${t(context)?.backToEvents ?? 'Retour aux événements'} (${_events.length})'
-                : '${t(context)?.archiveEvent ?? 'Événements archivés'} (${_archivedEvents.length})',
-            style: TextStyle(color: theme.colorScheme.primary),
-          ),
-          onPressed: () async {
-            setState(() {
-              _showArchived = !_showArchived;
-              _isLoading = true;
-            });
-            await _fetchEvents();
-          },
-        ),
+        title: isAuthenticated
+            ? IconButton(
+                icon: Text(
+                  _showArchived
+                      ? '${t(context)?.backToEvents ?? 'Retour aux événements'} (${_events.length})'
+                      : '${t(context)?.archiveEvent ?? 'Événements archivés'} (${_archivedEvents.length})',
+                  style: TextStyle(color: theme.colorScheme.primary),
+                ),
+                onPressed: () async {
+                  setState(() {
+                    _showArchived = !_showArchived;
+                    _isLoading = true;
+                  });
+                  await _fetchEvents();
+                },
+              )
+            : null,
         actions: [
-          IconButton(
-            icon: CircleAvatar(
-              backgroundImage: NetworkImage(userAvatar ?? ''),
-            ),
-            onPressed: () {
-              context.go('/profile');
-            },
-          ),
+          authProvider.user == null
+              ? ElevatedButton(
+                  onPressed: () {
+                    _onAddButtonPressed();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: Text('Se connecter',
+                      style: TextStyle(color: theme.colorScheme.surface)),
+                )
+              : IconButton(
+                  icon: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(authProvider.user?.avatar.url ?? ''),
+                  ),
+                  onPressed: () {
+                    context.go('/profile');
+                  },
+                ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          if (authProvider.isAuthenticated) {
-            if (!_isLoading && _events.isEmpty) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _fetchEvents();
-              });
-            }
-            return _isLoading
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Container(
-                            height: 20,
-                            width: 180,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(12),
+      body: Stack(
+        children: [
+          Consumer<AuthProvider>(
+            builder: (context, authProvider, child) {
+              if (authProvider.isAuthenticated) {
+                if (!_isLoading && _events.isEmpty) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _fetchEvents();
+                  });
+                }
+                return _isLoading
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Container(
+                                height: 28,
+                                width: 220,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Skeletonizer(
-                          enabled: true,
-                          child: Column(
-                            children: List.generate(
-                              5,
-                              (index) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Container(
-                                  height: 80,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.secondaryContainer,
-                                    borderRadius: BorderRadius.circular(12),
+                            Skeletonizer(
+                              enabled: true,
+                              child: Column(
+                                children: List.generate(
+                                  5,
+                                  (index) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Container(
+                                      height: 80,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: theme
+                                            .colorScheme.secondaryContainer,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Row(
-                          children: [
-                            Icon(Icons.rocket,
-                                color: theme.colorScheme.primary),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Tes évènements',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
                           ],
                         ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.rocket,
+                                    color: theme.colorScheme.primary),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Tes évènements',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: _showArchived
+                                ? _archivedEvents.isEmpty
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(24.0),
+                                        child: Text(
+                                          'Aucun évènement dans cette galaxie pour l\'instant',
+                                          style: theme.textTheme.bodyMedium,
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 24.0),
+                                        itemCount: _archivedEvents.length,
+                                        itemBuilder: (context, index) {
+                                          final Event event =
+                                              _archivedEvents[index];
+                                          return _buildEventItem(
+                                              context, event);
+                                        },
+                                      )
+                                : _events.isEmpty
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(24.0),
+                                        child: Text(
+                                          'Aucun évènement dans cette galaxie pour l\'instant',
+                                          style: theme.textTheme.bodyMedium,
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 24.0),
+                                        itemCount: _events.length,
+                                        itemBuilder: (context, index) {
+                                          final Event event = _events[index];
+                                          return _buildEventItem(
+                                              context, event);
+                                        },
+                                      ),
+                          ),
+                        ],
+                      );
+              } else {
+                return const Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 24),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          EventNotFound(),
+                        ],
                       ),
-                      Expanded(
-                        child: _showArchived
-                            ? _archivedEvents.isEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Text(
-                                      'Aucun évènement dans cette galaxie pour l\'instant',
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24.0),
-                                    itemCount: _archivedEvents.length,
-                                    itemBuilder: (context, index) {
-                                      final Event event =
-                                          _archivedEvents[index];
-                                      return _buildEventItem(context, event);
-                                    },
-                                  )
-                            : _events.isEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Text(
-                                      'Aucun évènement dans cette galaxie pour l\'instant',
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24.0),
-                                    itemCount: _events.length,
-                                    itemBuilder: (context, index) {
-                                      final Event event = _events[index];
-                                      return _buildEventItem(context, event);
-                                    },
-                                  ),
-                      ),
-                    ],
-                  );
-          } else {
-            return const Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: EventNotFound(),
-                ),
-              ],
-            );
-          }
-        },
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+          if (!isAuthenticated)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Image.asset(
+                'lib/assets/images/hero.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+        ],
       ),
       floatingActionButton:
           add_button.AddButton(onPressed: _onAddButtonPressed),

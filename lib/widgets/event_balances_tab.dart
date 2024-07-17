@@ -30,7 +30,7 @@ class EventBalanceTab extends StatelessWidget {
               Center(
                 child: Text(
                   t(context)!.scrollToSeeEveryone,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               const SizedBox(height: 16),

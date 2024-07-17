@@ -4,14 +4,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventNotFound extends StatelessWidget {
-  const EventNotFound({Key? key}) : super(key: key);
+  const EventNotFound({super.key});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final containerColor = colorScheme.primaryContainer;
-    final shadowColor = colorScheme.secondaryContainer;
 
     return Container(
       width: 342,
@@ -19,10 +18,11 @@ class EventNotFound extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: containerColor,
-        borderRadius: BorderRadius.circular(9.0),
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: colorScheme.primary),
         boxShadow: [
           BoxShadow(
-            color: shadowColor,
+            color: colorScheme.primary,
             offset: const Offset(8, 8),
             spreadRadius: 0,
           ),
@@ -45,7 +45,6 @@ class EventNotFound extends StatelessWidget {
                   t(context)!.createOrJoinEvent,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
               ),
@@ -54,9 +53,7 @@ class EventNotFound extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             t(context)!.enjoyTools,
-            style: textTheme.bodyMedium?.copyWith(
-              color: Colors.white,
-            ),
+            style: textTheme.bodyMedium,
             textAlign: TextAlign.start,
           ),
         ],
