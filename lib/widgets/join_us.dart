@@ -163,7 +163,7 @@ class _JoinUsState extends State<JoinUs> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(
-                    color: colorScheme.secondaryContainer,
+                    color: colorScheme.primary,
                     width: 2,
                   ),
                 ),
@@ -192,7 +192,7 @@ class _JoinUsState extends State<JoinUs> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
+                  color: colorScheme.primary,
                   width: 2,
                 ),
               ),
@@ -222,7 +222,7 @@ class _JoinUsState extends State<JoinUs> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
+                  color: colorScheme.primary,
                   width: 2,
                 ),
               ),

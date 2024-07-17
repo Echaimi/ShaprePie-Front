@@ -29,6 +29,7 @@ class _EventFormState extends State<EventForm> {
   final CategoryService categoryService = CategoryService(ApiService());
   final EventService eventService = EventService(ApiService());
   int selectedCategoryId = 1; // Default category ID
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -116,10 +117,20 @@ class _EventFormState extends State<EventForm> {
             ),
           ),
           onPressed: () async {
+            setState(() {
+              _isLoading = true;
+            });
             await widget.onSubmit(); // Call the custom submit function
+            setState(() {
+              _isLoading = false;
+            });
           },
-          child: Text(widget.buttonText,
-              style: const TextStyle(color: Colors.white)),
+          child: _isLoading
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : Text(widget.buttonText,
+                  style: const TextStyle(color: Colors.white)),
         ),
       ],
     );

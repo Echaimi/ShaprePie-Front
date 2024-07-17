@@ -115,8 +115,8 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 1.0,
+                  color: colorScheme.primary,
+                  width: 2,
                 ),
               ),
               errorBorder: OutlineInputBorder(
@@ -236,13 +236,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               style: textTheme.titleMedium,
             ),
           ),
-          const SizedBox(height: 16),
-          Center(
-            child: Image.asset(
-              'lib/assets/images/joinEvent.png',
-            ),
-          ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 8),
           Center(
             child: Text(
               'Le créateur de l\'évènement t\'as envoyé un code pour rejoindre la partie ! Rien reçu ? Contacte le directement',
@@ -250,68 +244,57 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               style: textTheme.bodyLarge,
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 16),
+          Center(
+            child: Image.asset(
+              'lib/assets/images/joinEvent.png',
+            ),
+          ),
           TextField(
             controller: _codeController,
             decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.black.withOpacity(0.1),
               labelText: 'Code de l\'évènement',
-              labelStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
+              labelStyle: TextStyle(color: colorScheme.primary),
+              fillColor: Colors.blueGrey.withOpacity(0.2),
+              filled: true,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 1.0,
+                  color: colorScheme.primary,
+                  width: 1,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 1.0,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(
-                  color: Colors.red,
-                  width: 1.0,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 1.0,
+                  color: colorScheme.primary,
+                  width: 2,
                 ),
               ),
             ),
-            style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+            style: textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _joinEvent,
               style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  side: BorderSide(
-                    color: colorScheme.secondaryContainer,
-                    width: 1.0,
+                  foregroundColor: colorScheme.surface,
+                  backgroundColor: colorScheme.primary,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ),
-              ),
+                  textStyle: textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  )),
               child: _isLoading
-                  ? const CircularProgressIndicator(
-                      color: Colors.white,
+                  ? CircularProgressIndicator(
+                      color: textTheme.bodyLarge?.color,
                     )
-                  : Text(
+                  : const Text(
                       'Rejoindre',
-                      style: textTheme.bodyLarge,
                     ),
             ),
           ),
