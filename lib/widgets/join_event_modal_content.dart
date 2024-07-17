@@ -69,6 +69,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     Widget content;
     if (_isServerError && _hasTriedOnce) {
@@ -107,20 +108,20 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: Colors.white.withOpacity(0.4),
+                  color: colorScheme.secondaryContainer,
                   width: 1.0,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: Colors.white.withOpacity(0.4),
+                  color: colorScheme.secondaryContainer,
                   width: 1.0,
                 ),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.red,
                   width: 1.0,
                 ),
@@ -146,7 +147,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   side: BorderSide(
-                    color: Colors.white.withOpacity(0.4),
+                    color: colorScheme.secondaryContainer,
                     width: 1.0,
                   ),
                 ),
@@ -165,7 +166,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
       );
     } else if (_isSuccess) {
       content = Column(
-        key: ValueKey('success'),
+        key: const ValueKey('success'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
@@ -211,7 +212,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   side: BorderSide(
-                    color: Colors.white.withOpacity(0.4),
+                    color: colorScheme.secondaryContainer,
                     width: 1.0,
                   ),
                 ),
@@ -226,7 +227,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
       );
     } else {
       content = Column(
-        key: ValueKey('default'),
+        key: const ValueKey('default'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
@@ -260,21 +261,20 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: Colors.white.withOpacity(0.4),
+                  color: colorScheme.secondaryContainer,
                   width: 1.0,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: Colors.white
-                      .withOpacity(0.4), // même couleur que enabledBorder
+                  color: colorScheme.secondaryContainer,
                   width: 1.0,
                 ),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.red,
                   width: 1.0,
                 ),
@@ -282,7 +282,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: Colors.grey.withOpacity(0.4),
+                  color: colorScheme.secondaryContainer,
                   width: 1.0,
                 ),
               ),
@@ -295,12 +295,12 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
             child: ElevatedButton(
               onPressed: _isLoading ? null : _joinEvent,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                backgroundColor: colorScheme.primary,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   side: BorderSide(
-                    color: Colors.white.withOpacity(0.4),
+                    color: colorScheme.secondaryContainer,
                     width: 1.0,
                   ),
                 ),
@@ -311,7 +311,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                     )
                   : Text(
                       'Rejoindre',
-                      style: textTheme.bodyLarge?.copyWith(color: Colors.white),
+                      style: textTheme.bodyLarge,
                     ),
             ),
           ),

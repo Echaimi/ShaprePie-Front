@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/widgets/event_not_found.dart';
 import 'package:spaceshare/widgets/create_event_modal_content.dart';
@@ -229,18 +228,15 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             : null,
         actions: [
-          authProvider.user == null
-              ? ElevatedButton(
-                  onPressed: () {
-                    _onAddButtonPressed();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  child: Text('Se connecter',
-                      style: TextStyle(color: theme.colorScheme.surface)),
-                )
-              : IconButton(
+          if (authProvider.user != null)
+            Row(
+              children: [
+                Text(authProvider.user?.username ?? '',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    )),
+                const SizedBox(width: 4),
+                IconButton(
                   icon: CircleAvatar(
                     backgroundImage:
                         NetworkImage(authProvider.user?.avatar.url ?? ''),
@@ -249,6 +245,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     context.go('/profile');
                   },
                 ),
+              ],
+            ),
         ],
       ),
       body: Stack(
@@ -312,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Row(
                               children: [
                                 Icon(Icons.rocket,
-                                    color: theme.colorScheme.primary),
+                                    color: theme.textTheme.bodyMedium?.color),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Tes évènements',

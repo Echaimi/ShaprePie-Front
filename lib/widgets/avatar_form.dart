@@ -109,7 +109,7 @@ class _AvatarFormState extends State<AvatarForm> {
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
-              backgroundColor: colorScheme.secondary,
+              backgroundColor: colorScheme.primary,
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),

@@ -39,18 +39,21 @@ class EventUsersTab extends StatelessWidget {
                     Expanded(
                         child: Text(
                       user.username,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     )),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '${user.totalExpenses.toStringAsFixed(2)} €',
+                          '${user.expenseCount} ${t(context)!.expenses}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
-                          '${user.expenseCount} ${t(context)!.expenses}',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          '${user.totalExpenses.toStringAsFixed(2)} €',
+                          style:
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),

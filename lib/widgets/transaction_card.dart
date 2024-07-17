@@ -13,7 +13,7 @@ class TransactionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.primary),
+        border: Border.all(color: theme.textTheme.bodyLarge!.color!),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Row(
