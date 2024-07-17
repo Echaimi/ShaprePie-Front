@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initializeScreen() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    if (authProvider.isAuthenticated) {
+    if (authProvider.isAuthenticated && authProvider.user != null) {
       await _fetchEvents();
     }
     setState(() {});
