@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:spaceshare/models/websocket_message.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -140,6 +141,19 @@ class EventWebsocketProvider with ChangeNotifier {
         notifyListeners();
         break;
     }
+  }
+
+  void createRefundFromTransaction(Transaction transaction) {
+    final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    final formattedDate = dateFormat.format(DateTime.now());
+
+    final data = {
+      'amount': transaction.amount,
+      'fromUserId': transaction.from.id,
+      'toUserId': transaction.to.id,
+      'date': formattedDate,
+    };
+    createRefund(data);
   }
 
   void createRefund(Map<String, dynamic> data) {
