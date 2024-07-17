@@ -12,7 +12,6 @@ import 'expense_reason.dart';
 import '../models/tag.dart';
 import '../models/participant.dart';
 import '../models/payer.dart';
-import 'package:go_router/go_router.dart';
 
 class ExpenseForm extends StatefulWidget {
   final Function(Map<String, dynamic>) onSubmit;
@@ -63,7 +62,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   void initState() {
     super.initState();
     final eventWebsocketProvider =
-        Provider.of<EventWebsocketProvider>(context, listen: false);
+    Provider.of<EventWebsocketProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     if (widget.initialExpense != null) {
       print(widget.initialExpense);
@@ -116,9 +115,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
   void _updateParticipantControllerText(User currentUser) {
     if (_selectedParticipants.length == 1) {
       _participantController.text =
-          _selectedParticipants.first.user.id == currentUser.id
-              ? 'Moi'
-              : _selectedParticipants.first.user.username;
+      _selectedParticipants.first.user.id == currentUser.id
+          ? 'Moi'
+          : _selectedParticipants.first.user.username;
     } else {
       _participantController.text = '${_selectedParticipants.length} personnes';
     }
@@ -137,17 +136,17 @@ class _ExpenseFormState extends State<ExpenseForm> {
   void _handleSubmit() {
     setState(() {
       _amountError =
-          _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
+      _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
       _purposeError = _purposeController.text.isEmpty
           ? 'Le nom de la dépense est obligatoire'
           : null;
       _payerError =
-          _selectedPayers.isEmpty ? 'Au moins un payeur est obligatoire' : null;
+      _selectedPayers.isEmpty ? 'Au moins un payeur est obligatoire' : null;
       _participantError = _selectedParticipants.isEmpty
           ? 'Au moins un participant est obligatoire'
           : null;
       _dateError =
-          _dateController.text.isEmpty ? 'La date est obligatoire' : null;
+      _dateController.text.isEmpty ? 'La date est obligatoire' : null;
     });
 
     if (_amountError == null &&
@@ -157,7 +156,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         _dateError == null &&
         _tagError == null) {
       final eventWebsocketProvider =
-          Provider.of<EventWebsocketProvider>(context, listen: false);
+      Provider.of<EventWebsocketProvider>(context, listen: false);
 
       final data = {
         'name': _purposeController.text,
@@ -210,7 +209,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   void _openExpenseParticipantsModal() async {
     final eventWebsocketProvider =
-        Provider.of<EventWebsocketProvider>(context, listen: false);
+    Provider.of<EventWebsocketProvider>(context, listen: false);
 
     await showModalBottomSheet(
       context: context,
@@ -226,7 +225,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
               setState(() {
                 _selectedParticipants = selectedParticipants;
                 final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
+                Provider.of<AuthProvider>(context, listen: false);
                 _updateParticipantControllerText(authProvider.user!);
               });
             },
@@ -238,7 +237,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   void _openExpensePayersModal() async {
     final eventWebsocketProvider =
-        Provider.of<EventWebsocketProvider>(context, listen: false);
+    Provider.of<EventWebsocketProvider>(context, listen: false);
 
     final currentUser = Provider.of<AuthProvider>(context, listen: false).user;
 
@@ -257,7 +256,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
               setState(() {
                 _selectedPayers = selectedPayers;
                 final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
+                Provider.of<AuthProvider>(context, listen: false);
                 _updatePayerControllerText(authProvider.user!);
               });
             },
@@ -268,120 +267,116 @@ class _ExpenseFormState extends State<ExpenseForm> {
   }
 
   void _selectDate(BuildContext context) async {
-    DateTime? initialDate = widget.initialExpense?.date ?? DateTime.now();
-    DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: initialDate,
+      initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime(2100),
     );
+
     if (picked != null) {
       setState(() {
-        _dateController.text = "${picked.day}/${picked.month}/${picked.year}";
+        _dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          _buildTextField('Montant (00.00€)', _amountController, context,
-              keyboardType: TextInputType.number, errorText: _amountError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Pour', _purposeController, context,
-              onTap: _openReasonExpenseModal, errorText: _purposeError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Payeurs', _payerController, context,
-              onTap: _openExpensePayersModal, errorText: _payerError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Participants', _participantController, context,
-              onTap: _openExpenseParticipantsModal,
-              errorText: _participantError),
-          const SizedBox(height: 16.0),
-          _buildTextField('Fait le (00/00/0000)', _dateController, context,
-              onTap: () => _selectDate(context), errorText: _dateError),
-          const SizedBox(height: 16.0),
-          if (_tagError != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                _tagError!,
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
-            ),
-          SizedBox(
-            width: 342,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _handleSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-              ),
-              child: Text(
-                'Ajouter la dépense',
-                style:
-                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      String label, TextEditingController controller, BuildContext context,
-      {VoidCallback? onTap, TextInputType? keyboardType, String? errorText}) {
-    final theme = Theme.of(context);
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 342,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: AbsorbPointer(
-          absorbing: onTap != null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: controller,
-                keyboardType: keyboardType,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
-                  border: InputBorder.none,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  labelText: label,
-                  floatingLabelBehavior: FloatingLabelBehavior.auto,
-                  labelStyle:
-                      theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  filled: true,
-                  fillColor: theme.colorScheme.secondaryContainer,
-                  errorText: errorText,
-                ),
-                style:
-                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Ajouter une dépense',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4A4A4A),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _amountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Montant',
+                errorText: _amountError,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _purposeController,
+              readOnly: true,
+              onTap: _openReasonExpenseModal,
+              decoration: InputDecoration(
+                labelText: 'Nom de la dépense',
+                errorText: _purposeError,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _descriptionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _participantController,
+              readOnly: true,
+              onTap: _openExpenseParticipantsModal,
+              decoration: InputDecoration(
+                labelText: 'Participants',
+                errorText: _participantError,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _payerController,
+              readOnly: true,
+              onTap: _openExpensePayersModal,
+              decoration: InputDecoration(
+                labelText: 'Payeurs',
+                errorText: _payerError,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _dateController,
+              readOnly: true,
+              onTap: () => _selectDate(context),
+              decoration: InputDecoration(
+                labelText: 'Date',
+                errorText: _dateError,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Center(
+              child: ElevatedButton(
+                onPressed: _handleSubmit,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 32, vertical: 12),
+                  backgroundColor: const Color(0xFF4CAF50), // Green color
+                ),
+                child: const Text(
+                  'Ajouter la dépense',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

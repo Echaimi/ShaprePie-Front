@@ -118,36 +118,66 @@ class _JoinUsState extends State<JoinUs> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Center(
-          child: Text(
-            isRegisterView
-                ? t(context)!.createAccountAndExplore
-                : t(context)!.loginAndExplore,
-            style: textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Center(
-          child: SizedBox(
-            width: 300,
-            height: 300,
-            child: Image.asset(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Text(
               isRegisterView
-                  ? 'lib/assets/images/register.png'
-                  : 'lib/assets/images/login.png',
+                  ? t(context)!.createAccountAndExplore
+                  : t(context)!.loginAndExplore,
+              style: textTheme.titleMedium,
+              textAlign: TextAlign.center,
             ),
           ),
-        ),
-        const SizedBox(height: 2),
-        if (isRegisterView)
+          Center(
+            child: SizedBox(
+              width: 300,
+              height: 300,
+              child: Image.asset(
+                isRegisterView
+                    ? 'lib/assets/images/register.png'
+                    : 'lib/assets/images/login.png',
+              ),
+            ),
+          ),
+          const SizedBox(height: 2),
+          if (isRegisterView)
+            SizedBox(
+              width: 342,
+              height: 53,
+              child: TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  labelText: t(context)!.email,
+                  labelStyle: TextStyle(color: colorScheme.primary),
+                  fillColor: colorScheme.secondaryContainer,
+                  filled: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide(
+                      color: colorScheme.secondaryContainer,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                style: textTheme.bodyMedium,
+              ),
+            ),
+          const SizedBox(height: 16),
           SizedBox(
             width: 342,
             height: 53,
             child: TextField(
-              controller: usernameController,
+              controller: emailController,
               decoration: InputDecoration(
                 labelText: t(context)!.email,
                 labelStyle: TextStyle(color: colorScheme.primary),
@@ -171,123 +201,95 @@ class _JoinUsState extends State<JoinUs> {
               style: textTheme.bodyMedium,
             ),
           ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: 342,
-          height: 53,
-          child: TextField(
-            controller: emailController,
-            decoration: InputDecoration(
-              labelText: t(context)!.email,
-              labelStyle: TextStyle(color: colorScheme.primary),
-              fillColor: colorScheme.secondaryContainer,
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.primary,
-                  width: 1,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 2,
-                ),
-              ),
-            ),
-            style: textTheme.bodyMedium,
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: 342,
-          height: 53,
-          child: TextField(
-            controller: passwordController,
-            obscureText: !isPasswordVisible,
-            decoration: InputDecoration(
-              labelText: t(context)!.email,
-              labelStyle: TextStyle(color: colorScheme.primary),
-              fillColor: colorScheme.secondaryContainer,
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.primary,
-                  width: 1,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 2,
-                ),
-              ),
-            ),
-            style: textTheme.bodyMedium,
-          ),
-        ),
-        const SizedBox(height: 32),
-        SizedBox(
-          width: 342,
-          child: ElevatedButton(
-            onPressed:
-                isLoading ? null : (isRegisterView ? registerUser : loginUser),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-            child: isLoading
-                ? CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(colorScheme.surface),
-                  )
-                : Text(
-                    isRegisterView
-                        ? t(context)!.createAccount
-                        : t(context)!.login,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.surface,
-                      fontWeight: FontWeight.bold,
-                    ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: 342,
+            height: 53,
+            child: TextField(
+              controller: passwordController,
+              obscureText: !isPasswordVisible,
+              decoration: InputDecoration(
+                labelText: t(context)!.email,
+                labelStyle: TextStyle(color: colorScheme.primary),
+                fillColor: colorScheme.secondaryContainer,
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
+                    width: 1,
                   ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(
+                    color: colorScheme.secondaryContainer,
+                    width: 2,
+                  ),
+                ),
+              ),
+              style: textTheme.bodyMedium,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                isRegisterView = !isRegisterView;
-                errorMessage = '';
-              });
-            },
-            child: Text(
-              isRegisterView
-                  ? t(context)!.alreadyHaveAccount
-                  : t(context)!.noAccount,
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
+          const SizedBox(height: 32),
+          SizedBox(
+            width: 342,
+            child: ElevatedButton(
+              onPressed:
+              isLoading ? null : (isRegisterView ? registerUser : loginUser),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: isLoading
+                  ? CircularProgressIndicator(
+                valueColor:
+                AlwaysStoppedAnimation<Color>(colorScheme.surface),
+              )
+                  : Text(
+                isRegisterView
+                    ? t(context)!.createAccount
+                    : t(context)!.login,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.surface,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
-        if (errorMessage.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.red),
+          const SizedBox(height: 16),
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isRegisterView = !isRegisterView;
+                  errorMessage = '';
+                });
+              },
+              child: Text(
+                isRegisterView
+                    ? t(context)!.alreadyHaveAccount
+                    : t(context)!.noAccount,
+                style: textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
-        const SizedBox(height: 16),
-      ],
+          if (errorMessage.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                errorMessage,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }

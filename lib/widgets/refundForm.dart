@@ -75,11 +75,11 @@ class _RefundFormState extends State<RefundForm> {
   void _handleSubmit() {
     setState(() {
       _amountError =
-          _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
+      _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
       _fromUserError = _fromUser == null ? 'Sélectionnez un utilisateur' : null;
       _toUserError = _toUser == null ? 'Sélectionnez un utilisateur' : null;
       _dateError =
-          _dateController.text.isEmpty ? 'La date est obligatoire' : null;
+      _dateController.text.isEmpty ? 'La date est obligatoire' : null;
     });
 
     if (_amountError == null &&
@@ -91,7 +91,7 @@ class _RefundFormState extends State<RefundForm> {
         'fromUserId': _fromUser?.id,
         'toUserId': _toUser?.id,
         'date':
-            '${DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateFormat('dd/MM/yyyy').parse(_dateController.text))}Z',
+        '${DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateFormat('dd/MM/yyyy').parse(_dateController.text))}Z',
       };
 
       if (widget.isUpdate && widget.initialRefund != null) {
@@ -105,7 +105,7 @@ class _RefundFormState extends State<RefundForm> {
 
   void _openUserSelectionModal(bool isFromUser) async {
     final eventWebsocketProvider =
-        Provider.of<EventWebsocketProvider>(context, listen: false);
+    Provider.of<EventWebsocketProvider>(context, listen: false);
 
     if (isFromUser) {
       await showModalBottomSheet(
@@ -117,18 +117,18 @@ class _RefundFormState extends State<RefundForm> {
             child: RefundPayers(
               users: eventWebsocketProvider.users
                   .map((user) => UserWithExpenses(
-                        id: user.id,
-                        email: user.email,
-                        username: user.username,
-                        role: user.role,
-                        avatar: user.avatar,
-                        expenseCount: 0,
-                        totalExpenses: 0.0,
-                        refundAmount: 0.0,
-                      ))
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role,
+                avatar: user.avatar,
+                expenseCount: 0,
+                totalExpenses: 0.0,
+                refundAmount: 0.0,
+              ))
                   .toList(),
               currentUser:
-                  Provider.of<AuthProvider>(context, listen: false).user,
+              Provider.of<AuthProvider>(context, listen: false).user,
               totalAmount: double.tryParse(_amountController.text) ?? 0.0,
               onPayersSelected: (selectedUsers) {
                 if (selectedUsers.isNotEmpty) {
@@ -291,7 +291,7 @@ class _RefundFormState extends State<RefundForm> {
                   errorText: errorText,
                 ),
                 style:
-                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
             ),
           ),
