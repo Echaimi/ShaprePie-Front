@@ -9,6 +9,7 @@ class User {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? deletedAt;
+  final String? firebaseToken;
 
   User({
     required this.id,
@@ -19,6 +20,7 @@ class User {
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
+    this.firebaseToken,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class User {
           json['UpdatedAt'] != null ? DateTime.parse(json['UpdatedAt']) : null,
       deletedAt:
           json['DeletedAt'] != null ? DateTime.parse(json['DeletedAt']) : null,
+      firebaseToken: json['firebaseToken'] as String?,
     );
   }
 
