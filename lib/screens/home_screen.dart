@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api, empty_catches, unused_element
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -267,11 +265,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               if (authProvider.isAuthenticated) {
-                if (!_isLoading && _events.isEmpty) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _fetchEvents();
-                  });
-                }
                 return _isLoading
                     ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0),
