@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/event_service.dart';
@@ -18,10 +16,12 @@ class JoinEventModalContent extends StatefulWidget {
 
 class _JoinEventModalContentState extends State<JoinEventModalContent> {
   final TextEditingController _codeController = TextEditingController();
+  final FocusNode _codeFocusNode = FocusNode();
   bool _isLoading = false;
   bool _isServerError = false;
   bool _isSuccess = false;
   bool _hasTriedOnce = false;
+  bool _isUserAlreadyInEventError = false;
   String? _eventName;
   String? _eventID;
   late EventService _eventService;
@@ -32,12 +32,26 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
     _eventService = EventService(ApiService());
   }
 
+  bool _isCodeValid(String code) {
+    final validCharacters = RegExp(r'^[A-Z0-9]+$');
+    return code.length >= 6 && validCharacters.hasMatch(code);
+  }
+
   Future<void> _joinEvent() async {
+    if (!_isCodeValid(_codeController.text)) {
+      setState(() {
+        _hasTriedOnce = true;
+      });
+      _codeFocusNode.requestFocus();
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _isSuccess = false;
       _eventName = null;
       _eventID = null;
+      _isUserAlreadyInEventError = false;
     });
 
     try {
@@ -50,8 +64,11 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
         _isServerError = false;
       });
     } catch (e) {
+      print('Error: $e');
       setState(() {
-        if (e.toString().contains('User is already in the event')) {
+        if (e.toString().contains('user is already in the event')) {
+          _isUserAlreadyInEventError = true;
+        } else if (e.toString().contains('failed to find event')) {
           _isServerError = true;
         } else {
           _isServerError = false;
@@ -77,249 +94,299 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
     final colorScheme = Theme.of(context).colorScheme;
 
     Widget content;
-    if (_isServerError && _hasTriedOnce) {
-      content = Column(
-        key: const ValueKey('error'),
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              t(context)!.joinEvent,
-              style: textTheme.titleMedium,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Image.asset(
-              'lib/assets/images/404.png',
-            ),
-          ),
-          const SizedBox(height: 40),
-          Center(
-            child: Text(
-              t(context)!.alreadyInEventError,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge,
-            ),
-          ),
-          const SizedBox(height: 40),
-          TextField(
-            controller: _codeController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.black.withOpacity(0.1),
-              labelText: t(context)!.eventCode,
-              labelStyle: textTheme.bodyMedium,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.secondaryContainer,
-                  width: 1.0,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(
-                  color: Colors.red,
-                  width: 1.0,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: Colors.grey.withOpacity(0.4),
-                  width: 1.0,
-                ),
-              ),
-            ),
-            style: textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _joinEvent,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  side: BorderSide(
-                    color: colorScheme.secondaryContainer,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(
-                      color: Colors.white,
-                    )
-                  : Text(
-                      t(context)!.join,
-                      style: textTheme.bodyLarge,
-                    ),
-            ),
-          ),
-        ],
-      );
+    if (_isUserAlreadyInEventError) {
+      content =
+          _buildUserAlreadyInEventErrorContent(context, textTheme, colorScheme);
+    } else if (_isServerError && _hasTriedOnce) {
+      content = _buildErrorContent(context, textTheme, colorScheme);
     } else if (_isSuccess) {
-      content = Column(
-        key: const ValueKey('success'),
-        crossAxisAlignment: CrossAxisAlignment.start,
+      content = _buildSuccessContent(context, textTheme, colorScheme);
+    } else {
+      content = _buildDefaultContent(context, textTheme, colorScheme);
+    }
+
+    return Scaffold(
+      body: Stack(
         children: [
-          Center(
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 150.0),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextSpan(
-                    text: t(context)!.joinedEvent,
-                    style: textTheme.titleMedium,
-                  ),
-                  TextSpan(
-                    text: '“$_eventName”',
-                    style: textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.0, 0.1),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: content,
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Center(
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTextField(context, textTheme, colorScheme),
+                  const SizedBox(height: 16),
+                  _buildJoinButton(context, textTheme, colorScheme),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorContent(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return Column(
+      key: const ValueKey('error'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Text(
+            t(context)!.serverError,
+            style: textTheme.titleMedium,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: SizedBox(
+            height: 300,
+            child: Image.asset(
+              'lib/assets/images/404.png',
+            ),
+          ),
+        ),
+        const SizedBox(height: 40),
+        Center(
+          child: Text(
+            t(context)!.serverErrorMessage,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSuccessContent(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return Column(
+      key: const ValueKey('success'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: t(context)!.joinedEvent,
+                  style: textTheme.titleMedium,
+                ),
+                TextSpan(
+                  text: '“$_eventName”',
+                  style: textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: SizedBox(
+            height: 300,
             child: Image.asset(
               'lib/assets/images/eventJoinSuccess.png',
             ),
           ),
-          const SizedBox(height: 40),
-          Center(
-            child: Text(
-              t(context)!.joinedEventMessage,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge,
-            ),
+        ),
+        const SizedBox(height: 40),
+        Center(
+          child: Text(
+            t(context)!.joinedEventMessage,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge,
           ),
-          const SizedBox(height: 40),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _viewEvent,
-              style: ElevatedButton.styleFrom(
-                  foregroundColor: colorScheme.surface,
-                  backgroundColor: colorScheme.primary,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  textStyle: textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )),
-              child: Text(
-                t(context)!.viewEvent,
-              ),
-            ),
+        ),
+        const SizedBox(height: 40),
+        _buildViewEventButton(context, textTheme, colorScheme),
+      ],
+    );
+  }
+
+  Widget _buildDefaultContent(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return Column(
+      key: const ValueKey('default'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Text(
+            t(context)!.joinEvent,
+            style: textTheme.titleMedium,
           ),
-        ],
-      );
-    } else {
-      content = Column(
-        key: const ValueKey('default'),
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              t(context)!.joinEvent,
-              style: textTheme.titleMedium,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              t(context)!.joinEventPrompt,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
+        ),
+        const SizedBox(height: 8),
+        Center(
+          child: SizedBox(
+            height: 300,
             child: Image.asset(
               'lib/assets/images/joinEvent.png',
             ),
           ),
-          TextField(
-            controller: _codeController,
-            decoration: InputDecoration(
-              labelText: t(context)!.eventCode,
-              labelStyle: TextStyle(color: colorScheme.primary),
-              fillColor: Colors.blueGrey.withOpacity(0.2),
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.primary,
-                  width: 1,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-            ),
-            style: textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 40),
+        Center(
+          child: Text(
+            t(context)!.joinEventPrompt,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge,
           ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _joinEvent,
-              style: ElevatedButton.styleFrom(
-                  foregroundColor: colorScheme.surface,
-                  backgroundColor: colorScheme.primary,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  textStyle: textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )),
-              child: _isLoading
-                  ? CircularProgressIndicator(
-                      color: textTheme.bodyLarge?.color,
-                    )
-                  : Text(
-                      t(context)!.join,
-                    ),
-            ),
-          ),
-        ],
-      );
-    }
+        ),
+        const SizedBox(height: 40),
+      ],
+    );
+  }
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.0, 0.1),
-              end: Offset.zero,
-            ).animate(animation),
-            child: child,
+  Widget _buildUserAlreadyInEventErrorContent(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return Column(
+      key: const ValueKey('userAlreadyInEventError'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Text(
+            t(context)!.userAlreadyInEventError,
+            style: textTheme.titleMedium,
           ),
-        );
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: SizedBox(
+            height: 300,
+            child: Image.asset(
+              'lib/assets/images/alreadyInEvent.png',
+            ),
+          ),
+        ),
+        const SizedBox(height: 40),
+        Center(
+          child: Text(
+            t(context)!.userAlreadyInEventErrorMessage,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return TextField(
+      controller: _codeController,
+      focusNode: _codeFocusNode,
+      decoration: InputDecoration(
+        labelText: t(context)!.eventCode,
+        labelStyle: TextStyle(color: colorScheme.primary),
+        fillColor: Colors.blueGrey.withOpacity(0.2),
+        filled: true,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(
+            color: colorScheme.primary,
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(
+            color: colorScheme.primary,
+            width: 2,
+          ),
+        ),
+        errorText: _hasTriedOnce && !_isCodeValid(_codeController.text)
+            ? t(context)!.codeTooShort
+            : null,
+      ),
+      style: textTheme.bodyMedium,
+      onChanged: (text) {
+        setState(() {});
       },
-      child: content,
+    );
+  }
+
+  Widget _buildJoinButton(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: _joinEvent,
+        style: ElevatedButton.styleFrom(
+          foregroundColor: colorScheme.surface,
+          backgroundColor: colorScheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          textStyle: textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        child: _isLoading
+            ? CircularProgressIndicator(
+                color: textTheme.bodyLarge?.color,
+              )
+            : Text(
+                t(context)!.join,
+              ),
+      ),
+    );
+  }
+
+  Widget _buildViewEventButton(
+      BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: _viewEvent,
+        style: ElevatedButton.styleFrom(
+          foregroundColor: colorScheme.surface,
+          backgroundColor: colorScheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          textStyle: textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        child: Text(
+          t(context)!.viewEvent,
+        ),
+      ),
     );
   }
 }

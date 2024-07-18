@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -87,8 +85,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _selectedPayers = [Payer(user: authProvider.user!, amount: 0)];
     }
 
-    _updateParticipantControllerText(authProvider.user!);
-    _updatePayerControllerText(authProvider.user!);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateParticipantControllerText(authProvider.user!);
+      _updatePayerControllerText(authProvider.user!);
+    });
 
     _amountController.addListener(_updateAmounts);
   }

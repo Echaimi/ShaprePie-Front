@@ -187,5 +187,12 @@
   "owes": "doit",
   "settledUp": "Tout est réglé !",
   "updateEventTitle": "Modifier l'évènement",
-  "updateEventButton": "Modifier"
+  "updateEventButton": "Modifier",
+  "codeTooShort": "Le code doit faire 6 caractères et ne contenir que des lettres majuscules ou des chiffres.",
+  "errorjoinEvent":"une perturbation a eu lieu?",
+  "userAlreadyInEventError": "Déjà dans l'événement",
+  "userAlreadyInEventErrorMessage": "Oups ! Il semble que vous soyez déjà sur la planète que vous recherchez, essayez une autre planète listée dans ce système solaire.",
+  "serverError": "Impossible de trouver l'événement",
+  "serverErrorMessage": "Oups ! Il semble que nous n'ayons pas pu trouver la planète que vous recherchez. Veuillez vérifier le code et réessayer."
 }
+
