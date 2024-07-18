@@ -129,7 +129,6 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (BuildContext context) {
         return BottomModal(
           scrollController: ScrollController(),

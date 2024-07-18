@@ -37,7 +37,7 @@ class BottomModal extends StatelessWidget {
                 width: 100,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
