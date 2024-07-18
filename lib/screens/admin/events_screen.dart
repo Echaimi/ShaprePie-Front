@@ -107,75 +107,66 @@ class _EventsScreenState extends State<EventsScreen> {
             _sortEvents(events);
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  cardColor: Colors.grey[50],
-                  dividerColor: Colors.black,
-                  textTheme: const TextTheme(
-                    bodyMedium: TextStyle(color: Colors.black),
-                  ),
-                ),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints:
-                            BoxConstraints(minWidth: constraints.maxWidth),
-                        child: PaginatedDataTable(
-                          rowsPerPage: _rowsPerPage,
-                          onRowsPerPageChanged: (int? value) {
-                            setState(() {
-                              _rowsPerPage = value ??
-                                  PaginatedDataTable.defaultRowsPerPage;
-                            });
-                          },
-                          sortColumnIndex: 4,
-                          sortAscending: _isSortedAscending,
-                          columns: [
-                            DataColumn(
-                              label: Text(t(context)?.id ?? 'ID',
-                                  style: const TextStyle(color: Colors.black)),
-                            ),
-                            DataColumn(
-                              label: Text(t(context)?.name ?? 'Name',
-                                  style: const TextStyle(color: Colors.black)),
-                            ),
-                            DataColumn(
-                              label: Text(t(context)?.category ?? 'Category',
-                                  style: const TextStyle(color: Colors.black)),
-                            ),
-                            DataColumn(
-                              label: Text(t(context)?.users ?? 'Users',
-                                  style: const TextStyle(color: Colors.black)),
-                            ),
-                            DataColumn(
-                              label: InkWell(
-                                child: Row(
-                                  children: [
-                                    Text(t(context)?.state ?? 'State',
-                                        style: const TextStyle(
-                                            color: Colors.black)),
-                                  ],
-                                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minWidth: constraints.maxWidth),
+                      child: PaginatedDataTable(
+                        rowsPerPage: _rowsPerPage,
+                        onRowsPerPageChanged: (int? value) {
+                          setState(() {
+                            _rowsPerPage =
+                                value ?? PaginatedDataTable.defaultRowsPerPage;
+                          });
+                        },
+                        sortColumnIndex: 4,
+                        sortAscending: _isSortedAscending,
+                        columns: [
+                          DataColumn(
+                            label: Text(t(context)?.id ?? 'ID',
+                                style: const TextStyle(color: Colors.black)),
+                          ),
+                          DataColumn(
+                            label: Text(t(context)?.name ?? 'Name',
+                                style: const TextStyle(color: Colors.black)),
+                          ),
+                          DataColumn(
+                            label: Text(t(context)?.category ?? 'Category',
+                                style: const TextStyle(color: Colors.black)),
+                          ),
+                          DataColumn(
+                            label: Text(t(context)?.users ?? 'Users',
+                                style: const TextStyle(color: Colors.black)),
+                          ),
+                          DataColumn(
+                            label: InkWell(
+                              child: Row(
+                                children: [
+                                  Text(t(context)?.state ?? 'State',
+                                      style:
+                                          const TextStyle(color: Colors.black)),
+                                ],
                               ),
-                              onSort: (int columnIndex, bool ascending) {
-                                setState(() {
-                                  _isSortedAscending = !_isSortedAscending;
-                                });
-                              },
                             ),
-                            DataColumn(
-                              label: Text(t(context)?.actions ?? 'Actions',
-                                  style: const TextStyle(color: Colors.black)),
-                            ),
-                          ],
-                          source: _EventDataSource(
-                              context, events, _showConfirmationDialog),
-                        ),
+                            onSort: (int columnIndex, bool ascending) {
+                              setState(() {
+                                _isSortedAscending = !_isSortedAscending;
+                              });
+                            },
+                          ),
+                          DataColumn(
+                            label: Text(t(context)?.actions ?? 'Actions',
+                                style: const TextStyle(color: Colors.black)),
+                          ),
+                        ],
+                        source: _EventDataSource(
+                            context, events, _showConfirmationDialog),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             );
           }
