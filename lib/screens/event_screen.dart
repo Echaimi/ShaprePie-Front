@@ -153,9 +153,10 @@ class _EventScreenState extends State<EventScreen> {
                     Fluttertoast.showToast(
                       msg: t(context)!.archivedEventWarning,
                       toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
+                      gravity: ToastGravity.TOP,
                       timeInSecForIosWeb: 1,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
                       textColor: Theme.of(context).textTheme.bodySmall?.color,
                       fontSize:
                           Theme.of(context).textTheme.bodySmall?.fontSize ??
@@ -462,7 +463,7 @@ class _EventScreenState extends State<EventScreen> {
                               style: theme.textTheme.bodyLarge,
                             ),
                             Text(
-                              '${userAmountOwed?.toStringAsFixed(2)} €',
+                              '${userBalanceIsPositive ? userAmountOwed?.toStringAsFixed(2) : 0} €',
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: userBalanceIsPositive
@@ -520,9 +521,10 @@ class _EventScreenState extends State<EventScreen> {
               Fluttertoast.showToast(
                 msg: t(context)!.archivedEventWarning,
                 toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
+                gravity: ToastGravity.TOP,
                 timeInSecForIosWeb: 1,
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
                 textColor: Theme.of(context).textTheme.bodySmall?.color,
                 fontSize:
                     Theme.of(context).textTheme.bodySmall?.fontSize ?? 16.0,

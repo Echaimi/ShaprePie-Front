@@ -95,7 +95,7 @@
   "commandantMessage": "You need to be the commander of this event to do this",
   "noEvents": "No events in this galaxy for now",
   "deleteEvent": "Delete event",
-  "archiveEvent": "Archive event",
+  "archiveEvent": "Archived events",
   "activateEvent": "Activate event",
   "backToEvents": "Back to events",
   "balance": "Balance",
