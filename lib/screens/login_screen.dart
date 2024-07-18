@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_textfield.dart';
 import '../widgets/square_tile.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,13 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loginUser() async {
     if (emailController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Email is required';
+        errorMessage = t(context)!.emailRequired;
       });
       return;
     }
     if (passwordController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Password is required';
+        errorMessage = t(context)!.passwordRequired;
       });
       return;
     }
@@ -45,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
       context.go('/');
     } catch (e) {
       setState(() {
-        errorMessage = 'Login failed : ${e.toString()}';
+        errorMessage = '${t(context)!.loginFailed} : ${e.toString()}';
       });
     } finally {
       setState(() {
@@ -72,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 50),
                 Text(
-                  'Welcome back you\'ve been missed!',
+                  t(context)!.welcomeBack,
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontSize: 16,
@@ -81,20 +84,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 25),
                 MyTextField(
                   controller: emailController,
-                  hintText: 'Email',
+                  hintText: t(context)!.email,
                   obscureText: false,
                 ),
                 const SizedBox(height: 10),
                 MyTextField(
                   controller: passwordController,
-                  hintText: 'Password',
+                  hintText: t(context)!.password,
                   obscureText: true,
                 ),
                 const SizedBox(height: 25),
                 isLoading
                     ? const CircularProgressIndicator()
                     : MyButton(
-                        onTap: loginUser, text: 'Login',
+                        onTap: loginUser,
+                        text: t(context)!.login,
                       ),
                 const SizedBox(height: 25),
                 Text(
@@ -115,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text(
-                          'Or continue with',
+                          t(context)!.orContinueWith,
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                       ),
@@ -139,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Don\'t have an account?',
+                      t(context)!.dontHaveAccount,
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
@@ -147,9 +151,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         context.go('/register');
                       },
-                      child: const Text(
-                        'Sign up now',
-                        style: TextStyle(
+                      child: Text(
+                        t(context)!.signUpNow,
+                        style: const TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
                         ),

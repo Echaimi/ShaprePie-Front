@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -21,7 +24,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       body: Stack(
         children: [
           Container(
-            color: Colors.white, // Background color to match the dashboard
+            color: Colors.white,
           ),
           Center(
             child: SingleChildScrollView(
@@ -35,11 +38,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(24.0),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFFF8F8F8), // Light grey background
+                          color: const Color(0xFFF8F8F8),
                           borderRadius: BorderRadius.circular(16.0),
                           border: Border.all(
-                            color: const Color(0xFFE0E0E0), // Light grey border
+                            color: const Color(0xFFE0E0E0),
                             width: 1.0,
                           ),
                         ),
@@ -49,7 +51,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                             TextField(
                               controller: _usernameController,
                               decoration: InputDecoration(
-                                labelText: 'Email address',
+                                labelText: t(context)?.email ?? 'Email address',
                                 labelStyle: const TextStyle(color: Colors.grey),
                                 filled: true,
                                 fillColor: Colors.white,
@@ -66,7 +68,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                             TextField(
                               controller: _passwordController,
                               decoration: InputDecoration(
-                                labelText: 'Password',
+                                labelText: t(context)?.password ?? 'Password',
                                 labelStyle: const TextStyle(color: Colors.grey),
                                 filled: true,
                                 fillColor: Colors.white,
@@ -89,14 +91,16 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                backgroundColor: Colors.black, // Button color
+                                backgroundColor: Colors.black,
                                 textStyle: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.w600),
                               ),
-                              child: const Text('Se connecter',
-                                  style: TextStyle(color: Colors.white)),
+                              child: Text(
+                                t(context)?.login ?? 'Se connecter',
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
                             if (_errorMessage.isNotEmpty)
                               Padding(
@@ -128,7 +132,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       context.go('/admin');
     } catch (e) {
       setState(() {
-        _errorMessage = 'Invalid username or password';
+        _errorMessage =
+            t(context)?.loginFailed ?? 'Invalid username or password';
       });
     }
   }

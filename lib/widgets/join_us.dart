@@ -150,7 +150,7 @@ class _JoinUsState extends State<JoinUs> {
               child: TextField(
                 controller: usernameController,
                 decoration: InputDecoration(
-                  labelText: t(context)!.username,
+                  labelText: t(context)!.pseudo,
                   labelStyle: TextStyle(color: colorScheme.primary),
                   fillColor: colorScheme.secondaryContainer,
                   filled: true,

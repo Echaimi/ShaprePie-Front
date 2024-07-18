@@ -151,8 +151,7 @@ class _EventScreenState extends State<EventScreen> {
                 onPressed: () {
                   if (isArchived == true) {
                     Fluttertoast.showToast(
-                      msg:
-                          "La planète que vous essayez de consulter a été archivée et n'est plus en mission",
+                      msg: t(context)!.archivedEventWarning,
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.CENTER,
                       timeInSecForIosWeb: 1,
@@ -189,7 +188,7 @@ class _EventScreenState extends State<EventScreen> {
                             _deleteEvent(context, eventProvider);
                             context.pop();
                           },
-                          child: const Text('Supprimer l\'évènement'),
+                          child: Text(t(context)!.deleteEvent),
                         ),
                         CupertinoActionSheetAction(
                           onPressed: () {
@@ -198,8 +197,8 @@ class _EventScreenState extends State<EventScreen> {
                           },
                           child: Text(
                             eventProvider.event!.state == 'active'
-                                ? 'Archiver l\'évènement'
-                                : 'Activer l\'évènement',
+                                ? t(context)!.archiveEvent
+                                : t(context)!.activateEvent,
                           ),
                         ),
                       ],
@@ -207,7 +206,7 @@ class _EventScreenState extends State<EventScreen> {
                         onPressed: () {
                           context.pop();
                         },
-                        child: const Text('Annuler'),
+                        child: Text(t(context)!.cancel),
                       ),
                     ),
                   );
@@ -519,8 +518,7 @@ class _EventScreenState extends State<EventScreen> {
           onPressed: () {
             if (isArchived == true) {
               Fluttertoast.showToast(
-                msg:
-                    "La planète que vous essayez de consulter a été archivée et n'est plus en mission",
+                msg: t(context)!.archivedEventWarning,
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.CENTER,
                 timeInSecForIosWeb: 1,

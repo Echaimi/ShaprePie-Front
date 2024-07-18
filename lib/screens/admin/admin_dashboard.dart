@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class AdminDashboard extends StatelessWidget {
   final Widget child;
@@ -14,8 +17,10 @@ class AdminDashboard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset('lib/assets/images/logo.png'),
         ),
-        title: const Text('Admin Dashboard',
-            style: TextStyle(color: Colors.black, fontSize: 20)),
+        title: Text(
+          t(context)?.adminDashboard ?? 'Admin Dashboard',
+          style: const TextStyle(color: Colors.black, fontSize: 20),
+        ),
         backgroundColor: Colors.white,
         actions: [
           IconButton(
@@ -41,10 +46,10 @@ class AdminDashboard extends StatelessWidget {
                 top: 24.0, right: 16.0, left: 16.0, bottom: 24.0),
             width: 250,
             decoration: const BoxDecoration(
-              color: Color(0xFFF8F8F8), // Light grey background
+              color: Color(0xFFF8F8F8),
               border: Border(
                 right: BorderSide(
-                  color: Color(0xFFE0E0E0), // Light grey border
+                  color: Color(0xFFE0E0E0),
                   width: 1.0,
                 ),
               ),
@@ -54,25 +59,25 @@ class AdminDashboard extends StatelessWidget {
                 _buildSidebarItem(
                   context,
                   icon: Icons.category,
-                  label: 'Categories',
+                  label: t(context)?.categories ?? 'Categories',
                   index: 0,
                 ),
                 _buildSidebarItem(
                   context,
                   icon: Icons.tag,
-                  label: 'Tags',
+                  label: t(context)?.tags ?? 'Tags',
                   index: 1,
                 ),
                 _buildSidebarItem(
                   context,
                   icon: Icons.people,
-                  label: 'Users',
+                  label: t(context)?.users ?? 'Users',
                   index: 2,
                 ),
                 _buildSidebarItem(
                   context,
                   icon: Icons.event,
-                  label: 'Events',
+                  label: t(context)?.events ?? 'Events',
                   index: 3,
                 ),
               ],
@@ -131,9 +136,7 @@ class AdminDashboard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFE0E0E0)
-              : Colors.transparent, // Light grey background for selected item
+          color: isSelected ? const Color(0xFFE0E0E0) : Colors.transparent,
           borderRadius: BorderRadius.circular(8.0),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
