@@ -177,11 +177,12 @@ class _ExpenseFormState extends State<ExpenseForm> {
             'amount': payer.amount,
           };
         }).toList(),
-        'date': DateFormat('yyyy-MM-dd')
+        'date': DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
             .format(DateFormat('dd/MM/yyyy').parse(_dateController.text)),
       };
       print(data);
       widget.onSubmit(data);
+      context.pop();
     }
   }
 

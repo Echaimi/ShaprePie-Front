@@ -1,56 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spaceshare/models/participant.dart';
+import 'package:spaceshare/models/user.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
+import '../models/payer.dart';
 
-class ExpenseParticipants extends StatefulWidget {
+class RefundPayers extends StatefulWidget {
   final List<UserWithExpenses> users;
-  final Function(List<Participant>) onParticipantsSelected;
-  final List<Participant> initialParticipants;
+  final User? currentUser;
   final double totalAmount;
+  final Function(List<Payer>) onPayersSelected;
+  final List<Payer> initialPayers;
 
-  const ExpenseParticipants({
+  const RefundPayers({
     super.key,
     required this.users,
-    required this.onParticipantsSelected,
-    required this.initialParticipants,
+    this.currentUser,
     required this.totalAmount,
+    required this.onPayersSelected,
+    required this.initialPayers,
   });
 
   @override
-  _ExpenseParticipantsState createState() => _ExpenseParticipantsState();
+  _RefundPayersState createState() => _RefundPayersState();
 }
 
-class _ExpenseParticipantsState extends State<ExpenseParticipants> {
-  late Map<String, bool> selectedParticipants;
+class _RefundPayersState extends State<RefundPayers> {
+  late List<UserWithExpenses> sortedUsers;
+  late Map<String, bool> selectedPayers;
   late Map<String, TextEditingController> amountControllers;
   String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialParticipants.isEmpty) {
-      selectedParticipants = {
-        for (var user in widget.users) user.username: true
+
+    sortedUsers = List.from(widget.users);
+    if (widget.currentUser != null) {
+      sortedUsers.sort((a, b) {
+        if (a.id == widget.currentUser!.id) {
+          return -1;
+        } else if (b.id == widget.currentUser!.id) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+
+    if (widget.initialPayers.isEmpty) {
+      selectedPayers = {
+        for (var user in sortedUsers)
+          user.username: user.id == widget.currentUser?.id
       };
       amountControllers = {
-        for (var user in widget.users)
+        for (var user in sortedUsers)
           user.username: TextEditingController(
-              text:
-                  (widget.totalAmount / widget.users.length).toStringAsFixed(2))
+              text: user.id == widget.currentUser?.id
+                  ? widget.totalAmount.toString()
+                  : '0')
       };
     } else {
-      selectedParticipants = {
-        for (var user in widget.users)
-          user.username: widget.initialParticipants
-              .any((p) => p.user.username == user.username)
+      selectedPayers = {
+        for (var user in sortedUsers)
+          user.username:
+              widget.initialPayers.any((p) => p.user.username == user.username)
       };
       amountControllers = {
-        for (var user in widget.users)
+        for (var user in sortedUsers)
           user.username: TextEditingController(
-              text: widget.initialParticipants
+              text: widget.initialPayers
                   .firstWhere((p) => p.user.username == user.username,
-                      orElse: () => Participant(user: user, amount: 0))
+                      orElse: () => Payer(user: user, amount: 0))
                   .amount
                   .toString())
       };
@@ -62,6 +81,8 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
     final double totalAmount = amountControllers.values
         .map((controller) => double.tryParse(controller.text) ?? 0)
         .fold(0, (sum, amount) => sum + amount);
+
+    const double tolerance = 0.01;
 
     setState(() {
       if (totalAmount < 0) {
@@ -76,7 +97,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
     final double editedAmount = double.tryParse(value) ?? 0;
     final double totalAmount = widget.totalAmount;
     final int selectedCount =
-        selectedParticipants.values.where((selected) => selected).length;
+        selectedPayers.values.where((selected) => selected).length;
 
     double remainingAmount = totalAmount - editedAmount;
 
@@ -85,19 +106,19 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
           (remainingAmount / (selectedCount - 1) * 100).floor() / 100;
 
       for (var entry in amountControllers.entries) {
-        if (selectedParticipants[entry.key]! && entry.key != username) {
+        if (selectedPayers[entry.key]! && entry.key != username) {
           entry.value.text = dividedAmount.toStringAsFixed(2);
         }
       }
 
       double sumOfAmounts = editedAmount;
       for (var entry in amountControllers.entries) {
-        if (selectedParticipants[entry.key]! && entry.key != username) {
+        if (selectedPayers[entry.key]! && entry.key != username) {
           sumOfAmounts += double.tryParse(entry.value.text) ?? 0;
         }
       }
       if ((sumOfAmounts - totalAmount).abs() > 0.01) {
-        final lastSelectedUser = selectedParticipants.entries
+        final lastSelectedUser = selectedPayers.entries
             .lastWhere((entry) => entry.value && entry.key != username)
             .key;
         final double lastUserAmount = totalAmount -
@@ -116,15 +137,14 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
   void _updateAmounts() {
     final double totalAmount = widget.totalAmount;
     final selectedUsersCount =
-        selectedParticipants.values.where((selected) => selected).length;
-
-    if (selectedUsersCount > 0 && totalAmount > 0) {
+        selectedPayers.values.where((selected) => selected).length;
+    if (selectedUsersCount > 0) {
       final double dividedAmount =
           (totalAmount / selectedUsersCount * 100).floor() / 100;
       double sumOfAmounts = 0;
 
       for (var entry in amountControllers.entries) {
-        if (selectedParticipants[entry.key]!) {
+        if (selectedPayers[entry.key]!) {
           sumOfAmounts += dividedAmount;
           entry.value.text = dividedAmount.toStringAsFixed(2);
         }
@@ -132,7 +152,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
 
       if (sumOfAmounts < totalAmount) {
         final lastSelectedUser =
-            selectedParticipants.entries.lastWhere((entry) => entry.value).key;
+            selectedPayers.entries.lastWhere((entry) => entry.value).key;
         final double lastUserAmount =
             totalAmount - sumOfAmounts + dividedAmount;
         amountControllers[lastSelectedUser]?.text =
@@ -140,7 +160,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
       }
     } else {
       for (var entry in amountControllers.entries) {
-        if (selectedParticipants[entry.key]!) {
+        if (selectedPayers[entry.key]!) {
           entry.value.text = '0';
         }
       }
@@ -151,7 +171,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
 
   void _onUserSelectionChanged(String username, bool isSelected) {
     setState(() {
-      selectedParticipants[username] = isSelected;
+      selectedPayers[username] = isSelected;
 
       if (isSelected) {
         _updateAmounts();
@@ -175,8 +195,10 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child:
-                    Text('Les participants', style: theme.textTheme.titleSmall),
+                child: Text(
+                  'Qui doit rembourser ?',
+                  style: theme.textTheme.titleSmall,
+                ),
               ),
               const SizedBox(height: 20.0),
               Row(
@@ -216,9 +238,9 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
               const SizedBox(height: 10.0),
               Expanded(
                 child: ListView.builder(
-                  itemCount: widget.users.length,
+                  itemCount: sortedUsers.length,
                   itemBuilder: (context, index) {
-                    final user = widget.users[index];
+                    final user = sortedUsers[index];
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -235,7 +257,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           decoration: BoxDecoration(
-                            color: selectedParticipants[user.username]!
+                            color: selectedPayers[user.username]!
                                 ? theme.colorScheme.secondaryContainer
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(8.0),
@@ -244,7 +266,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                           child: Row(
                             children: [
                               Checkbox(
-                                value: selectedParticipants[user.username],
+                                value: selectedPayers[user.username],
                                 onChanged: (bool? value) {
                                   _onUserSelectionChanged(
                                       user.username, value!);
@@ -253,12 +275,10 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                                 checkColor: Colors.white,
                               ),
                               Expanded(
-                                child: Text(
-                                  user.username,
-                                  style: theme.textTheme.bodyLarge,
-                                ),
+                                child: Text(user.username,
+                                    style: theme.textTheme.bodyLarge),
                               ),
-                              if (selectedParticipants[user.username]!)
+                              if (selectedPayers[user.username]!)
                                 SizedBox(
                                   width: 70,
                                   child: Row(
@@ -330,10 +350,10 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
               child: ElevatedButton(
                 onPressed: errorMessage == null
                     ? () {
-                        List<Participant> selectedUsers = widget.users
+                        List<Payer> selectedUsers = sortedUsers
                             .where((user) =>
-                                selectedParticipants[user.username] ?? false)
-                            .map((user) => Participant(
+                                selectedPayers[user.username] ?? false)
+                            .map((user) => Payer(
                                   id: user.id,
                                   user: user,
                                   amount: double.tryParse(
@@ -343,7 +363,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                                       0,
                                 ))
                             .toList();
-                        widget.onParticipantsSelected(selectedUsers);
+                        widget.onPayersSelected(selectedUsers);
                         context.pop(context);
                       }
                     : null,
@@ -356,9 +376,9 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: Text(
-                  'Valider les participants',
+                  'Valider les payeurs',
                   style:
-                      theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                      theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),
               ),
             ),
@@ -370,7 +390,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
 
   void _selectAll() {
     setState(() {
-      selectedParticipants.updateAll((key, value) => true);
+      selectedPayers.updateAll((key, value) => true);
       _updateAmounts();
     });
   }
@@ -378,7 +398,7 @@ class _ExpenseParticipantsState extends State<ExpenseParticipants> {
   void _resetAmounts() {
     setState(() {
       for (var entry in amountControllers.entries) {
-        if (selectedParticipants[entry.key]!) {
+        if (selectedPayers[entry.key]!) {
           entry.value.text = '0';
         }
       }

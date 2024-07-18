@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/tag.dart';
 import '../services/tags_service.dart';
 import 'package:spaceshare/services/api_service.dart'; // Assurez-vous que le chemin est correct
@@ -85,7 +86,7 @@ class _ReasonExpenseState extends State<ReasonExpense> {
     if (_nameError == null && _tagError == null) {
       widget.onReasonSelected(nameController.text, descriptionController.text,
           _selectedTag, _showTagList);
-      Navigator.pop(context);
+      context.pop(context);
     }
   }
 
@@ -101,15 +102,13 @@ class _ReasonExpenseState extends State<ReasonExpense> {
             Center(
               child: Text(
                 'La raison ?',
-                style: theme.textTheme.titleMedium!.copyWith(
-                  color: Colors.white,
-                ),
+                style: theme.textTheme.titleMedium,
               ),
             ),
             const SizedBox(height: 16.0),
             Text(
               'C\'est un cadeau ? De quoi te retourner la tête ce soir ? Juste les courses ?',
-              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+              style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.left,
             ),
             const SizedBox(height: 24.0),
@@ -199,12 +198,12 @@ class _ReasonExpenseState extends State<ReasonExpense> {
           ),
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.auto,
-          labelStyle: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+          labelStyle: theme.textTheme.bodyMedium,
           filled: true,
           fillColor: theme.colorScheme.secondaryContainer,
           errorText: errorText,
         ),
-        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+        style: theme.textTheme.bodyMedium,
       ),
     );
   }
@@ -223,6 +222,8 @@ class _ReasonExpenseState extends State<ReasonExpense> {
         controller: controller,
         maxLines: 5,
         decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 10.0, horizontal: 22.0),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide.none,
@@ -237,11 +238,11 @@ class _ReasonExpenseState extends State<ReasonExpense> {
           ),
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.auto,
-          labelStyle: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+          labelStyle: theme.textTheme.bodyMedium,
           filled: true,
           fillColor: theme.colorScheme.secondaryContainer,
         ),
-        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+        style: theme.textTheme.bodyMedium,
       ),
     );
   }
@@ -252,8 +253,7 @@ class _ReasonExpenseState extends State<ReasonExpense> {
       spacing: 8.0,
       runSpacing: 12.0,
       children: _tags.map((tag) {
-        final isSelected = _selectedTag != null &&
-            _selectedTag!.id == tag.id; // Comparer les ID des tags
+        final isSelected = _selectedTag != null && _selectedTag!.id == tag.id;
         return GestureDetector(
           onTap: () => _toggleTagSelection(tag),
           child: Container(

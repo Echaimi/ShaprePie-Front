@@ -39,6 +39,8 @@ class UserWithExpenses extends User {
     );
   }
 
+  get user => null;
+
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
