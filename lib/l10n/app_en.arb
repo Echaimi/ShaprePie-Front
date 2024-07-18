@@ -176,7 +176,6 @@
   "joinEventPrompt": "The event creator sent you a code to join the event! Nothing received? Contact them directly.",
   "eventCode": "Event Code",
   "join": "Join",
-  "alreadyInEventError": "Oops! It looks like you are already on the planet you are looking for, try another one listed in this solar system.",
   "joinedEventMessage": "Congratulations! The planet you are looking for is well listed in this solar system.",
   "viewEvent": "View Event",
   "joinedEvent": "You have joined",
@@ -193,5 +192,12 @@
   "owes": "owes",
   "settledUp": "All settled!",
   "updateEventTitle": "Edit Event",
-  "updateEventButton": "Update"
+  "updateEventButton": "Update",
+  "codeTooShort": "The code must be at least 6 characters only uppercase letters or numbers.",
+  "errorjoinEvent":"Disturbance occurred",
+  "alreadyInEventError": "Oops! It looks like you didn't find the planet you are looking for, try another one listed in this solar system.",
+  "userAlreadyInEventError": "Already in the event",
+  "userAlreadyInEventErrorMessage": "Oops! It looks like you are already on the planet you are looking for, try another one listed in this solar system.",
+  "serverError": "Failed to find the event",
+  "serverErrorMessage": "Oops! It seems we couldn't find the planet you're looking for. Please check the code and try again."
 }
