@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, empty_catches, unused_element
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -73,9 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await widget.eventService.updateEventState(eventId, state);
       await _fetchEvents();
-    } catch (e) {
-      print('Error updating event state: $e');
-    }
+    } catch (e) {}
   }
 
   void _showArchiveOptions(BuildContext context, Event event) {

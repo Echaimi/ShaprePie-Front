@@ -1,7 +1,12 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/category_service.dart';
 import 'package:spaceshare/models/category.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class CategoriesScreen extends StatefulWidget {
   final CategoryService categoryService;
@@ -27,17 +32,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this category?'),
+          title: Text(t(context)?.confirmDelete ?? 'Confirm Delete'),
+          content: Text(
+            t(context)?.deleteCategoryConfirmation ??
+                'Are you sure you want to delete this category?',
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(t(context)?.cancel ?? 'Cancel'),
               onPressed: () {
                 context.pop();
               },
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: Text(t(context)?.delete ?? 'Delete'),
               onPressed: () async {
                 try {
                   await widget.categoryService.deleteCategory(categoryId);
@@ -47,7 +55,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete category: $e')),
+                    SnackBar(
+                        content: Text(
+                      '${t(context)?.deleteCategoryFailed ?? 'Failed to delete category'}: $e',
+                    )),
                   );
                 }
               },
@@ -67,14 +78,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(category == null ? 'Add Category' : 'Edit Category'),
+          title: Text(category == null
+              ? t(context)?.addCategory ?? 'Add Category'
+              : t(context)?.editCategory ?? 'Edit Category'),
           content: Form(
             key: formKey,
             child: TextFormField(
               initialValue: categoryName,
-              decoration: const InputDecoration(
-                labelText: 'Category Name',
-                labelStyle: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: t(context)?.categoryName ?? 'Category Name',
+                labelStyle: const TextStyle(color: Colors.black),
               ),
               style: const TextStyle(color: Colors.black),
               onChanged: (value) {
@@ -82,7 +95,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a category name';
+                  return t(context)?.enterCategoryName ??
+                      'Please enter a category name';
                 }
                 return null;
               },
@@ -90,13 +104,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(t(context)?.cancel ?? 'Cancel'),
               onPressed: () {
                 context.pop();
               },
             ),
             TextButton(
-              child: const Text('Save'),
+              child: Text(t(context)?.save ?? 'Save'),
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   try {
@@ -113,7 +127,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     context.pop();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to save category: $e')),
+                      SnackBar(
+                          content: Text(
+                        '${t(context)?.saveCategoryFailed ?? 'Failed to save category'}: $e',
+                      )),
                     );
                   }
                 }
@@ -132,10 +149,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Align(
+          title: Align(
             alignment: Alignment.centerLeft,
-            child: Text('Manage Categories',
-                style: TextStyle(color: Colors.black)),
+            child: Text(
+              t(context)?.manageCategories ?? 'Manage Categories',
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
           backgroundColor: Colors.white,
           iconTheme: const IconThemeData(color: Colors.black),
@@ -146,7 +165,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(
+                  child: Text(
+                      '${t(context)?.error ?? 'Error'}: ${snapshot.error}'));
             } else {
               final categories = snapshot.data!;
               return Padding(
@@ -164,7 +185,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           ElevatedButton.icon(
                             onPressed: () => _showCategoryFormDialog(),
                             icon: const Icon(Icons.add),
-                            label: const Text('Add Category'),
+                            label:
+                                Text(t(context)?.addCategory ?? 'Add Category'),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
@@ -183,18 +205,22 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               ? MediaQuery.of(context).size.width
                               : 800,
                           child: DataTable(
-                            columns: const [
+                            columns: [
                               DataColumn(
-                                label: Text('ID',
-                                    style: TextStyle(color: Colors.black)),
-                              ),
-                              DataColumn(
-                                label: Expanded(
-                                  child: Text('Name',
-                                      style: TextStyle(color: Colors.black)),
+                                label: Text(
+                                  t(context)?.id ?? 'ID',
+                                  style: const TextStyle(color: Colors.black),
                                 ),
                               ),
                               DataColumn(
+                                label: Expanded(
+                                  child: Text(
+                                    t(context)?.name ?? 'Name',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                              const DataColumn(
                                 label: Text(''),
                               ),
                             ],

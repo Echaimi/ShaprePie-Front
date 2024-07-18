@@ -1,7 +1,12 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/event_service.dart';
 import 'package:spaceshare/models/event.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventsScreen extends StatefulWidget {
   final EventService eventService;
@@ -29,11 +34,12 @@ class _EventsScreenState extends State<EventsScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm $action'),
-          content: Text('Are you sure you want to $action this event?'),
+          title: Text('${t(context)?.confirm} $action'),
+          content: Text(
+              '${t(context)?.confirmationQuestion} $action ${t(context)?.thisEvent}?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(t(context)?.cancel ?? 'Cancel'),
               onPressed: () {
                 context.pop();
               },
@@ -42,9 +48,9 @@ class _EventsScreenState extends State<EventsScreen> {
               child: Text(action),
               onPressed: () async {
                 try {
-                  if (action == 'delete') {
+                  if (action == t(context)?.delete) {
                     await widget.eventService.deleteEvent(eventId);
-                  } else if (action == 'archive') {
+                  } else if (action == t(context)?.archive) {
                     await widget.eventService
                         .updateEventState(eventId, 'archived');
                   }
@@ -54,7 +60,9 @@ class _EventsScreenState extends State<EventsScreen> {
                   context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to $action event: $e')),
+                    SnackBar(
+                        content: Text(
+                            '${t(context)?.failedTo} $action ${t(context)?.thisEvent}: $e')),
                   );
                 }
               },
@@ -76,9 +84,10 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Align(
+        title: Align(
           alignment: Alignment.centerLeft,
-          child: Text('Manage Events', style: TextStyle(color: Colors.black)),
+          child: Text(t(context)?.manageEvents ?? 'Manage Events',
+              style: const TextStyle(color: Colors.black)),
         ),
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -90,7 +99,9 @@ class _EventsScreenState extends State<EventsScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+                child:
+                    Text('${t(context)?.error ?? 'Error'}: ${snapshot.error}'));
           } else {
             final events = snapshot.data!;
             _sortEvents(events);
@@ -121,28 +132,29 @@ class _EventsScreenState extends State<EventsScreen> {
                           sortColumnIndex: 4,
                           sortAscending: _isSortedAscending,
                           columns: [
-                            const DataColumn(
-                              label: Text('ID',
-                                  style: TextStyle(color: Colors.black)),
-                            ),
-                            const DataColumn(
-                              label: Text('Name',
-                                  style: TextStyle(color: Colors.black)),
-                            ),
-                            const DataColumn(
-                              label: Text('Category',
-                                  style: TextStyle(color: Colors.black)),
-                            ),
-                            const DataColumn(
-                              label: Text('Users',
-                                  style: TextStyle(color: Colors.black)),
+                            DataColumn(
+                              label: Text(t(context)?.id ?? 'ID',
+                                  style: const TextStyle(color: Colors.black)),
                             ),
                             DataColumn(
-                              label: const InkWell(
+                              label: Text(t(context)?.name ?? 'Name',
+                                  style: const TextStyle(color: Colors.black)),
+                            ),
+                            DataColumn(
+                              label: Text(t(context)?.category ?? 'Category',
+                                  style: const TextStyle(color: Colors.black)),
+                            ),
+                            DataColumn(
+                              label: Text(t(context)?.users ?? 'Users',
+                                  style: const TextStyle(color: Colors.black)),
+                            ),
+                            DataColumn(
+                              label: InkWell(
                                 child: Row(
                                   children: [
-                                    Text('State',
-                                        style: TextStyle(color: Colors.black)),
+                                    Text(t(context)?.state ?? 'State',
+                                        style: const TextStyle(
+                                            color: Colors.black)),
                                   ],
                                 ),
                               ),
@@ -152,13 +164,13 @@ class _EventsScreenState extends State<EventsScreen> {
                                 });
                               },
                             ),
-                            const DataColumn(
-                              label: Text('Actions',
-                                  style: TextStyle(color: Colors.black)),
+                            DataColumn(
+                              label: Text(t(context)?.actions ?? 'Actions',
+                                  style: const TextStyle(color: Colors.black)),
                             ),
                           ],
-                          source:
-                              _EventDataSource(events, _showConfirmationDialog),
+                          source: _EventDataSource(
+                              context, events, _showConfirmationDialog),
                         ),
                       ),
                     );
@@ -174,11 +186,12 @@ class _EventsScreenState extends State<EventsScreen> {
 }
 
 class _EventDataSource extends DataTableSource {
+  final BuildContext context;
   final List<Event> events;
   final Future<void> Function(int eventId, String action)
       showConfirmationDialog;
 
-  _EventDataSource(this.events, this.showConfirmationDialog);
+  _EventDataSource(this.context, this.events, this.showConfirmationDialog);
 
   @override
   DataRow? getRow(int index) {
@@ -202,11 +215,13 @@ class _EventDataSource extends DataTableSource {
             children: [
               IconButton(
                 icon: const Icon(Icons.archive, color: Colors.black),
-                onPressed: () => showConfirmationDialog(event.id, 'archive'),
+                onPressed: () => showConfirmationDialog(
+                    event.id, t(context)?.archive ?? 'archive'),
               ),
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.black),
-                onPressed: () => showConfirmationDialog(event.id, 'delete'),
+                onPressed: () => showConfirmationDialog(
+                    event.id, t(context)?.delete ?? 'delete'),
               ),
             ],
           ),

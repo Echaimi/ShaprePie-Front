@@ -1,8 +1,13 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class JoinEventModalContent extends StatefulWidget {
   const JoinEventModalContent({super.key});
@@ -79,7 +84,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
         children: [
           Center(
             child: Text(
-              'Rejoindre un évènement',
+              t(context)!.joinEvent,
               style: textTheme.titleMedium,
             ),
           ),
@@ -92,7 +97,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
           const SizedBox(height: 40),
           Center(
             child: Text(
-              'Oups ! Il semblerait que tu te situes déjà sur la planète que tu recherches essaie une autre répertoriée dans ce système solaire.',
+              t(context)!.alreadyInEventError,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge,
             ),
@@ -103,7 +108,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.black.withOpacity(0.1),
-              labelText: 'Code de l\'évènement',
+              labelText: t(context)!.eventCode,
               labelStyle: textTheme.bodyMedium,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -157,7 +162,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                       color: Colors.white,
                     )
                   : Text(
-                      'Rejoindre',
+                      t(context)!.join,
                       style: textTheme.bodyLarge,
                     ),
             ),
@@ -175,7 +180,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: 'Vous avez rejoint\n',
+                    text: t(context)!.joinedEvent,
                     style: textTheme.titleMedium,
                   ),
                   TextSpan(
@@ -196,7 +201,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
           const SizedBox(height: 40),
           Center(
             child: Text(
-              'Félicitations ! La planète que tu recherches est bien répertoriée dans ce système solaire.',
+              t(context)!.joinedEventMessage,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge,
             ),
@@ -216,8 +221,8 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                   textStyle: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   )),
-              child: const Text(
-                'Voir l\'évènement',
+              child: Text(
+                t(context)!.viewEvent,
               ),
             ),
           ),
@@ -230,14 +235,14 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
         children: [
           Center(
             child: Text(
-              'Rejoindre un évènement',
+              t(context)!.joinEvent,
               style: textTheme.titleMedium,
             ),
           ),
           const SizedBox(height: 8),
           Center(
             child: Text(
-              'Le créateur de l\'évènement t\'as envoyé un code pour rejoindre la partie ! Rien reçu ? Contacte le directement',
+              t(context)!.joinEventPrompt,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge,
             ),
@@ -251,7 +256,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
           TextField(
             controller: _codeController,
             decoration: InputDecoration(
-              labelText: 'Code de l\'évènement',
+              labelText: t(context)!.eventCode,
               labelStyle: TextStyle(color: colorScheme.primary),
               fillColor: Colors.blueGrey.withOpacity(0.2),
               filled: true,
@@ -291,8 +296,8 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
                   ? CircularProgressIndicator(
                       color: textTheme.bodyLarge?.color,
                     )
-                  : const Text(
-                      'Rejoindre',
+                  : Text(
+                      t(context)!.join,
                     ),
             ),
           ),

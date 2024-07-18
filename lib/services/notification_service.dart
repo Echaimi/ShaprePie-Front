@@ -27,7 +27,6 @@ class NotificationService {
   void _configureForegroundNotification() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification != null) {
-        print('Notification received: ${message.notification!.toMap()}');
         await _flutterLocalNotificationsPlugin.show(
           message.hashCode,
           message.notification!.title,

@@ -1,8 +1,13 @@
+// ignore_for_file: library_private_types_in_public_api, unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/models/user.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/payer.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class RefundPayers extends StatefulWidget {
   final List<UserWithExpenses> users;
@@ -86,7 +91,7 @@ class _RefundPayersState extends State<RefundPayers> {
 
     setState(() {
       if (totalAmount < 0) {
-        errorMessage = 'Le montant total ne peut pas être inférieur à zéro.';
+        errorMessage = t(context)!.totalAmountError;
       } else {
         errorMessage = null;
       }
@@ -196,7 +201,7 @@ class _RefundPayersState extends State<RefundPayers> {
             children: [
               Center(
                 child: Text(
-                  'Qui doit rembourser ?',
+                  t(context)!.whoShouldRefund,
                   style: theme.textTheme.titleSmall,
                 ),
               ),
@@ -207,7 +212,7 @@ class _RefundPayersState extends State<RefundPayers> {
                   GestureDetector(
                     onTap: _selectAll,
                     child: Text(
-                      'Tout sélectionner',
+                      t(context)!.selectAll,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         decoration: TextDecoration.none,
@@ -217,7 +222,7 @@ class _RefundPayersState extends State<RefundPayers> {
                   GestureDetector(
                     onTap: _resetAmounts,
                     child: Text(
-                      'Réinitialiser',
+                      t(context)!.resetAmounts,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         decoration: TextDecoration.none,
@@ -230,7 +235,7 @@ class _RefundPayersState extends State<RefundPayers> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'Cliquez pour modifier le montant',
+                  t(context)!.clickToEditAmount,
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: theme.colorScheme.secondary),
                 ),
@@ -376,7 +381,7 @@ class _RefundPayersState extends State<RefundPayers> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: Text(
-                  'Valider les payeurs',
+                  t(context)!.validatePayers,
                   style:
                       theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),

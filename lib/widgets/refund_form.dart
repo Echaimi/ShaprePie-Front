@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +13,9 @@ import '../models/payer.dart';
 import 'Refund_payer.dart';
 import 'bottom_modal.dart';
 import 'refund_participants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class RefundForm extends StatefulWidget {
   final Function(Map<String, dynamic>) onSubmit;
@@ -77,11 +82,11 @@ class _RefundFormState extends State<RefundForm> {
   void _handleSubmit() {
     setState(() {
       _amountError =
-          _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
-      _fromUserError = _fromUser == null ? 'Sélectionnez un utilisateur' : null;
-      _toUserError = _toUser == null ? 'Sélectionnez un utilisateur' : null;
+          _amountController.text.isEmpty ? t(context)!.amountRequired : null;
+      _fromUserError = _fromUser == null ? t(context)!.fromUserRequired : null;
+      _toUserError = _toUser == null ? t(context)!.toUserRequired : null;
       _dateError =
-          _dateController.text.isEmpty ? 'La date est obligatoire' : null;
+          _dateController.text.isEmpty ? t(context)!.dateRequired : null;
     });
 
     if (_amountError == null &&
@@ -227,21 +232,23 @@ class _RefundFormState extends State<RefundForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    _buildLabeledField(
-                        'Montant (00.00€)', _amountController, context,
+                    _buildLabeledField(t(context)!.amountPlaceholder,
+                        _amountController, context,
                         keyboardType: TextInputType.number,
                         errorText: _amountError),
                     const SizedBox(height: 24.0),
-                    _buildLabeledField('De', _fromController, context,
+                    _buildLabeledField(
+                        t(context)!.fromUser, _fromController, context,
                         errorText: _fromUserError,
                         onTap: () => _openUserSelectionModal(true)),
                     const SizedBox(height: 24.0),
-                    _buildLabeledField('À', _toController, context,
+                    _buildLabeledField(
+                        t(context)!.toUser, _toController, context,
                         errorText: _toUserError,
                         onTap: () => _openUserSelectionModal(false)),
                     const SizedBox(height: 24.0),
                     _buildLabeledField(
-                        'Date (00/00/0000)', _dateController, context,
+                        t(context)!.datePlaceholder, _dateController, context,
                         onTap: () => _selectDate(context),
                         errorText: _dateError),
                   ],
@@ -268,8 +275,8 @@ class _RefundFormState extends State<RefundForm> {
                   ),
                   child: Text(
                     widget.isUpdate
-                        ? 'Modifier le remboursement'
-                        : 'Ajouter le remboursement',
+                        ? t(context)!.editRefund
+                        : t(context)!.addRefund,
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: Colors.white),
                   ),

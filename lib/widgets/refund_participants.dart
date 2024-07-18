@@ -1,6 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class RefundParticipants extends StatefulWidget {
   final List<UserWithExpenses> users;
@@ -41,7 +46,7 @@ class _RefundParticipantsState extends State<RefundParticipants> {
 
     setState(() {
       if (totalAmount < 0) {
-        errorMessage = 'Le montant total ne peut pas être inférieur à zéro.';
+        errorMessage = t(context)!.totalAmountError;
       } else {
         errorMessage = null;
       }
@@ -71,14 +76,16 @@ class _RefundParticipantsState extends State<RefundParticipants> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child:
-                    Text('Les participants', style: theme.textTheme.titleSmall),
+                child: Text(
+                  t(context)!.participants,
+                  style: theme.textTheme.titleSmall,
+                ),
               ),
               const SizedBox(height: 20.0),
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'Cliquez pour modifier le montant',
+                  t(context)!.clickToEditAmount,
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: theme.colorScheme.secondary),
                 ),
@@ -217,7 +224,7 @@ class _RefundParticipantsState extends State<RefundParticipants> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: Text(
-                  'Valider le participant',
+                  t(context)!.selectParticipant,
                   style:
                       theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
                 ),

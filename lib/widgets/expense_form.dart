@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,9 @@ import '../models/tag.dart';
 import '../models/participant.dart';
 import '../models/payer.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ExpenseForm extends StatefulWidget {
   final Function(Map<String, dynamic>) onSubmit;
@@ -66,7 +71,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
         Provider.of<EventWebsocketProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     if (widget.initialExpense != null) {
-      print(widget.initialExpense);
       _amountController.text = widget.initialExpense!.amount.toString();
       _purposeController.text = widget.initialExpense!.name;
       _descriptionController.text = widget.initialExpense!.description;
@@ -117,37 +121,36 @@ class _ExpenseFormState extends State<ExpenseForm> {
     if (_selectedParticipants.length == 1) {
       _participantController.text =
           _selectedParticipants.first.user.id == currentUser.id
-              ? 'Moi'
+              ? t(context)!.myself
               : _selectedParticipants.first.user.username;
     } else {
-      _participantController.text = '${_selectedParticipants.length} personnes';
+      _participantController.text =
+          t(context)!.personsCount(_selectedParticipants.length);
     }
   }
 
   void _updatePayerControllerText(User currentUser) {
     if (_selectedPayers.length == 1) {
       _payerController.text = _selectedPayers.first.user.id == currentUser.id
-          ? 'Moi'
+          ? t(context)!.myself
           : _selectedPayers.first.user.username;
     } else {
-      _payerController.text = '${_selectedPayers.length} personnes';
+      _payerController.text = t(context)!.personsCount(_selectedPayers.length);
     }
   }
 
   void _handleSubmit() {
     setState(() {
       _amountError =
-          _amountController.text.isEmpty ? 'Le montant est obligatoire' : null;
-      _purposeError = _purposeController.text.isEmpty
-          ? 'Le nom de la dépense est obligatoire'
-          : null;
-      _payerError =
-          _selectedPayers.isEmpty ? 'Au moins un payeur est obligatoire' : null;
+          _amountController.text.isEmpty ? t(context)!.amountRequired : null;
+      _purposeError =
+          _purposeController.text.isEmpty ? t(context)!.purposeRequired : null;
+      _payerError = _selectedPayers.isEmpty ? t(context)!.payerRequired : null;
       _participantError = _selectedParticipants.isEmpty
-          ? 'Au moins un participant est obligatoire'
+          ? t(context)!.participantRequired
           : null;
       _dateError =
-          _dateController.text.isEmpty ? 'La date est obligatoire' : null;
+          _dateController.text.isEmpty ? t(context)!.dateRequired : null;
     });
 
     if (_amountError == null &&
@@ -180,7 +183,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
         'date': DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
             .format(DateFormat('dd/MM/yyyy').parse(_dateController.text)),
       };
-      print(data);
       widget.onSubmit(data);
       context.pop();
     }
@@ -300,25 +302,27 @@ class _ExpenseFormState extends State<ExpenseForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    _buildLabeledField(
-                        'Montant (00.00€)', _amountController, context,
+                    _buildLabeledField(t(context)!.amountPlaceholderExpense,
+                        _amountController, context,
                         keyboardType: TextInputType.number,
                         errorText: _amountError),
                     const SizedBox(height: 24.0),
-                    _buildLabeledField('Pour', _purposeController, context,
+                    _buildLabeledField(t(context)!.forPlaceholderExpense,
+                        _purposeController, context,
                         errorText: _purposeError,
                         onTap: _openReasonExpenseModal),
                     const SizedBox(height: 24.0),
-                    _buildLabeledField('Payeurs', _payerController, context,
+                    _buildLabeledField(t(context)!.payersPlaceholder,
+                        _payerController, context,
                         errorText: _payerError, onTap: _openExpensePayersModal),
                     const SizedBox(height: 24.0),
-                    _buildLabeledField(
-                        'Participants', _participantController, context,
+                    _buildLabeledField(t(context)!.participantsPlaceholder,
+                        _participantController, context,
                         errorText: _participantError,
                         onTap: _openExpenseParticipantsModal),
                     const SizedBox(height: 24.0),
-                    _buildLabeledField(
-                        'Fait le (00/00/0000)', _dateController, context,
+                    _buildLabeledField(t(context)!.datePlaceholderExpense,
+                        _dateController, context,
                         onTap: () => _selectDate(context),
                         errorText: _dateError),
                   ],
@@ -344,7 +348,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
                   child: Text(
-                    'Ajouter la dépense',
+                    t(context)!.addExpenseButtonExpense,
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: Colors.white),
                   ),
