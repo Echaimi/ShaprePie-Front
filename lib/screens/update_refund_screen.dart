@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spaceshare/models/refund.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../widgets/refund_form.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class UpdateRefundScreen extends StatelessWidget {
   final Refund refund;
@@ -30,9 +33,9 @@ class UpdateRefundScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text(
-                  'Fermer',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  t(context)?.close ?? 'Fermer',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),

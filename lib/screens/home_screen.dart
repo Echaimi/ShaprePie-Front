@@ -84,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (event.author.id != currentUserId) {
       Fluttertoast.showToast(
-        msg: "Il faut être le commandant de bord de cet event pour faire cela",
+        msg: t(context)?.commandantMessage ??
+            "Il faut être le commandant de bord de cet event pour faire cela",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
@@ -325,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: theme.textTheme.bodyMedium?.color),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Tes évènements',
+                                  t(context)?.yourEvents ?? 'Tes évènements',
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
@@ -339,7 +340,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ? Padding(
                                         padding: const EdgeInsets.all(24.0),
                                         child: Text(
-                                          'Aucun évènement dans cette galaxie pour l\'instant',
+                                          t(context)?.noEvents ??
+                                              'Aucun évènement dans cette galaxie pour l\'instant',
                                           style: theme.textTheme.bodyMedium,
                                         ),
                                       )
@@ -358,7 +360,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ? Padding(
                                         padding: const EdgeInsets.all(24.0),
                                         child: Text(
-                                          'Aucun évènement dans cette galaxie pour l\'instant',
+                                          t(context)?.noEvents ??
+                                              'Aucun évènement dans cette galaxie pour l\'instant',
                                           style: theme.textTheme.bodyMedium,
                                         ),
                                       )
