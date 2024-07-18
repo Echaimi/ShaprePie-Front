@@ -33,7 +33,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
   }
 
   bool _isCodeValid(String code) {
-    final validCharacters = RegExp(r'^[A-Z0-9]+$');
+    final validCharacters = RegExp(r'^[a-z0-9]+$');
     return code.length >= 6 && validCharacters.hasMatch(code);
   }
 
@@ -64,7 +64,6 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
         _isServerError = false;
       });
     } catch (e) {
-      print('Error: $e');
       setState(() {
         if (e.toString().contains('user is already in the event')) {
           _isUserAlreadyInEventError = true;
@@ -106,6 +105,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
     }
 
     return Scaffold(
+      backgroundColor: colorScheme.primaryContainer,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -137,20 +137,21 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTextField(context, textTheme, colorScheme),
-                  const SizedBox(height: 16),
-                  _buildJoinButton(context, textTheme, colorScheme),
-                ],
+          if (!_isSuccess)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildTextField(context, textTheme, colorScheme),
+                    const SizedBox(height: 16),
+                    _buildJoinButton(context, textTheme, colorScheme),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
