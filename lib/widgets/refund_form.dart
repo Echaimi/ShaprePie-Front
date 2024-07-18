@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spaceshare/models/user.dart';
@@ -6,7 +7,8 @@ import 'package:spaceshare/models/user_with_expenses.dart';
 import 'package:spaceshare/providers/auth_provider.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 import '../models/refund.dart';
-import 'Refund_player.dart';
+import '../models/payer.dart';
+import 'Refund_payer.dart';
 import 'bottom_modal.dart';
 import 'refund_participants.dart';
 
@@ -99,7 +101,7 @@ class _RefundFormState extends State<RefundForm> {
       }
 
       widget.onSubmit(data);
-      Navigator.pop(context);
+      context.pop(context);
     }
   }
 
@@ -139,7 +141,24 @@ class _RefundFormState extends State<RefundForm> {
                   });
                 }
               },
-              initialPayers: [],
+              initialPayers: _fromUser != null
+                  ? [
+                      Payer(
+                        id: _fromUser!.id,
+                        user: UserWithExpenses(
+                          id: _fromUser!.id,
+                          email: _fromUser!.email,
+                          username: _fromUser!.username,
+                          role: _fromUser!.role,
+                          avatar: _fromUser!.avatar,
+                          expenseCount: 0,
+                          totalExpenses: 0.0,
+                          refundAmount: 0.0,
+                        ),
+                        amount: double.tryParse(_amountController.text) ?? 0.0,
+                      )
+                    ]
+                  : [],
             ),
           );
         },
@@ -153,12 +172,25 @@ class _RefundFormState extends State<RefundForm> {
             scrollController: ScrollController(),
             child: RefundParticipants(
               users: eventWebsocketProvider.users,
+              totalAmount: double.tryParse(_amountController.text) ?? 0.0,
               onUserSelected: (selectedUser) {
                 setState(() {
                   _toUser = selectedUser;
                   _toController.text = selectedUser.username;
                 });
               },
+              selectedUser: _toUser != null
+                  ? UserWithExpenses(
+                      id: _toUser!.id,
+                      email: _toUser!.email,
+                      username: _toUser!.username,
+                      role: _toUser!.role,
+                      avatar: _toUser!.avatar,
+                      expenseCount: 0,
+                      totalExpenses: 0.0,
+                      refundAmount: 0.0,
+                    )
+                  : null,
             ),
           );
         },
@@ -286,10 +318,11 @@ class _RefundFormState extends State<RefundForm> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.secondaryContainer,
-                      width: 2,
-                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide.none,
                   ),
                   errorText: errorText,
                 ),

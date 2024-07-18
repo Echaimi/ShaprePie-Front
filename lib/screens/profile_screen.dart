@@ -160,143 +160,158 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 10),
-              Text(
-                t(context)!.myAccount,
-                style: themeData.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 20),
-              if (authProvider.user != null) ...[
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    GestureDetector(
-                      onTap: selectAvatar,
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundImage:
-                            NetworkImage(authProvider.user!.avatar.url),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: InkWell(
-                        onTap: selectAvatar,
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: themeData.colorScheme.primary,
-                          child: Icon(
-                            Icons.edit,
-                            size: 20,
-                            color: themeData.colorScheme.surface,
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 10),
+                  Text(
+                    t(context)!.myAccount,
+                    style: themeData.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 20),
+                  if (authProvider.user != null) ...[
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        GestureDetector(
+                          onTap: selectAvatar,
+                          child: CircleAvatar(
+                            radius: 70,
+                            backgroundImage:
+                                NetworkImage(authProvider.user!.avatar.url),
                           ),
                         ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: InkWell(
+                            onTap: selectAvatar,
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundColor: themeData.colorScheme.primary,
+                              child: Icon(
+                                Icons.edit,
+                                size: 20,
+                                color: themeData.colorScheme.surface,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      authProvider.user!.username,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: themeData.colorScheme.primary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 48),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 342,
+                      child: TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          labelText: t(context)!.email,
+                          labelStyle:
+                              TextStyle(color: themeData.colorScheme.primary),
+                          fillColor: Colors.blueGrey.withOpacity(0.2),
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: themeData.colorScheme.primary,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: themeData.colorScheme.primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        style: TextStyle(color: themeData.colorScheme.primary),
+                        enabled: true,
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 342,
+                      child: TextField(
+                        controller: usernameController,
+                        decoration: InputDecoration(
+                          labelText: t(context)!.username,
+                          labelStyle:
+                              TextStyle(color: themeData.colorScheme.primary),
+                          fillColor: Colors.blueGrey.withOpacity(0.2),
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: themeData.colorScheme.primary,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: themeData.colorScheme.primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        style: TextStyle(color: themeData.colorScheme.primary),
+                        enabled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ] else ...[
+                    const CircularProgressIndicator(),
                   ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  authProvider.user!.username,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: themeData.colorScheme.primary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 342,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: t(context)!.email,
-                      labelStyle:
-                          TextStyle(color: themeData.colorScheme.primary),
-                      fillColor: Colors.blueGrey.withOpacity(0.2),
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: themeData.colorScheme.primary,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: themeData.colorScheme.primary,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(color: themeData.colorScheme.primary),
-                    enabled: true,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 342,
-                  child: TextField(
-                    controller: usernameController,
-                    decoration: InputDecoration(
-                      labelText: t(context)!.username,
-                      labelStyle:
-                          TextStyle(color: themeData.colorScheme.primary),
-                      fillColor: Colors.blueGrey.withOpacity(0.2),
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: themeData.colorScheme.primary,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: themeData.colorScheme.primary,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(color: themeData.colorScheme.primary),
-                    enabled: true,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: 342,
+                ],
+              ),
+            ),
+          ),
+          if (authProvider.user != null)
+            Positioned(
+              bottom: 50,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
                   child: ElevatedButton(
                     onPressed: saveProfile,
                     style: ElevatedButton.styleFrom(
-                        foregroundColor: themeData.colorScheme.surface,
-                        backgroundColor: colorScheme.primary,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        textStyle: textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        )),
+                      foregroundColor: themeData.colorScheme.surface,
+                      backgroundColor: colorScheme.primary,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      textStyle: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     child: Text(t(context)!.save),
                   ),
                 ),
-              ] else ...[
-                const CircularProgressIndicator(),
-              ],
-            ],
-          ),
-        ),
+              ),
+            ),
+        ],
       ),
     );
   }

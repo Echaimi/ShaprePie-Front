@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:spaceshare/models/user.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
 import '../models/payer.dart';
@@ -194,7 +195,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
               Center(
                 child: Text(
                   'Qui a Khalass ?',
-                  style: theme.textTheme.titleSmall!.copyWith(),
+                  style: theme.textTheme.titleSmall,
                 ),
               ),
               const SizedBox(height: 20.0),
@@ -361,7 +362,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
                                 ))
                             .toList();
                         widget.onPayersSelected(selectedUsers);
-                        Navigator.pop(context);
+                        context.pop(context);
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

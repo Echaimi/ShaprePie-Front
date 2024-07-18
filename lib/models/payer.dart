@@ -1,4 +1,4 @@
-import 'user.dart';
+import 'package:spaceshare/models/user.dart';
 
 class Payer {
   final int? id;

@@ -107,7 +107,7 @@ class RefundDetailsModal extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             eventProvider.deleteRefund(refund.id);
-                            Navigator.pop(context);
+                            context.pop(context);
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,

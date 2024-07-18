@@ -103,7 +103,7 @@ class ExpenseDetailsModal extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             eventProvider.deleteExpense(expense.id);
-                            Navigator.pop(context);
+                            context.pop(context);
                           },
                           child: Text(
                             t(context)!.delete,
