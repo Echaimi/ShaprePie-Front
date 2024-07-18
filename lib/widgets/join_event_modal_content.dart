@@ -33,7 +33,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
   }
 
   bool _isCodeValid(String code) {
-    final validCharacters = RegExp(r'^[a-z0-9]+$');
+    final validCharacters = RegExp(r'^[a-zA-Z0-9]+$');
     return code.length >= 6 && validCharacters.hasMatch(code);
   }
 
@@ -358,7 +358,7 @@ class _JoinEventModalContentState extends State<JoinEventModalContent> {
         ),
         child: _isLoading
             ? CircularProgressIndicator(
-                color: textTheme.bodyLarge?.color,
+                color: colorScheme.surface,
               )
             : Text(
                 t(context)!.join,
