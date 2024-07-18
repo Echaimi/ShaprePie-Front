@@ -1,3 +1,5 @@
+// ignore_for_file: empty_catches, unused_catch_stack
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -58,7 +60,6 @@ class EventWebsocketProvider with ChangeNotifier {
     try {
       return _expenses.firstWhere((expense) => expense.id == id);
     } catch (e) {
-      print('Expense with id $id not found: $e');
       return null;
     }
   }
@@ -74,7 +75,6 @@ class EventWebsocketProvider with ChangeNotifier {
     try {
       return _refunds.firstWhere((refund) => refund.id == id);
     } catch (e) {
-      print('Refund with id $id not found: $e');
       return null;
     }
   }
@@ -89,9 +89,7 @@ class EventWebsocketProvider with ChangeNotifier {
           '${dotenv.env['API_WS_URL']}/ws/events/$eventId?authorization=Bearer $token';
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
       _channel?.stream.listen(_handleMessage);
-    } catch (e) {
-      print('Error initializing WebSocket: $e');
-    }
+    } catch (e) {}
   }
 
   void _handleMessage(message) {
@@ -115,10 +113,7 @@ class EventWebsocketProvider with ChangeNotifier {
               .map((r) => Refund.fromJson(r))
               .toList();
           _updateRefunds(refunds);
-        } catch (e, stackTrace) {
-          print('Error parsing refunds: $e');
-          print(stackTrace);
-        }
+        } catch (e, stackTrace) {}
         break;
       case 'users':
         final users = (webSocketMessage.payload as List)
@@ -169,7 +164,6 @@ class EventWebsocketProvider with ChangeNotifier {
 
   void _updateEvent(Event event) {
     _event = event;
-    print('Event updated: ${event.name}');
     notifyListeners();
   }
 
@@ -179,7 +173,6 @@ class EventWebsocketProvider with ChangeNotifier {
   }
 
   void _updateRefunds(List<Refund> refunds) {
-    print('Updating refunds: $refunds');
     _refunds = refunds;
     notifyListeners();
   }
@@ -219,9 +212,7 @@ class EventWebsocketProvider with ChangeNotifier {
   void _sendMessage(WebSocketMessage message) {
     try {
       _channel?.sink.add(message.toString());
-    } catch (e) {
-      print('Error sending message: $e');
-    }
+    } catch (e) {}
   }
 
   @override

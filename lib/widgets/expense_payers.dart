@@ -1,8 +1,13 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/models/user.dart';
 import 'package:spaceshare/models/user_with_expenses.dart';
 import '../models/payer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ExpensePayers extends StatefulWidget {
   final List<UserWithExpenses> users;
@@ -80,11 +85,12 @@ class _ExpensePayersState extends State<ExpensePayers> {
         .map((controller) => double.tryParse(controller.text) ?? 0)
         .fold(0, (sum, amount) => sum + amount);
 
+    // ignore: unused_local_variable
     const double tolerance = 0.01;
 
     setState(() {
       if (totalAmount < 0) {
-        errorMessage = 'Le montant total ne peut pas être inférieur à zéro.';
+        errorMessage = t(context)!.totalAmountCannotBeNegative;
       } else {
         errorMessage = null;
       }
@@ -194,7 +200,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
             children: [
               Center(
                 child: Text(
-                  'Qui a Khalass ?',
+                  t(context)!.whoPaid,
                   style: theme.textTheme.titleSmall,
                 ),
               ),
@@ -205,7 +211,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
                   GestureDetector(
                     onTap: _selectAll,
                     child: Text(
-                      'Tout sélectionner',
+                      t(context)!.selectAll,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         decoration: TextDecoration.none,
@@ -215,7 +221,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
                   GestureDetector(
                     onTap: _resetAmounts,
                     child: Text(
-                      'Réinitialiser',
+                      t(context)!.reset,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         decoration: TextDecoration.none,
@@ -228,7 +234,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'Cliquez pour modifier le montant',
+                  t(context)!.clickToEditAmount,
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: theme.colorScheme.secondary),
                 ),
@@ -374,7 +380,7 @@ class _ExpensePayersState extends State<ExpensePayers> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: Text(
-                  'Valider les payeurs',
+                  t(context)!.validatePayers,
                   style:
                       theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),

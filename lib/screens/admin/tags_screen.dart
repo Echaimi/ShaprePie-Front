@@ -1,7 +1,12 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/tag_service.dart';
 import 'package:spaceshare/models/tag.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class TagsScreen extends StatefulWidget {
   final TagService tagService;
@@ -27,17 +32,17 @@ class _TagsScreenState extends State<TagsScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this tag?'),
+          title: Text(t(context)!.confirmDelete),
+          content: Text(t(context)!.confirmDeleteQuestion),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(t(context)!.cancel),
               onPressed: () {
                 context.pop();
               },
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: Text(t(context)!.delete),
               onPressed: () async {
                 try {
                   await widget.tagService.deleteTag(tagId);
@@ -47,7 +52,8 @@ class _TagsScreenState extends State<TagsScreen> {
                   context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete tag: $e')),
+                    SnackBar(
+                        content: Text('${t(context)!.failedToDeleteTag}: $e')),
                   );
                 }
               },
@@ -67,14 +73,14 @@ class _TagsScreenState extends State<TagsScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(tag == null ? 'Add Tag' : 'Edit Tag'),
+          title: Text(tag == null ? t(context)!.addTag : t(context)!.editTag),
           content: Form(
             key: formKey,
             child: TextFormField(
               initialValue: tagName,
-              decoration: const InputDecoration(
-                labelText: 'Tag Name',
-                labelStyle: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: t(context)!.tagName,
+                labelStyle: const TextStyle(color: Colors.black),
               ),
               style: const TextStyle(color: Colors.black),
               onChanged: (value) {
@@ -82,7 +88,7 @@ class _TagsScreenState extends State<TagsScreen> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a tag name';
+                  return t(context)!.pleaseEnterTagName;
                 }
                 return null;
               },
@@ -90,13 +96,13 @@ class _TagsScreenState extends State<TagsScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(t(context)!.cancel),
               onPressed: () {
                 context.pop();
               },
             ),
             TextButton(
-              child: const Text('Save'),
+              child: Text(t(context)!.save),
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   try {
@@ -112,7 +118,8 @@ class _TagsScreenState extends State<TagsScreen> {
                     context.pop();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to save tag: $e')),
+                      SnackBar(
+                          content: Text('${t(context)!.failedToSaveTag}: $e')),
                     );
                   }
                 }
@@ -131,9 +138,10 @@ class _TagsScreenState extends State<TagsScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Align(
+          title: Align(
             alignment: Alignment.centerLeft,
-            child: Text('Manage Tags', style: TextStyle(color: Colors.black)),
+            child: Text(t(context)!.manageTags,
+                style: const TextStyle(color: Colors.black)),
           ),
           backgroundColor: Colors.white,
           iconTheme: const IconThemeData(color: Colors.black),
@@ -144,7 +152,8 @@ class _TagsScreenState extends State<TagsScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(
+                  child: Text('${t(context)!.error}: ${snapshot.error}'));
             } else {
               final tags = snapshot.data!;
               return Padding(
@@ -162,7 +171,7 @@ class _TagsScreenState extends State<TagsScreen> {
                           ElevatedButton.icon(
                             onPressed: () => _showTagFormDialog(),
                             icon: const Icon(Icons.add),
-                            label: const Text('Add Tag'),
+                            label: Text(t(context)!.addTag),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
@@ -181,18 +190,20 @@ class _TagsScreenState extends State<TagsScreen> {
                               ? MediaQuery.of(context).size.width
                               : 800,
                           child: DataTable(
-                            columns: const [
+                            columns: [
                               DataColumn(
-                                label: Text('ID',
-                                    style: TextStyle(color: Colors.black)),
+                                label: Text(t(context)!.id,
+                                    style:
+                                        const TextStyle(color: Colors.black)),
                               ),
                               DataColumn(
                                 label: Expanded(
-                                  child: Text('Name',
-                                      style: TextStyle(color: Colors.black)),
+                                  child: Text(t(context)!.name,
+                                      style:
+                                          const TextStyle(color: Colors.black)),
                                 ),
                               ),
-                              DataColumn(
+                              const DataColumn(
                                 label: Text(''),
                               ),
                             ],

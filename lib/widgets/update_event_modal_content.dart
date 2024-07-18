@@ -1,7 +1,12 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/event_websocket_service.dart';
 import 'event_form.dart';
 import 'package:go_router/go_router.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class UpdateEventModalContent extends StatefulWidget {
   final int eventId;
@@ -61,7 +66,7 @@ class _UpdateEventModalContentState extends State<UpdateEventModalContent> {
           children: [
             Center(
               child: Text(
-                'Modifier l\'évènement',
+                t(context)!.updateEventTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -70,7 +75,7 @@ class _UpdateEventModalContentState extends State<UpdateEventModalContent> {
               eventNameController: eventNameController,
               descriptionController: descriptionController,
               onSubmit: _updateEvent,
-              buttonText: 'Modifier',
+              buttonText: t(context)!.updateEventButton,
               onCategorySelected: (int categoryId) {
                 setState(() {
                   selectedCategoryId = categoryId;

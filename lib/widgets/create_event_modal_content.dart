@@ -1,9 +1,14 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spaceshare/models/event.dart';
 import 'event_form.dart';
 import '../services/event_service.dart';
 import '../services/api_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class CreateEventModalContent extends StatefulWidget {
   const CreateEventModalContent({super.key});
@@ -27,7 +32,7 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
       return event;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create event: $e')),
+        SnackBar(content: Text('${t(context)!.creationEventFailed}: $e')),
       );
       return null;
     }
@@ -44,7 +49,7 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
           children: [
             Center(
               child: Text(
-                'L\'évènement',
+                t(context)!.eventTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
@@ -52,7 +57,7 @@ class _CreateEventModalContentState extends State<CreateEventModalContent> {
             EventForm(
               eventNameController: eventNameController,
               descriptionController: descriptionController,
-              buttonText: 'Créer',
+              buttonText: t(context)!.createEventButton,
               onSubmit: () async {
                 final Map<String, dynamic> eventData = {
                   'name': eventNameController.text,

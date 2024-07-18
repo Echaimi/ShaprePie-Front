@@ -20,8 +20,6 @@ class Refund {
   });
 
   factory Refund.fromJson(Map<String, dynamic> json) {
-    print('Parsing Refund from JSON: $json');
-
     return Refund(
       id: json['ID'],
       fromUserId: json['fromUserId'],

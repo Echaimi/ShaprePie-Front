@@ -1,7 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, empty_catches
+
 import 'package:flutter/material.dart';
 import 'package:spaceshare/services/user_service.dart';
 import 'package:spaceshare/models/user.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UsersScreen extends StatefulWidget {
   final UserService userService;
@@ -27,17 +30,17 @@ class _UsersScreenState extends State<UsersScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this user?'),
+          title: Text(AppLocalizations.of(context)!.confirmDeleteUser),
+          content: Text(AppLocalizations.of(context)!.deleteUserConfirmation),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () {
                 context.pop();
               },
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: Text(AppLocalizations.of(context)!.delete),
               onPressed: () async {
                 try {
                   await widget.userService.deleteUser(userId);
@@ -47,7 +50,9 @@ class _UsersScreenState extends State<UsersScreen> {
                   context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete user: $e')),
+                    SnackBar(
+                        content: Text(
+                            '${AppLocalizations.of(context)!.failedToDeleteUser}: $e')),
                   );
                 }
               },
@@ -68,7 +73,9 @@ class _UsersScreenState extends State<UsersScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(user == null ? 'Add User' : 'Edit User'),
+          title: Text(user == null
+              ? AppLocalizations.of(context)!.addUser
+              : AppLocalizations.of(context)!.editUser),
           content: Form(
             key: formKey,
             child: Column(
@@ -76,9 +83,9 @@ class _UsersScreenState extends State<UsersScreen> {
               children: [
                 TextFormField(
                   initialValue: email,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.userEmail,
+                    labelStyle: const TextStyle(color: Colors.black),
                   ),
                   style: const TextStyle(color: Colors.black),
                   onChanged: (value) {
@@ -86,16 +93,16 @@ class _UsersScreenState extends State<UsersScreen> {
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter an email';
+                      return AppLocalizations.of(context)!.pleaseEnterEmail;
                     }
                     return null;
                   },
                 ),
                 TextFormField(
                   initialValue: username,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    labelStyle: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.userUsername,
+                    labelStyle: const TextStyle(color: Colors.black),
                   ),
                   style: const TextStyle(color: Colors.black),
                   onChanged: (value) {
@@ -103,7 +110,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a username';
+                      return AppLocalizations.of(context)!.pleaseEnterUsername;
                     }
                     return null;
                   },
@@ -113,13 +120,13 @@ class _UsersScreenState extends State<UsersScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () {
                 context.pop();
               },
             ),
             TextButton(
-              child: const Text('Save'),
+              child: Text(AppLocalizations.of(context)!.save),
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   try {
@@ -127,7 +134,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       await widget.userService.createUser({
                         'email': email,
                         'username': username,
-                        'password': 'newpassword123456789', // Default password
+                        'password': 'newpassword123456789',
                       });
                     } else {
                       await widget.userService.updateUser(user.id, {
@@ -140,9 +147,10 @@ class _UsersScreenState extends State<UsersScreen> {
                     });
                     context.pop();
                   } catch (e) {
-                    print(e);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to save user: $e')),
+                      SnackBar(
+                          content: Text(
+                              '${AppLocalizations.of(context)!.failedToSaveUser}: $e')),
                     );
                   }
                 }
@@ -161,9 +169,10 @@ class _UsersScreenState extends State<UsersScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Align(
+          title: Align(
             alignment: Alignment.centerLeft,
-            child: Text('Manage Users', style: TextStyle(color: Colors.black)),
+            child: Text(AppLocalizations.of(context)!.manageUsers,
+                style: const TextStyle(color: Colors.black)),
           ),
           backgroundColor: Colors.white,
           iconTheme: const IconThemeData(color: Colors.black),
@@ -192,7 +201,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           ElevatedButton.icon(
                             onPressed: () => _showUserFormDialog(),
                             icon: const Icon(Icons.add),
-                            label: const Text('Add User'),
+                            label: Text(AppLocalizations.of(context)!.addUser),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
@@ -211,26 +220,33 @@ class _UsersScreenState extends State<UsersScreen> {
                               ? MediaQuery.of(context).size.width
                               : 800,
                           child: DataTable(
-                            columns: const [
+                            columns: [
                               DataColumn(
-                                label: Text('ID',
-                                    style: TextStyle(color: Colors.black)),
+                                label: Text(AppLocalizations.of(context)!.id,
+                                    style:
+                                        const TextStyle(color: Colors.black)),
                               ),
                               DataColumn(
                                 label: Expanded(
-                                  child: Text('Email',
-                                      style: TextStyle(color: Colors.black)),
+                                  child: Text(
+                                      AppLocalizations.of(context)!.email,
+                                      style:
+                                          const TextStyle(color: Colors.black)),
                                 ),
                               ),
                               DataColumn(
-                                label: Text('Username',
-                                    style: TextStyle(color: Colors.black)),
+                                label: Text(
+                                    AppLocalizations.of(context)!.username,
+                                    style:
+                                        const TextStyle(color: Colors.black)),
                               ),
                               DataColumn(
-                                label: Text('Role',
-                                    style: TextStyle(color: Colors.black)),
+                                label: Text(
+                                    AppLocalizations.of(context)!.userRole,
+                                    style:
+                                        const TextStyle(color: Colors.black)),
                               ),
-                              DataColumn(
+                              const DataColumn(
                                 label: Text(''),
                               ),
                             ],

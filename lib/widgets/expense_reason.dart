@@ -1,8 +1,13 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/tag.dart';
 import '../services/tags_service.dart';
-import 'package:spaceshare/services/api_service.dart'; // Assurez-vous que le chemin est correct
+import 'package:spaceshare/services/api_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class ReasonExpense extends StatefulWidget {
   final Function(String, String, Tag?, bool) onReasonSelected;
@@ -69,18 +74,14 @@ class _ReasonExpenseState extends State<ReasonExpense> {
       setState(() {
         _isLoading = false;
       });
-      // Handle the error appropriately
     }
   }
 
   void _validateReason() {
     setState(() {
-      _nameError = nameController.text.isEmpty
-          ? 'Le nom de la dépense est obligatoire'
-          : null;
-      _tagError = _selectedTag == null
-          ? 'La sélection d\'un tag est obligatoire'
-          : null;
+      _nameError =
+          nameController.text.isEmpty ? t(context)!.expenseNameRequired : null;
+      _tagError = _selectedTag == null ? t(context)!.tagRequired : null;
     });
 
     if (_nameError == null && _tagError == null) {
@@ -101,27 +102,27 @@ class _ReasonExpenseState extends State<ReasonExpense> {
           children: [
             Center(
               child: Text(
-                'La raison ?',
+                t(context)!.reason,
                 style: theme.textTheme.titleMedium,
               ),
             ),
             const SizedBox(height: 16.0),
             Text(
-              'C\'est un cadeau ? De quoi te retourner la tête ce soir ? Juste les courses ?',
+              t(context)!.reasonPrompt,
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.left,
             ),
             const SizedBox(height: 24.0),
-            _buildTextField('Nom de la dépense', nameController, context,
+            _buildTextField(t(context)!.expenseName, nameController, context,
                 errorText: _nameError),
             const SizedBox(height: 16.0),
             _buildDescriptionField(
-                'Description', descriptionController, context),
+                t(context)!.description, descriptionController, context),
             const SizedBox(height: 16.0),
             GestureDetector(
               onTap: _toggleTagListVisibility,
               child: Text(
-                'Ajouter un tag',
+                t(context)!.addTag,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.primary,
                   decoration: TextDecoration.none,
@@ -155,7 +156,7 @@ class _ReasonExpenseState extends State<ReasonExpense> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: Text(
-                  'Valider la raison',
+                  t(context)!.validateReason,
                   style:
                       theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),

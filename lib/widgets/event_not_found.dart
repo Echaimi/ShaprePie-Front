@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spaceshare/widgets/bottom_modal.dart';
 import 'package:spaceshare/widgets/join_us.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventNotFound extends StatelessWidget {
   const EventNotFound({super.key});
@@ -13,12 +16,12 @@ class EventNotFound extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Explore the Galaxy", style: textTheme.titleLarge),
+        Text(t(context)!.exploreTheGalaxy, style: textTheme.titleLarge),
         const SizedBox(height: 4),
-        Text("Manage your expenses with ease", style: textTheme.titleSmall),
+        Text(t(context)!.manageExpensesWithEase, style: textTheme.titleSmall),
         const SizedBox(height: 8),
         Text(
-          "Join us and embark on a journey to better financial management",
+          t(context)!.joinUsJourney,
           style: textTheme.bodyLarge,
           textAlign: TextAlign.start,
         ),
@@ -48,7 +51,7 @@ class EventNotFound extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
-              child: const Text("Nous rejoindre"),
+              child: Text(t(context)!.joinUsButton),
             ),
           ],
         )

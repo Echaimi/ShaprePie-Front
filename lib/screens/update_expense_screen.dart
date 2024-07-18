@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:spaceshare/widgets/expense_form.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class UpdateExpenseScreen extends StatelessWidget {
   final int expenseId;
@@ -10,6 +13,7 @@ class UpdateExpenseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
     final eventWebsocketProvider = Provider.of<EventWebsocketProvider>(context);
     final expense = eventWebsocketProvider.getExpenseById(expenseId);
@@ -27,9 +31,9 @@ class UpdateExpenseScreen extends StatelessWidget {
                 onPressed: () {
                   context.pop();
                 },
-                child: const Text(
-                  'Fermer',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  t(context)?.close ?? 'Fermer',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),

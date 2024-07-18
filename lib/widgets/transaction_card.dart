@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spaceshare/models/transaction.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class TransactionCard extends StatelessWidget {
   final Transaction transaction;
@@ -29,7 +32,7 @@ class TransactionCard extends StatelessWidget {
                 children: [
                   Text(
                     transaction.from.username,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: theme.textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 8.0),
                   CircleAvatar(
@@ -42,19 +45,17 @@ class TransactionCard extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: 'doit ',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      text: '${t(context)!.owes} ',
+                      style: theme.textTheme.bodyLarge,
                     ),
                     TextSpan(
                       text: '${transaction.amount.toStringAsFixed(2)} €',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
+                      style: theme.textTheme.bodyLarge
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                      text: ' à',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      text: ' ${t(context)!.to}',
+                      style: theme.textTheme.bodyLarge,
                     ),
                   ],
                 ),
@@ -63,7 +64,7 @@ class TransactionCard extends StatelessWidget {
                 children: [
                   Text(
                     transaction.to.username,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: theme.textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 8.0),
                   CircleAvatar(
@@ -86,7 +87,7 @@ class TransactionCard extends StatelessWidget {
                 handleRefund(transaction);
               },
               child: Text(
-                'Tout est réglé !',
+                t(context)!.settledUp,
                 style: TextStyle(
                   color: theme.primaryColor,
                   fontWeight: FontWeight.bold,

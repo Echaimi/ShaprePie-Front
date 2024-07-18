@@ -1,8 +1,13 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../services/category_service.dart';
 import '../services/api_service.dart';
 import '../services/event_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+AppLocalizations? t(BuildContext context) => AppLocalizations.of(context);
 
 class EventForm extends StatefulWidget {
   final TextEditingController eventNameController;
@@ -28,7 +33,7 @@ class _EventFormState extends State<EventForm> {
   late Future<List<Category>> _futureCategories;
   final CategoryService categoryService = CategoryService(ApiService());
   final EventService eventService = EventService(ApiService());
-  int selectedCategoryId = 1; // Default category ID
+  int selectedCategoryId = 1;
   bool _isLoading = false;
 
   @override
@@ -46,8 +51,7 @@ class _EventFormState extends State<EventForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Choisissez une catégorie pour votre évènement',
-            style: textTheme.bodySmall),
+        Text(t(context)!.chooseEventCategory, style: textTheme.bodySmall),
         const SizedBox(height: 8),
         FutureBuilder<List<Category>>(
           future: _futureCategories,
@@ -55,9 +59,9 @@ class _EventFormState extends State<EventForm> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
+              return Text('${t(context)!.error}: ${snapshot.error}');
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Text('No categories available');
+              return Text(t(context)!.noCategoriesAvailable);
             } else {
               return Wrap(
                 spacing: 8.0,
@@ -69,14 +73,14 @@ class _EventFormState extends State<EventForm> {
           },
         ),
         const SizedBox(height: 20.0),
-        Text('En quel honneur ?', style: textTheme.bodySmall),
+        Text(t(context)!.eventNameLabel, style: textTheme.bodySmall),
         const SizedBox(height: 8.0),
         TextField(
           controller: widget.eventNameController,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.black.withOpacity(0.1),
-            labelText: 'Event name',
+            labelText: t(context)!.eventNameLabel,
             labelStyle: textTheme.bodyMedium,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -95,7 +99,7 @@ class _EventFormState extends State<EventForm> {
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.black.withOpacity(0.1),
-            labelText: 'Description',
+            labelText: t(context)!.eventDescriptionLabel,
             labelStyle: textTheme.bodyMedium,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -110,8 +114,8 @@ class _EventFormState extends State<EventForm> {
         const SizedBox(height: 40.0),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: colorScheme.primary, // Set your button color here
-            minimumSize: const Size(double.infinity, 50.0), // Full width button
+            backgroundColor: colorScheme.primary,
+            minimumSize: const Size(double.infinity, 50.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -120,14 +124,15 @@ class _EventFormState extends State<EventForm> {
             setState(() {
               _isLoading = true;
             });
-            await widget.onSubmit(); // Call the custom submit function
+            await widget.onSubmit();
             setState(() {
               _isLoading = false;
             });
           },
           child: _isLoading
-              ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ? CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
                 )
               : Text(widget.buttonText,
                   style: const TextStyle(color: Colors.white)),

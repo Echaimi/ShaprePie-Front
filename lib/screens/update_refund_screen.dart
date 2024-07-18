@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:spaceshare/models/refund.dart';
 import 'package:spaceshare/services/event_websocket_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
